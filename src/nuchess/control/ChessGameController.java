@@ -132,9 +132,8 @@ public class ChessGameController
 	{
 		return moveHistory;
 	}
-
 	
-	public void start()
+	public void init()
 	{
 		initView();
 		takeTurn(getNextPlayer());

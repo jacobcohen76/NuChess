@@ -82,7 +82,17 @@ public class ChessEngine implements Engine<CMove>
 		return board.isAttacked(board.kingSquare(toMove()), toMove() ^ 1);
 	}
 	
-	public final boolean isCheckMove(CMove move)
+	public final boolean isCheck(CMove move)
+	{
+		return isDirectCheck(move) || isDiscoveryCheck(move);
+	}
+	
+	public final boolean isDirectCheck(CMove move)
+	{
+		return (Attacks.attacks(board.pieceAt(move.from()), move.to(), board.occAfter(move)) & board.bitboard(Piece.WHITE_KING + toMove() ^ 1)) != 0;
+	}
+	
+	public final boolean isDiscoveryCheck(CMove move)
 	{
 		return board.attacksTo(board.kingSquare(toMove() ^ 1), toMove(), board.occAfter(move)) != 0;
 	}
@@ -268,7 +278,7 @@ public class ChessEngine implements Engine<CMove>
 		{
 			SAN.append(FENParser.pieceChar(Piece.pieceCode(move.promotedTo(), toMove())));
 		}
-		if(isCheckMove(move))
+		if(isCheck(move))
 		{
 			SAN.append('+');
 		}

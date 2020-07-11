@@ -1,24 +1,46 @@
 package nuchess.view.graphics;
 
+import nuchess.engine.Piece;
+
 public class TextureIDs
 {
 	public static final int pieceID(char pieceChar)
 	{
 		switch(pieceChar)
 		{
-			case 'P':	return 0x1;
-			case 'N':	return 0x2;
-			case 'B':	return 0x3;
-			case 'R':	return 0x4;
-			case 'Q':	return 0x5;
-			case 'K':	return 0x6;
-			case 'p':	return 0x7;
-			case 'n':	return 0x8;
-			case 'b':	return 0x9;
-			case 'r':	return 0xA;
-			case 'q':	return 0xB;
-			case 'k':	return 0xC;
-			default:	return 0x0;
+			case 'P':	return WHITE_PAWN;
+			case 'N':	return WHITE_KNIGHT;
+			case 'B':	return WHITE_BISHOP;
+			case 'R':	return WHITE_ROOK;
+			case 'Q':	return WHITE_QUEEN;
+			case 'K':	return WHITE_KING;
+			case 'p':	return BLACK_PAWN;
+			case 'n':	return BLACK_KNIGHT;
+			case 'b':	return BLACK_BISHOP;
+			case 'r':	return BLACK_ROOK;
+			case 'q':	return BLACK_QUEEN;
+			case 'k':	return BLACK_KING;
+			default:	return NULL;
+		}
+	}
+	
+	public static final int pieceID(int pieceCode)
+	{
+		switch(pieceCode)
+		{
+			case Piece.WHITE_PAWN:		return WHITE_PAWN;
+			case Piece.WHITE_KNIGHT:	return WHITE_KNIGHT;
+			case Piece.WHITE_BISHOP:	return WHITE_BISHOP;
+			case Piece.WHITE_ROOK:		return WHITE_ROOK;
+			case Piece.WHITE_QUEEN:		return WHITE_QUEEN;
+			case Piece.WHITE_KING:		return WHITE_KING;
+			case Piece.BLACK_PAWN:		return BLACK_PAWN;
+			case Piece.BLACK_KNIGHT:	return BLACK_KNIGHT;
+			case Piece.BLACK_BISHOP:	return BLACK_BISHOP;
+			case Piece.BLACK_ROOK:		return BLACK_ROOK;
+			case Piece.BLACK_QUEEN:		return BLACK_QUEEN;
+			case Piece.BLACK_KING:		return BLACK_KING;
+			default:					return NULL;
 		}
 	}
 	

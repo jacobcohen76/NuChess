@@ -1,5 +1,6 @@
 package nuchess.view.graphics;
 
+import java.awt.Dimension;
 import java.awt.Image;
 import java.io.File;
 import java.io.FileInputStream;
@@ -84,7 +85,7 @@ public class ChessboardGraphics
 		oos.close();
 		fos.close();
 	}
-		
+	
 	private LayeredGraphics lg;
 	private Image[] scaledResources;
 	private int squareSize;
@@ -104,6 +105,11 @@ public class ChessboardGraphics
 		
 		scaledResources = RESOURCE_MANAGER.getScaledTextures(squareSize, Image.SCALE_SMOOTH);
 		RESOURCE_MANAGER.addSubscriber(this);
+	}
+	
+	public Image[] getScaledResources()
+	{
+		return scaledResources;
 	}
 	
 	public int getSquareSize()
@@ -258,6 +264,11 @@ public class ChessboardGraphics
 	private void paint(Image img, int square, int layer)
 	{
 		lg.getGraphics(layer).drawImage(img, getX(square), getY(square), squareSize, squareSize, null);
+	}
+	
+	public Dimension getDimensions()
+	{
+		return new Dimension(getWidth(), getHeight());
 	}
 	
 	public int getWidth()

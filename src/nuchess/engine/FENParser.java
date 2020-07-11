@@ -1,15 +1,32 @@
 package nuchess.engine;
 
+import util.StringUtil;
+
 public final class FENParser
 {	
-	public static final boolean isDigit(char c)
+	public static final boolean isDigit(char ch)
 	{
-		return '0' <= c && c <= '9';
+		return '0' <= ch && ch <= '9';
 	}
 	
-	public static final boolean isPiece(char c)
+	public static final boolean isFile(char ch)
 	{
-		switch(c)
+		return 'a' <= ch && ch <= 'h';
+	}
+	
+	public static final boolean isRank(char ch)
+	{
+		return '1' <= ch && ch <= '8';
+	}
+	
+	public static final boolean isColor(char ch)
+	{
+		return ch == 'w' || ch == 'b';
+	}
+	
+	public static final boolean isPiece(char ch)
+	{
+		switch(ch)
 		{
 			case 'p':
 			case 'r':
@@ -190,5 +207,59 @@ public final class FENParser
 	public static final String formatHalfmoveClock(int halfmoveClock)
 	{
 		return String.valueOf(halfmoveClock);
+	}
+	
+	public static final boolean isBase10(String numberString)
+	{
+		for(int i = 0; i < numberString.length(); i++)
+		{
+			if(!isDigit(numberString.charAt(i)))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public static final boolean isCoord(String coordString)
+	{
+		return coordString.length() == 2 && isFile(coordString.charAt(0)) && isRank(coordString.charAt(1));
+	}
+	
+	private static final int castlingRightPriority(char ch)
+	{
+		switch(ch)
+		{
+			case 'K':	return +3;
+			case 'Q':	return +2;
+			case 'k':	return +1;
+			case 'q':	return  0;
+			case '-':	return Integer.MIN_VALUE;
+			default:	return Integer.MAX_VALUE;
+		}
+	}
+	
+	private static final boolean isValidCastlingRightsOrder(String crString)
+	{
+		int i = 0, prevState = Integer.MAX_VALUE, currState = prevState - 1;
+		while(i < crString.length() && currState < prevState)
+		{
+			prevState = currState;
+			currState = castlingRightPriority(crString.charAt(i++));
+		}
+		return currState < prevState;
+	}
+	
+	public static final boolean isCastlingRights(String crString)
+	{
+		return	crString.length() != 0 &&
+				StringUtil.contains(crString, '-') ?
+					crString.length() == 1 :
+					isValidCastlingRightsOrder(crString);
+	}
+	
+	public static final boolean isToMove(String toMoveString)
+	{
+		return toMoveString.length() == 1 && isColor(toMoveString.charAt(0));
 	}
 }

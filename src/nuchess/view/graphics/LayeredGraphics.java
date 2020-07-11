@@ -2,6 +2,7 @@ package nuchess.view.graphics;
 
 
 import java.awt.AlphaComposite;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -83,6 +84,11 @@ public class LayeredGraphics
 	{
 		this.w = w;
 		this.h = h;
+	}
+	
+	public Dimension getNewDimensions()
+	{
+		return new Dimension(w, h);
 	}
 	
 	private Pair<BufferedImage, Graphics2D> getNewLayer()

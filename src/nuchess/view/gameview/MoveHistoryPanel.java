@@ -158,6 +158,7 @@ class MoveHistoryPanel
 		JToggleButton toggleButton = buttons.get(ply);
 		toggleButton.setContentAreaFilled(true);
 		toggleButton.setBackground(selectedColor);
+		panel.repaint();
 	}
 	
 	private void deselect(int ply)
@@ -165,11 +166,13 @@ class MoveHistoryPanel
 		JToggleButton toggleButton = buttons.get(ply);
 		toggleButton.setContentAreaFilled(false);
 		toggleButton.setBackground(hoverColor);
+		panel.repaint();
 	}
 	
 	private void addHoverEffect(int ply)
 	{
 		buttons.get(ply).setContentAreaFilled(true);
+		panel.repaint();
 	}
 	
 	private void removeHoverEffect(int ply)
@@ -177,6 +180,7 @@ class MoveHistoryPanel
 		if(selected != ply)
 		{
 			buttons.get(ply).setContentAreaFilled(false);
+			panel.repaint();
 		}
 	}
 	
@@ -184,6 +188,7 @@ class MoveHistoryPanel
 	{
 		JToggleButton toggleButton = new JToggleButton();
 		toggleButton.setText(formattedMove);
+		toggleButton.setHorizontalAlignment(JToggleButton.RIGHT);
 		toggleButton.setFocusable(false);
 		toggleButton.setBorderPainted(false);
 		toggleButton.setContentAreaFilled(false);

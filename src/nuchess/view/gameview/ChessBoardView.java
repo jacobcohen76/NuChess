@@ -73,7 +73,7 @@ class ChessBoardView
 		enabledML = new MouseListener()
 		{
 			public void mouseClicked(MouseEvent e)	{}
-			public void mousePressed(MouseEvent e)	{ press(e); }
+			public void mousePressed(MouseEvent e)	{ pressed(e); }
 			public void mouseReleased(MouseEvent e)	{}
 			public void mouseEntered(MouseEvent e)	{}
 			public void mouseExited(MouseEvent e)	{}
@@ -98,7 +98,7 @@ class ChessBoardView
 		selector.parent = this;
 	}
 	
-	private void press(MouseEvent e)
+	private void pressed(MouseEvent e)
 	{
 		clear(dots, corners, selector.getFrom());
 		selector.select(cbg.getSquare(e.getX(), e.getY()));
