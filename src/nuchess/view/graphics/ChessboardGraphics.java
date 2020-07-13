@@ -1,7 +1,9 @@
 package nuchess.view.graphics;
 
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -112,6 +114,11 @@ public class ChessboardGraphics
 		return scaledResources;
 	}
 	
+	public Graphics2D getLayer(int layer)
+	{
+		return lg.getGraphics(layer);
+	}
+	
 	public int getSquareSize()
 	{
 		return squareSize;
@@ -141,6 +148,11 @@ public class ChessboardGraphics
 	{
 		this.squareSize = squareSize;
 		resizeLayeredGraphics(getWidth(), getHeight());
+	}
+	
+	public BufferedImage getRenderedImage()
+	{
+		return lg.merge();
 	}
 	
 	public void clear(int layer)

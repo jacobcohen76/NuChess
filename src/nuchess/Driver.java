@@ -4,11 +4,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 
+import nuchess.control.BitboardViewerController;
 import nuchess.control.ChessGameController;
 import nuchess.control.FENBuilderController;
 import nuchess.engine.CBoard;
 import nuchess.engine.ChessEngine;
 import nuchess.view.ViewFrame;
+import nuchess.view.bitboardviewer.BitboardViewerView;
 import nuchess.view.fenbuilder.FENBuilderView;
 import nuchess.view.gameview.ChessGameView;
 import nuchess.view.graphics.ChessboardGraphics;
@@ -51,6 +53,9 @@ public class Driver
 			case "fen-builder":
 				loadFENBuilder(view, squareSize, flipped);
 				break;
+			case "bitboard-viewer":
+				loadBitboardViewer(view, squareSize, flipped);
+				break;
 		}
 		
 		view.setVisible(true);
@@ -70,6 +75,14 @@ public class Driver
 		CBoard board = new CBoard();
 		FENBuilderView fbv = new FENBuilderView(squareSize, flipped);
 		FENBuilderController controller = new FENBuilderController(board, fbv);
+		controller.init();
+		view.display(controller.getViewPanel());
+	}
+	
+	private static void loadBitboardViewer(ViewFrame view, int squareSize, boolean flipped)
+	{
+		BitboardViewerView bbvv = new BitboardViewerView(squareSize, flipped);
+		BitboardViewerController controller = new BitboardViewerController(bbvv);
 		controller.init();
 		view.display(controller.getViewPanel());
 	}
