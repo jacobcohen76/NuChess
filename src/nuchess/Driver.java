@@ -16,16 +16,46 @@ import nuchess.view.gameview.ChessGameView;
 import nuchess.view.graphics.ChessboardGraphics;
 
 public class Driver
-{	
+{
+	public static final String OS = System.getProperty("os.name");
+	
+	private static final int SQUARE_SIZE = 100;
+	private static final int EXTRA_SPACING = 500;
+	private static final boolean FLIPPED = false;
+	
+	private static File saveDirectory = new File("/home/jacob/Desktop");
+	
+	public static File getCurrentSaveDirectory()
+	{
+		return saveDirectory;
+	}
+	
+	public static void setCurrentSaveDirectory(File file)
+	{
+		saveDirectory = file;
+	}
+	
 	public static void main(String args[])
 	{
-		if(args.length <= 0)
-		{
-			return;
-		}
-		
 		bootup();
-		
+		ViewFrame view = getNewViewFrame();
+		switch(args[0])
+		{
+			case "game":
+				loadNewChessGame(view, SQUARE_SIZE);
+				break;
+			case "fen-builder":
+				loadFENBuilder(view, SQUARE_SIZE, FLIPPED);
+				break;
+			case "bitboard-viewer":
+				loadBitboardViewer(view, SQUARE_SIZE, FLIPPED);
+				break;
+		}
+		view.setVisible(true);
+	}
+	
+	private static ViewFrame getNewViewFrame()
+	{
 		ViewFrame view = new ViewFrame();
 		view.setWindowListener(new WindowListener()
 		{
@@ -37,28 +67,9 @@ public class Driver
 			public void windowActivated(WindowEvent e)		{}
 			public void windowDeactivated(WindowEvent e)	{}
 		});
-		
-		int squareSize = 100;
-		int extraSpacing = 500;
-		boolean flipped = false;
-		
-		view.setSize(squareSize * 8 + extraSpacing, squareSize * 8 + extraSpacing);
+		view.setSize(SQUARE_SIZE * 8 + EXTRA_SPACING, SQUARE_SIZE * 8 + EXTRA_SPACING);
 		view.setLocationRelativeTo(null);
-		
-		switch(args[0])
-		{
-			case "game":
-				loadNewChessGame(view, squareSize);
-				break;
-			case "fen-builder":
-				loadFENBuilder(view, squareSize, flipped);
-				break;
-			case "bitboard-viewer":
-				loadBitboardViewer(view, squareSize, flipped);
-				break;
-		}
-		
-		view.setVisible(true);
+		return view;
 	}
 	
 	private static void loadNewChessGame(ViewFrame view, int squareSize)
@@ -103,6 +114,6 @@ public class Driver
 	
 	private static void initSystem()
 	{
-//		System.setProperty("sun.java2d.opengl", "true");
+		System.out.println(OS);
 	}
 }

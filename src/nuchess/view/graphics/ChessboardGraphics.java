@@ -43,14 +43,10 @@ public class ChessboardGraphics
 	{
 		try
 		{
-			System.out.println("loading ResourceManager from \"" + file + "\"");
 			loadResourceManager(file);
-			System.out.println("loaded ResourceManager from \"" + file + "\"");
 		}
 		catch(Exception ex)
 		{
-			System.out.println("failed to load ResourceManager from " + file);
-			System.out.println("loading default ResourceManager");
 			RESOURCE_MANAGER = new ResourceManager();
 		}
 	}
@@ -59,13 +55,11 @@ public class ChessboardGraphics
 	{
 		try
 		{
-			System.out.println("saving ResourceManager to \"" + file + "\"");
 			saveResourceManager(file);
-			System.out.println("saved ResourceManager to \"" + file + "\"");
 		}
 		catch(Exception ex)
 		{
-			System.out.println("failed to save ResourceManager to \"" + file + "\"");
+			
 		}
 	}
 	

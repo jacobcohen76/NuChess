@@ -1,11 +1,16 @@
 package nuchess.view.bitboardviewer;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+
+import nuchess.control.BitboardViewerController;
 
 public class BitboardViewerView
 {
@@ -14,13 +19,17 @@ public class BitboardViewerView
 	
 	private JTextField bitboardInputField;
 	private JComboBox<String> baseSelector;
-	private JComboBox<String> squareMappingSelector;
+	private JButton testingButton;
+	
+	public BitboardViewerController controller;
 	
 	public BitboardViewerView(int squareSize, boolean flipped)
 	{
 		initComponents(squareSize, flipped);
 		putConstraints();
 		addComponents();
+		
+		controller = null;
 		
 		display(0xFF00L);
 	}
@@ -32,7 +41,7 @@ public class BitboardViewerView
 		
 		bitboardInputField = new JTextField();
 		baseSelector = new JComboBox<String>();
-		squareMappingSelector = new JComboBox<String>();
+		testingButton = new JButton();
 		
 		bitboardInputField.setColumns(64);
 		
@@ -41,14 +50,14 @@ public class BitboardViewerView
 		baseSelector.addItem("Decimal");
 		baseSelector.addItem("Hexadecimal");
 		
-		squareMappingSelector.addItem("LERF");
-		squareMappingSelector.addItem("LERBEF");
-		squareMappingSelector.addItem("BERLEF");
-		squareMappingSelector.addItem("BERF");
-		squareMappingSelector.addItem("LEFR");
-		squareMappingSelector.addItem("LEFBER");
-		squareMappingSelector.addItem("BEFLER");
-		squareMappingSelector.addItem("BEFR");
+		testingButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent event)
+			{
+				controller.saveRenderedBoardView();
+			}
+		});
 	}
 	
 	private void putConstraints()
@@ -65,8 +74,8 @@ public class BitboardViewerView
 		layout.putConstraint(SpringLayout.NORTH, baseSelector, 0, SpringLayout.NORTH, panel);
 		layout.putConstraint(SpringLayout.WEST, baseSelector, 0, SpringLayout.EAST, bitboardInputField);
 		
-		layout.putConstraint(SpringLayout.NORTH, squareMappingSelector, 0, SpringLayout.NORTH, panel);
-		layout.putConstraint(SpringLayout.EAST, squareMappingSelector, 0, SpringLayout.EAST, panel);
+		layout.putConstraint(SpringLayout.NORTH, testingButton, 0, SpringLayout.NORTH, panel);
+		layout.putConstraint(SpringLayout.EAST, testingButton, 0, SpringLayout.EAST, panel);
 		
 		panel.setLayout(layout);
 	}
@@ -76,7 +85,7 @@ public class BitboardViewerView
 		panel.add(bbbv.getPanel());
 		panel.add(bitboardInputField);
 		panel.add(baseSelector);
-		panel.add(squareMappingSelector);
+		panel.add(testingButton);
 	}
 	
 	public void display(long bitboard)
@@ -87,6 +96,11 @@ public class BitboardViewerView
 	public BufferedImage getRenderedImage()
 	{
 		return bbbv.getRenderedImage();
+	}
+	
+	public long getDisplaying()
+	{
+		return bbbv.getDisplaying();
 	}
 	
 	public JPanel getPanel()

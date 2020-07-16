@@ -139,16 +139,15 @@ public class ChessGameController
 		takeTurn(getNextPlayer());
 	}
 	
-	
 	public void end()
 	{
 		
 		updateStatistics();
 	}
 	
-	
 	public void savePGN(File f)
 	{
+		
 	}
 	
 	
@@ -156,7 +155,6 @@ public class ChessGameController
 	{
 		
 	}
-
 	
 	public void takeTurn(Player<CMove> player)
 	{

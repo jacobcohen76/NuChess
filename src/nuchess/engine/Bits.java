@@ -71,21 +71,21 @@ public class Bits
 	public static String toBinaryString(int u32, int numBits)
 	{
 		String binaryString = Integer.toUnsignedString(u32, 2);
-		return binaryString.length() < numBits ?
+		return (binaryString.length() < numBits ?
 					StringUtil.repeat('0', numBits - binaryString.length()) + binaryString :
 					binaryString.length() > numBits ?
 						binaryString.substring(binaryString.length() - numBits, binaryString.length()) :
-						binaryString;
+						binaryString).toUpperCase();
 	}
 	
 	public static String toBinaryString(long u64, int numBits)
 	{
 		String binaryString = Long.toUnsignedString(u64, 2);
-		return binaryString.length() < numBits ?
+		return (binaryString.length() < numBits ?
 					StringUtil.repeat('0', numBits - binaryString.length()) + binaryString :
 					binaryString.length() > numBits ?
 						binaryString.substring(binaryString.length() - numBits, binaryString.length()) :
-						binaryString;
+						binaryString).toUpperCase();
 	}
 	
 	public static String toHexString(byte u8)
@@ -111,20 +111,20 @@ public class Bits
 	public static String toHexString(int u32, int numBits)
 	{
 		String hexString = Integer.toUnsignedString(u32, 16);
-		return hexString.length() < numBits ?
+		return (hexString.length() < numBits ?
 					StringUtil.repeat('0', numBits - hexString.length()) + hexString :
 					hexString.length() > numBits ?
 						hexString.substring(hexString.length() - numBits, hexString.length()) :
-						hexString;
+						hexString).toUpperCase();
 	}
 	
 	public static String toHexString(long u64, int numBits)
 	{
 		String hexString = Long.toUnsignedString(u64, 16);
-		return hexString.length() < numBits ?
+		return (hexString.length() < numBits ?
 					StringUtil.repeat('0', numBits - hexString.length()) + hexString :
 					hexString.length() > numBits ?
 						hexString.substring(hexString.length() - numBits, hexString.length()) :
-						hexString;
+						hexString).toUpperCase();
 	}
 }
