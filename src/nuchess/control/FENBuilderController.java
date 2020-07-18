@@ -1,5 +1,7 @@
 package nuchess.control;
 
+import java.io.File;
+
 import javax.swing.JPanel;
 
 import nuchess.engine.CBoard;
@@ -48,7 +50,7 @@ public class FENBuilderController
 	
 	private void linkObjects()
 	{
-		view.parent = this;
+		view.controller = this;
 	}
 	
 	private void updateView()
@@ -143,5 +145,11 @@ public class FENBuilderController
 		castlingRights = FENParser.parseCastlingRights(elements[2]);
 		epSquare = FENParser.parseEnPassantSquare(elements[3]);
 		updateView(FEN);
+	}
+	
+	public void saveRenderedBoardView()
+	{
+		File out = FileSaving.chooseImageFile(view.getPanel(), getFEN().replace('/', '.'));
+		FileSaving.saveRenderedImage(view.getRenderedImage(), out);
 	}
 }

@@ -7,7 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
-//import javax.swing.JButton;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,7 +30,7 @@ public class BitboardBuilderView
 	private JTextField bitboardInputField;
 	private JLabel inputFieldMessageLabel;
 	private JComboBox<String> baseSelector;
-//	private JButton testingButton;
+	private JButton testingButton;
 	
 	public BitboardBuilderController controller;
 	
@@ -54,7 +54,7 @@ public class BitboardBuilderView
 		bitboardInputField = new JTextField();
 		inputFieldMessageLabel = new JLabel();
 		baseSelector = new JComboBox<String>();
-//		testingButton = new JButton();
+		testingButton = new JButton();
 		
 		bitboardInputField.setColumns(64);
 		
@@ -67,13 +67,13 @@ public class BitboardBuilderView
 	
 	private void initListeners()
 	{
-//		testingButton.addActionListener(new ActionListener()
-//		{
-//			public void actionPerformed(ActionEvent event)
-//			{
-//				controller.saveRenderedBoardView();
-//			}
-//		});
+		testingButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event)
+			{
+				controller.saveRenderedBoardView();
+			}
+		});
 		
 		bitboardInputField.addKeyListener(new KeyListener()
 		{
@@ -146,8 +146,8 @@ public class BitboardBuilderView
 		layout.putConstraint(SpringLayout.NORTH, baseSelector, 0, SpringLayout.NORTH, panel);
 		layout.putConstraint(SpringLayout.WEST, baseSelector, 0, SpringLayout.EAST, bitboardInputField);
 		
-//		layout.putConstraint(SpringLayout.NORTH, testingButton, 0, SpringLayout.NORTH, panel);
-//		layout.putConstraint(SpringLayout.EAST, testingButton, 0, SpringLayout.EAST, panel);
+		layout.putConstraint(SpringLayout.NORTH, testingButton, 0, SpringLayout.NORTH, panel);
+		layout.putConstraint(SpringLayout.EAST, testingButton, 0, SpringLayout.EAST, panel);
 		
 		panel.setLayout(layout);
 	}
@@ -158,7 +158,7 @@ public class BitboardBuilderView
 		panel.add(bitboardInputField);
 		panel.add(inputFieldMessageLabel);
 		panel.add(baseSelector);
-//		panel.add(testingButton);
+		panel.add(testingButton);
 	}
 	
 	private void linkObjects()
@@ -192,7 +192,7 @@ public class BitboardBuilderView
 		}
 	}
 	
-	private long getBitboard(String bitboardString, int base)
+	public long getBitboard(String bitboardString, int base)
 	{
 		switch(base)
 		{
@@ -204,7 +204,7 @@ public class BitboardBuilderView
 		}
 	}
 	
-	private String getBitboardString(long bitboard, int base)
+	public String getBitboardString(long bitboard, int base)
 	{
 		switch(base)
 		{
@@ -212,6 +212,18 @@ public class BitboardBuilderView
 			case OCTAL:			return Long.toUnsignedString(bitboard, 8);
 			case DECIMAL:		return Long.toUnsignedString(bitboard, 10);
 			case HEXADECIMAL:	return Bits.toHexString(bitboard);
+			default:			throw new Error("INVALID BASE");
+		}
+	}
+	
+	public String getFileName(long bitboard)
+	{
+		switch(baseSelector.getSelectedIndex())
+		{
+			case BINARY:		return "0b" + Bits.toBinaryString(bitboard);
+			case OCTAL:			return "0o" + Long.toUnsignedString(bitboard, 8);
+			case DECIMAL:		return Long.toUnsignedString(bitboard, 10);
+			case HEXADECIMAL:	return "0x" + Bits.toHexString(bitboard);
 			default:			throw new Error("INVALID BASE");
 		}
 	}

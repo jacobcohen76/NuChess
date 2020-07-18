@@ -2,10 +2,14 @@ package nuchess.view.fenbuilder;
 
 import java.awt.Cursor;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
@@ -25,10 +29,11 @@ public class FENBuilderView
 	private JTextField FENtextField;
 	private long draggedBB, occ;
 	private int piece, lockedButton;
+	private JButton testingButton;
 	
 	protected boolean shiftHeld;
 	
-	public FENBuilderController parent;
+	public FENBuilderController controller;
 	
 	public FENBuilderView(int piece, int squareSize, boolean flipped)
 	{
@@ -37,13 +42,14 @@ public class FENBuilderView
 		settingsView = new FENSettingsView("En Passant Square", "To Move", "Fullmove Clock", "Halfmove Clock");
 		pieceSelector = new PieceSelectorPanel(squareSize, piece);
 		FENtextField = new JTextField();
+		testingButton = new JButton();
 		
 		this.piece = piece;
 		
 		lockedButton = NULL_BUTTON;
 		draggedBB = occ = 0L;
 		shiftHeld = false;
-		parent = null;
+		controller = null;
 		
 		linkObjects();
 		initListeners();
@@ -70,9 +76,9 @@ public class FENBuilderView
 			draggedBB = 0L;
 			lockedButton = button;
 			if(button == MouseEvent.BUTTON1 && ((occ >> square) & 1) == 0)
-				parent.put(piece, square);
+				controller.put(piece, square);
 			else if(button == MouseEvent.BUTTON3 && ((occ >> square) & 1) == 1)
-				parent.capture(square);
+				controller.capture(square);
 		}
 	}
 	
@@ -92,9 +98,9 @@ public class FENBuilderView
 			{
 				draggedBB |= (1L << square);
 				if(lockedButton == MouseEvent.BUTTON1 && ((occ >> square) & 1) == 0)
-					parent.put(piece, square);
+					controller.put(piece, square);
 				else if(lockedButton == MouseEvent.BUTTON3 && ((occ >> square) & 1) == 1)
-					parent.capture(square);
+					controller.capture(square);
 			}
 		}
 		else
@@ -111,6 +117,14 @@ public class FENBuilderView
 	
 	private void initListeners()
 	{
+		testingButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event)
+			{
+				controller.saveRenderedBoardView();
+			}
+		});
+		
 		panel.addKeyListener(new KeyListener()
 		{
 			public void keyPressed(KeyEvent e)
@@ -141,7 +155,7 @@ public class FENBuilderView
 			{
 				if(e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
-					parent.setFEN(FENtextField.getText());
+					controller.setFEN(FENtextField.getText());
 				}
 				else if(e.getKeyCode() == KeyEvent.VK_SHIFT)
 				{
@@ -182,6 +196,9 @@ public class FENBuilderView
 		layout.putConstraint(SpringLayout.EAST, FENtextField, 0, SpringLayout.EAST, boardView.getPanel());
 		layout.putConstraint(SpringLayout.WEST, FENtextField, 0, SpringLayout.WEST, boardView.getPanel());
 		
+		layout.putConstraint(SpringLayout.NORTH, testingButton, 0, SpringLayout.NORTH, panel);
+		layout.putConstraint(SpringLayout.EAST, testingButton, 0, SpringLayout.EAST, panel);
+		
 		panel.setLayout(layout);
 	}
 	
@@ -191,6 +208,7 @@ public class FENBuilderView
 		panel.add(settingsView.getPanel());
 		panel.add(pieceSelector.getPanel());
 		panel.add(FENtextField);
+		panel.add(testingButton);
 	}
 	
 	protected Image[] getScaledResources()
@@ -224,5 +242,10 @@ public class FENBuilderView
 	public void setPiece(int piece)
 	{
 		this.piece = piece;
+	}
+	
+	public BufferedImage getRenderedImage()
+	{
+		return boardView.getRenderedImage();
 	}
 }
