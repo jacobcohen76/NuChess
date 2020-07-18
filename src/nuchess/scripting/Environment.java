@@ -5,40 +5,32 @@ import java.util.HashMap;
 
 public class Environment
 {
-	public HashMap<String, HashMap<Type[], Function>> functionMap;
 	public HashMap<String, Integer> variableMap;
 	public ArrayList<String> memory;
-	public ArrayList<Type> typeList;
-	
-	public void declare(String name, Type[] args, Function function)
-	{
-		HashMap<Type[], Function> overloadMap = functionMap.get(name);
-		if(overloadMap == null)
-		{
-			overloadMap = new HashMap<Type[], Function>();
-			functionMap.put(name, overloadMap);
-		}
 		
-		if(!overloadMap.containsKey(args))
+	public void declare(String name)
+	{
+		if(variableMap.containsKey(name))
 		{
-			overloadMap.put(args, function);
+			throw new Error(name + " is a duplicate variable");
 		}
 		else
 		{
-			throw new Error("Function \'" + name + "\' already declared with those parameters");
+			variableMap.put(name, memory.size());
+			memory.add(null);
 		}
 	}
 	
-	public void declare(String name, Type type)
+	public void assign(String name, String value)
 	{
-		variableMap.put(name, typeList.size());
-		typeList.add(type);
-		memory.add(null);
-	}
-	
-	public Type type(String name)
-	{
-		return variableMap.containsKey(name) ? typeList.get(variableMap.get(name)) : null;
+		if(variableMap.containsKey(name))
+		{
+			memory.set(variableMap.get(name), value);
+		}
+		else
+		{
+			throw new Error(name + " cannot be resolved to a variable");
+		}
 	}
 	
 	

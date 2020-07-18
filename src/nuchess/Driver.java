@@ -4,13 +4,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 
-import nuchess.control.BitboardViewerController;
+import nuchess.control.BitboardBuilderController;
 import nuchess.control.ChessGameController;
 import nuchess.control.FENBuilderController;
 import nuchess.engine.CBoard;
 import nuchess.engine.ChessEngine;
 import nuchess.view.ViewFrame;
-import nuchess.view.bitboardviewer.BitboardViewerView;
+import nuchess.view.bitboardviewer.BitboardBuilderView;
 import nuchess.view.fenbuilder.FENBuilderView;
 import nuchess.view.gameview.ChessGameView;
 import nuchess.view.graphics.ChessboardGraphics;
@@ -92,8 +92,8 @@ public class Driver
 	
 	private static void loadBitboardViewer(ViewFrame view, int squareSize, boolean flipped)
 	{
-		BitboardViewerView bbvv = new BitboardViewerView(squareSize, flipped);
-		BitboardViewerController controller = new BitboardViewerController(bbvv);
+		BitboardBuilderView bbvv = new BitboardBuilderView(squareSize, flipped);
+		BitboardBuilderController controller = new BitboardBuilderController(bbvv);
 		controller.init();
 		view.display(controller.getViewPanel());
 	}

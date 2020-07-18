@@ -127,4 +127,89 @@ public class Bits
 						hexString.substring(hexString.length() - numBits, hexString.length()) :
 						hexString).toUpperCase();
 	}
+	
+	public static long valueOf(String str, int base)
+	{
+		switch(base)
+		{
+			case 2:
+		}
+		return 0L;
+	}
+	
+	public static long valueOfBinaryString(String binaryString)
+	{
+		if(binaryString.length() > 64)
+		{
+			throw new Error("binary string is out of range for a 64 bit integer");
+		}
+		else if(!checkString(binaryString, '0', '1'))
+		{
+			throw new Error("binary string is not comprise of only '0' and '1'");
+		}
+		else
+		{
+			long value = 0L;
+			for(int bit = 0; bit < binaryString.length(); bit++)
+			{
+				value |= (binaryString.charAt(bit) == '1' ? 1L : 0L) << bit;
+			}
+			return value;
+		}
+	}
+	
+	public static long valueOfHexString(String hexString)
+	{
+		hexString = hexString.toUpperCase();
+		if(hexString.length() > 16)
+		{
+			throw new Error("hex string is out of range for a 64 bit integer");
+		}
+		else if(!checkString(hexString, '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'))
+		{
+			throw new Error("hex string is not comprise of only 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, or F");
+		}
+		else
+		{
+			long value = 0L;
+			for(int i = 0; i < hexString.length(); i++)
+			{
+				value |= (valueOf(hexString.charAt(i))) << (i * 4);
+			}
+			return value;
+		}
+	}
+	
+	private static long valueOf(char ch)
+	{
+		switch(ch)
+		{
+			case '0':	return 0x0L;
+			case '1':	return 0x1L;
+			case '2':	return 0x2L;
+			case '3':	return 0x3L;
+			case '4':	return 0x4L;
+			case '5':	return 0x5L;
+			case '6':	return 0x6L;
+			case '7':	return 0x7L;
+			case '8':	return 0x8L;
+			case '9':	return 0x9L;
+			case 'A':	return 0xAL;
+			case 'B':	return 0xBL;
+			case 'C':	return 0xCL;
+			case 'D':	return 0xDL;
+			case 'E':	return 0xEL;
+			case 'F':	return 0xFL;
+			default:	return -1L;
+		}
+	}
+	
+	public static boolean checkString(String str, char... characters)
+	{
+		for(char ch : characters)
+		{
+			str = str.replaceAll(String.valueOf(ch), "");
+		}
+		return str.length() == 0;
+	}
 }

@@ -8,9 +8,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
 import nuchess.engine.Bits;
-import nuchess.view.bitboardviewer.BitboardViewerView;
+import nuchess.view.bitboardviewer.BitboardBuilderView;
 
-public class BitboardViewerController
+public class BitboardBuilderController
 {
 	private static String getFormatName(File file)
 	{
@@ -27,10 +27,10 @@ public class BitboardViewerController
 		return "png";
 	}
 	
-	private BitboardViewerView view;
+	private BitboardBuilderView view;
 	private JFileChooser chooser;
 	
-	public BitboardViewerController(BitboardViewerView view)
+	public BitboardBuilderController(BitboardBuilderView view)
 	{
 		this.view = view;
 		chooser = new JFileChooser();
