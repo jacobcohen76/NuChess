@@ -104,7 +104,7 @@ public class BitboardBuilderView
 		{
 			public void actionPerformed(ActionEvent event)
 			{
-				System.out.println(event);
+				setInputBitboard(bbbv.getDisplaying());
 			}
 		});
 		baseSelector.addKeyListener(new KeyListener()

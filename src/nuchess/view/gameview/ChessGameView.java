@@ -17,18 +17,18 @@ public class ChessGameView
 	
 	public ChessGameController controller;
 	
-	public ChessGameView(int squareSize)
+	public ChessGameView(int squareSize, boolean flipped)
 	{
-		initComponents(squareSize);
+		initComponents(squareSize, flipped);
 		putConstraints();
 		addComponents();
 		linkObjects();
 	}
 	
-	private void initComponents(int squareSize)
+	private void initComponents(int squareSize, boolean flipped)
 	{
 		panel = new JPanel();
-		boardView = new ChessBoardView(squareSize, false);
+		boardView = new ChessBoardView(squareSize, flipped);
 		actionPanel = new ActionPanel();
 		actionPanel.getPanel().setPreferredSize(new Dimension(300, 300));
 	}

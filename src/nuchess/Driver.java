@@ -1,5 +1,6 @@
 package nuchess;
 
+import java.awt.Color;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
@@ -9,6 +10,7 @@ import nuchess.control.ChessGameController;
 import nuchess.control.FENBuilderController;
 import nuchess.engine.CBoard;
 import nuchess.engine.ChessEngine;
+import nuchess.view.TabbedView;
 import nuchess.view.ViewFrame;
 import nuchess.view.bitboardviewer.BitboardBuilderView;
 import nuchess.view.fenbuilder.FENBuilderView;
@@ -42,13 +44,16 @@ public class Driver
 		switch(args[0])
 		{
 			case "game":
-				loadNewChessGame(view, SQUARE_SIZE);
+				loadNewChessGame(view, SQUARE_SIZE, FLIPPED);
 				break;
 			case "fen-builder":
 				loadFENBuilder(view, SQUARE_SIZE, FLIPPED);
 				break;
 			case "bitboard-viewer":
-				loadBitboardViewer(view, SQUARE_SIZE, FLIPPED);
+				loadBitboardBuilder(view, SQUARE_SIZE, FLIPPED);
+				break;
+			default:
+				loadDefaultView(view, SQUARE_SIZE, FLIPPED);
 				break;
 		}
 		view.setVisible(true);
@@ -72,9 +77,9 @@ public class Driver
 		return view;
 	}
 	
-	private static void loadNewChessGame(ViewFrame view, int squareSize)
+	private static void loadNewChessGame(ViewFrame view, int squareSize, boolean flipped)
 	{
-		ChessGameView cv = new ChessGameView(squareSize);
+		ChessGameView cv = new ChessGameView(squareSize, flipped);
 		ChessEngine engine = new ChessEngine();
 		ChessGameController controller = new ChessGameController(engine, cv);
 		controller.init();
@@ -90,7 +95,7 @@ public class Driver
 		view.display(controller.getViewPanel());
 	}
 	
-	private static void loadBitboardViewer(ViewFrame view, int squareSize, boolean flipped)
+	private static void loadBitboardBuilder(ViewFrame view, int squareSize, boolean flipped)
 	{
 		BitboardBuilderView bbvv = new BitboardBuilderView(squareSize, flipped);
 		BitboardBuilderController controller = new BitboardBuilderController(bbvv);
@@ -115,5 +120,41 @@ public class Driver
 	private static void initSystem()
 	{
 		System.out.println(OS);
+	}
+	
+	private static void loadDefaultView(ViewFrame view, int squareSize, boolean flipped)
+	{
+		TabbedView tv = new TabbedView();
+		tv.getPanel().setBackground(Color.RED);
+		addNewChessGameTab(tv, squareSize, flipped);
+		addNewFENBuilder(tv, squareSize, flipped);
+		addNewBitboardBuilder(tv, squareSize, flipped);
+		view.display(tv.getPanel());
+	}
+	
+	private static void addNewChessGameTab(TabbedView tv, int squareSize, boolean flipped)
+	{
+		ChessGameView cv = new ChessGameView(squareSize, flipped);
+		ChessEngine engine = new ChessEngine();
+		ChessGameController controller = new ChessGameController(engine, cv);
+		controller.init();
+		tv.addTab("Game", controller.getViewPanel());
+	}
+	
+	private static void addNewFENBuilder(TabbedView tv, int squareSize, boolean flipped)
+	{
+		CBoard board = new CBoard();
+		FENBuilderView fbv = new FENBuilderView(squareSize, flipped);
+		FENBuilderController controller = new FENBuilderController(board, fbv);
+		controller.init();
+		tv.addTab("FEN", controller.getViewPanel());
+	}
+	
+	private static void addNewBitboardBuilder(TabbedView tv, int squareSize, boolean flipped)
+	{
+		BitboardBuilderView bbvv = new BitboardBuilderView(squareSize, flipped);
+		BitboardBuilderController controller = new BitboardBuilderController(bbvv);
+		controller.init();
+		tv.addTab("Bits", controller.getViewPanel());
 	}
 }

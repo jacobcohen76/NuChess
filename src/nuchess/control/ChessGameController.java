@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JPanel;
+
 import nuchess.control.player.Computer;
 import nuchess.control.player.Human;
 import nuchess.control.player.Player;
@@ -22,15 +24,15 @@ public class ChessGameController
 		DEFAULT_BLACKPLAYER = new Human<CMove>("Default Black Player", "1");
 	}
 	
-	private ChessEngine engine;
-	private ChessGameView gameView;
+	private ChessEngine model;
+	private ChessGameView view;
 	private LinkedList<CMove> moveHistory;
 	private Player<CMove> player1, player2;
 	
-	public ChessGameController(ChessEngine engine, ChessGameView gameView)
+	public ChessGameController(ChessEngine model, ChessGameView view)
 	{
-		this.engine = engine;
-		this.gameView = gameView;
+		this.model = model;
+		this.view = view;
 		moveHistory = new LinkedList<CMove>();
 		player1 = getDefaultPlayer1();
 		player2 = getDefaultPlayer2();
@@ -39,36 +41,41 @@ public class ChessGameController
 	
 	private void linkObjects()
 	{
-		gameView.controller = this;
+		view.controller = this;
 	}
 	
 	public void updateView(String SAN)
 	{
-		long checkBB = engine.inCheck(engine.toMove()) ? engine.board.bitboard(Piece.WHITE_KING + engine.toMove()) : 0L;
-		long occBB = engine.board.occ();
+		long checkBB = model.inCheck(model.toMove()) ? model.board.bitboard(Piece.WHITE_KING + model.toMove()) : 0L;
+		long occBB = model.board.occ();
 		CMove move = moveHistory.getLast();
-		String FEN = engine.getFEN();
+		String FEN = model.getFEN();
 		
-		gameView.addNewState(checkBB, occBB, move, FEN, SAN);
-		gameView.setMoveableSquares(engine.board.bitboard(engine.toMove()));
-		gameView.setSelectableMoves(engine.generateLegalMoves());
+		view.addNewState(checkBB, occBB, move, FEN, SAN);
+		view.setMoveableSquares(model.board.bitboard(model.toMove()));
+		view.setSelectableMoves(model.generateLegalMoves());
 	}
 	
 	private void initView()
 	{
-		long checkBB = engine.inCheck(engine.toMove()) ? engine.board.bitboard(Piece.WHITE_KING + engine.toMove()) : 0L;
-		long occBB = engine.board.occ();
-		String FEN = engine.getFEN();
+		long checkBB = model.inCheck(model.toMove()) ? model.board.bitboard(Piece.WHITE_KING + model.toMove()) : 0L;
+		long occBB = model.board.occ();
+		String FEN = model.getFEN();
 		
-		gameView.setInitialState(checkBB, occBB, FEN);
-		gameView.setMoveableSquares(engine.board.bitboard(engine.toMove()));
-		gameView.setSelectableMoves(engine.generateLegalMoves());
+		view.setInitialState(checkBB, occBB, FEN);
+		view.setMoveableSquares(model.board.bitboard(model.toMove()));
+		view.setSelectableMoves(model.generateLegalMoves());
+	}
+	
+	public JPanel getViewPanel()
+	{
+		return view.getPanel();
 	}
 	
 	public void make(CMove move)
 	{
-		String SAN = engine.getSAN(move);
-		engine.make(move);
+		String SAN = model.getSAN(move);
+		model.make(move);
 		moveHistory.add(move);
 		updateView(SAN);
 		takeTurn(getNextPlayer());
@@ -77,7 +84,7 @@ public class ChessGameController
 	public void unmake()
 	{
 		CMove move = moveHistory.pollLast();
-		engine.unmake(move);
+		model.unmake(move);
 	}
 	
 	public void setPlayer1(Player<CMove> player1)
@@ -158,13 +165,13 @@ public class ChessGameController
 	
 	public void takeTurn(Player<CMove> player)
 	{
-		while(player instanceof Computer<?> && engine.isGameOver() == false)
+		while(player instanceof Computer<?> && model.isGameOver() == false)
 		{
 			make(player.selectMove());
 			player = getNextPlayer();
 			System.out.println(player);
 		}
-		if(engine.isGameOver())
+		if(model.isGameOver())
 		{
 			end();
 		}
