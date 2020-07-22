@@ -16,8 +16,9 @@ import javax.swing.SpringLayout;
 
 import nuchess.control.FENBuilderController;
 import nuchess.engine.Piece;
+import nuchess.view.View;
 
-public class FENBuilderView
+public class FENBuilderView implements View
 {
 	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
 	private static final int NULL_BUTTON = -1;
@@ -247,5 +248,15 @@ public class FENBuilderView
 	public BufferedImage getRenderedImage()
 	{
 		return boardView.getRenderedImage();
+	}
+	
+	public void close()
+	{
+		
+	}
+	
+	public String getTitle()
+	{
+		return "FEN Builder";
 	}
 }

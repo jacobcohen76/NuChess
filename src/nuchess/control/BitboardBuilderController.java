@@ -1,11 +1,11 @@
 package nuchess.control;
 
 import java.io.File;
-import javax.swing.JPanel;
 
+import nuchess.view.View;
 import nuchess.view.bitboardviewer.BitboardBuilderView;
 
-public class BitboardBuilderController
+public class BitboardBuilderController implements Controller
 {
 	private BitboardBuilderView view;
 	
@@ -25,8 +25,8 @@ public class BitboardBuilderController
 		FileSaving.saveRenderedImage(view.getRenderedImage(), out);
 	}
 	
-	public JPanel getViewPanel()
+	public View getView()
 	{
-		return view.getPanel();
+		return view;
 	}
 }

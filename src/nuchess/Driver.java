@@ -7,15 +7,17 @@ import java.io.File;
 
 import nuchess.control.BitboardBuilderController;
 import nuchess.control.ChessGameController;
+import nuchess.control.Controller;
 import nuchess.control.FENBuilderController;
 import nuchess.engine.CBoard;
 import nuchess.engine.ChessEngine;
-import nuchess.view.TabbedView;
 import nuchess.view.ViewFrame;
 import nuchess.view.bitboardviewer.BitboardBuilderView;
 import nuchess.view.fenbuilder.FENBuilderView;
 import nuchess.view.gameview.ChessGameView;
 import nuchess.view.graphics.ChessboardGraphics;
+import nuchess.view.homeview.HomeView;
+import nuchess.view.tabs.TabbedView;
 
 public class Driver
 {
@@ -41,21 +43,7 @@ public class Driver
 	{
 		bootup();
 		ViewFrame view = getNewViewFrame();
-		switch(args[0])
-		{
-			case "game":
-				loadNewChessGame(view, SQUARE_SIZE, FLIPPED);
-				break;
-			case "fen-builder":
-				loadFENBuilder(view, SQUARE_SIZE, FLIPPED);
-				break;
-			case "bitboard-viewer":
-				loadBitboardBuilder(view, SQUARE_SIZE, FLIPPED);
-				break;
-			default:
-				loadDefaultView(view, SQUARE_SIZE, FLIPPED);
-				break;
-		}
+		loadDefaultView(view, SQUARE_SIZE, FLIPPED);
 		view.setVisible(true);
 	}
 	
@@ -75,32 +63,6 @@ public class Driver
 		view.setSize(SQUARE_SIZE * 8 + EXTRA_SPACING, SQUARE_SIZE * 8 + EXTRA_SPACING);
 		view.setLocationRelativeTo(null);
 		return view;
-	}
-	
-	private static void loadNewChessGame(ViewFrame view, int squareSize, boolean flipped)
-	{
-		ChessGameView cv = new ChessGameView(squareSize, flipped);
-		ChessEngine engine = new ChessEngine();
-		ChessGameController controller = new ChessGameController(engine, cv);
-		controller.init();
-		view.display(cv.getPanel());
-	}
-	
-	private static void loadFENBuilder(ViewFrame view, int squareSize, boolean flipped)
-	{
-		CBoard board = new CBoard();
-		FENBuilderView fbv = new FENBuilderView(squareSize, flipped);
-		FENBuilderController controller = new FENBuilderController(board, fbv);
-		controller.init();
-		view.display(controller.getViewPanel());
-	}
-	
-	private static void loadBitboardBuilder(ViewFrame view, int squareSize, boolean flipped)
-	{
-		BitboardBuilderView bbvv = new BitboardBuilderView(squareSize, flipped);
-		BitboardBuilderController controller = new BitboardBuilderController(bbvv);
-		controller.init();
-		view.display(controller.getViewPanel());
 	}
 	
 	private static final File RM_PATH = new File("resources/serial/resmanager/resource-manager");
@@ -126,35 +88,42 @@ public class Driver
 	{
 		TabbedView tv = new TabbedView();
 		tv.getPanel().setBackground(Color.RED);
+		addHome(tv);
 		addNewChessGameTab(tv, squareSize, flipped);
 		addNewFENBuilder(tv, squareSize, flipped);
 		addNewBitboardBuilder(tv, squareSize, flipped);
 		view.display(tv.getPanel());
 	}
 	
+	private static void addHome(TabbedView tv)
+	{
+		HomeView hv = new HomeView();
+		tv.addTab(hv);
+	}
+	
 	private static void addNewChessGameTab(TabbedView tv, int squareSize, boolean flipped)
 	{
 		ChessGameView cv = new ChessGameView(squareSize, flipped);
 		ChessEngine engine = new ChessEngine();
-		ChessGameController controller = new ChessGameController(engine, cv);
+		Controller controller = new ChessGameController(engine, cv);
 		controller.init();
-		tv.addTab("Game", controller.getViewPanel());
+		tv.addTab(controller.getView());
 	}
 	
 	private static void addNewFENBuilder(TabbedView tv, int squareSize, boolean flipped)
 	{
 		CBoard board = new CBoard();
 		FENBuilderView fbv = new FENBuilderView(squareSize, flipped);
-		FENBuilderController controller = new FENBuilderController(board, fbv);
+		Controller controller = new FENBuilderController(board, fbv);
 		controller.init();
-		tv.addTab("FEN", controller.getViewPanel());
+		tv.addTab(controller.getView());
 	}
 	
 	private static void addNewBitboardBuilder(TabbedView tv, int squareSize, boolean flipped)
 	{
 		BitboardBuilderView bbvv = new BitboardBuilderView(squareSize, flipped);
-		BitboardBuilderController controller = new BitboardBuilderController(bbvv);
+		Controller controller = new BitboardBuilderController(bbvv);
 		controller.init();
-		tv.addTab("Bits", controller.getViewPanel());
+		tv.addTab(controller.getView());
 	}
 }

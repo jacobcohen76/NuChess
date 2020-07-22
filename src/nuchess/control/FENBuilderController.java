@@ -2,16 +2,15 @@ package nuchess.control;
 
 import java.io.File;
 
-import javax.swing.JPanel;
-
 import nuchess.engine.CBoard;
 import nuchess.engine.Color;
 import nuchess.engine.FENParser;
 import nuchess.engine.Piece;
 import nuchess.engine.Square;
+import nuchess.view.View;
 import nuchess.view.fenbuilder.FENBuilderView;
 
-public class FENBuilderController
+public class FENBuilderController implements Controller
 {
 	private CBoard board;
 	private FENBuilderView view;
@@ -43,9 +42,9 @@ public class FENBuilderController
 		updateView();
 	}
 	
-	public JPanel getViewPanel()
+	public View getView()
 	{
-		return view.getPanel();
+		return view;
 	}
 	
 	private void linkObjects()

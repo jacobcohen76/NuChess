@@ -8,8 +8,9 @@ import javax.swing.SpringLayout;
 
 import nuchess.control.ChessGameController;
 import nuchess.engine.CMove;
+import nuchess.view.View;
 
-public class ChessGameView
+public class ChessGameView implements View
 {
 	private JPanel panel;
 	private ChessBoardView boardView;
@@ -108,5 +109,15 @@ public class ChessGameView
 	public void setSelectionEnabled(boolean b)
 	{
 		boardView.setSelectionEnabled(b);
+	}
+	
+	public void close()
+	{
+		
+	}
+	
+	public String getTitle()
+	{
+		return "Chess Game";
 	}
 }

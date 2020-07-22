@@ -4,17 +4,16 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JPanel;
-
 import nuchess.control.player.Computer;
 import nuchess.control.player.Human;
 import nuchess.control.player.Player;
 import nuchess.engine.CMove;
 import nuchess.engine.ChessEngine;
 import nuchess.engine.Piece;
+import nuchess.view.View;
 import nuchess.view.gameview.ChessGameView;
 
-public class ChessGameController
+public class ChessGameController implements Controller
 {
 	public static final Player<CMove> DEFAULT_WHITEPLAYER, DEFAULT_BLACKPLAYER;
 	
@@ -67,9 +66,9 @@ public class ChessGameController
 		view.setSelectableMoves(model.generateLegalMoves());
 	}
 	
-	public JPanel getViewPanel()
+	public View getView()
 	{
-		return view.getPanel();
+		return view;
 	}
 	
 	public void make(CMove move)

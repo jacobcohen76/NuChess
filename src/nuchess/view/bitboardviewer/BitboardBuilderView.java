@@ -16,8 +16,9 @@ import javax.swing.SpringLayout;
 
 import nuchess.control.BitboardBuilderController;
 import nuchess.engine.Bits;
+import nuchess.view.View;
 
-public class BitboardBuilderView
+public class BitboardBuilderView implements View
 {
 	private static final int BINARY			= 0;
 	private static final int OCTAL			= 1;
@@ -252,5 +253,15 @@ public class BitboardBuilderView
 	public JPanel getPanel()
 	{
 		return panel;
+	}
+	
+	public void close()
+	{
+		
+	}
+	
+	public String getTitle()
+	{
+		return "Bitboard Viewer";
 	}
 }
