@@ -1,10 +1,10 @@
-package nuchess.view.gameview;
+package nuchess.view.chessgameview;
 
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +21,7 @@ class ChessBoardView
 	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
 	private static final Cursor DEFAULT_CURSOR = new Cursor(Cursor.DEFAULT_CURSOR);
 	
-	private LayeredGraphicsPanel panel;
+	private LayeredGraphicsPanel lgp;
 	private MoveSelector selector;
 	private ChessboardGraphics cbg;
 	private MouseMotionListener enabledMML, disabledMML;
@@ -34,12 +34,13 @@ class ChessBoardView
 	
 	protected ChessGameView parent;
 	
-	public ChessBoardView(int squareSize, boolean flipped)
+	public ChessBoardView(boolean flipped)
 	{
-		LayeredGraphics lg = new LayeredGraphics(squareSize * 8, squareSize * 8);
-		panel = new LayeredGraphicsPanel(lg);
+		LayeredGraphics lg = new LayeredGraphics(ChessboardGraphics.getSquareSize() * 8, ChessboardGraphics.getSquareSize() * 8);
+		
+		lgp = new LayeredGraphicsPanel(lg);
 		selector = new MoveSelector();
-		cbg = new ChessboardGraphics(squareSize, flipped, lg);
+		cbg = new ChessboardGraphics(flipped, lg);
 		
 		states = new ArrayList<BoardViewState>();
 		currentState = null;
@@ -49,18 +50,13 @@ class ChessBoardView
 		externalSelectionEnabled = true;
 		internalSelectionEnabled = true;
 		
-		setSquareSize(squareSize);
-		
 		initListeners();
 		linkObjects();
 		setSelectionEnabled(true);
 		
 		parent = null;
-	}
-	
-	private void updateSize()
-	{
-		panel.setSize(new Dimension(cbg.getWidth(), cbg.getHeight()));
+		
+		resizeViewPanel();
 	}
 	
 	private void initListeners()
@@ -93,6 +89,11 @@ class ChessBoardView
 		};
 	}
 	
+	private void resizeViewPanel()
+	{
+		lgp.setSize(cbg.getDimensions());
+	}
+	
 	private void linkObjects()
 	{
 		selector.parent = this;
@@ -105,7 +106,7 @@ class ChessBoardView
 		dots = selector.getDestinations() & ~occ;
 		corners = (selector.getDestinations() & occ);
 		paint(dots, corners, selector.getFrom());
-		panel.repaint();
+		lgp.repaint();
 	}
 	
 	private void moved(MouseEvent e)
@@ -118,16 +119,16 @@ class ChessBoardView
 	private void updateCursor(int square)
 	{
 		if(selector.isClickable(square))
-			panel.setCursor(HAND_CURSOR);
+			lgp.setCursor(HAND_CURSOR);
 		else
-			panel.setCursor(DEFAULT_CURSOR);
+			lgp.setCursor(DEFAULT_CURSOR);
 		cursorSquare = square;
 	}
 	
 	protected void requestMove(CMove move)
 	{
 		parent.requestMove(move);
-		panel.setCursor(DEFAULT_CURSOR);
+		lgp.setCursor(DEFAULT_CURSOR);
 	}
 	
 	public void setSelectionEnabled(boolean b)
@@ -135,15 +136,15 @@ class ChessBoardView
 		externalSelectionEnabled = b;
 		if(externalSelectionEnabled && internalSelectionEnabled)
 		{
-			panel.setMouseListener(enabledML);
-			panel.setMouseMotionListener(enabledMML);
+			lgp.setMouseListener(enabledML);
+			lgp.setMouseMotionListener(enabledMML);
 			updateCursor(cursorSquare);
 		}
 		else
 		{
-			panel.setMouseListener(disabledML);
-			panel.setMouseMotionListener(disabledMML);
-			panel.setCursor(DEFAULT_CURSOR);
+			lgp.setMouseListener(disabledML);
+			lgp.setMouseMotionListener(disabledMML);
+			lgp.setCursor(DEFAULT_CURSOR);
 		}
 	}
 	
@@ -163,15 +164,15 @@ class ChessBoardView
 		internalSelectionEnabled = b;
 		if(externalSelectionEnabled && internalSelectionEnabled)
 		{
-			panel.setMouseListener(enabledML);
-			panel.setMouseMotionListener(enabledMML);
+			lgp.setMouseListener(enabledML);
+			lgp.setMouseMotionListener(enabledMML);
 			updateCursor(cursorSquare);
 		}
 		else
 		{
-			panel.setMouseListener(disabledML);
-			panel.setMouseMotionListener(disabledMML);
-			panel.setCursor(DEFAULT_CURSOR);
+			lgp.setMouseListener(disabledML);
+			lgp.setMouseMotionListener(disabledMML);
+			lgp.setCursor(DEFAULT_CURSOR);
 		}
 	}
 	
@@ -182,7 +183,7 @@ class ChessBoardView
 		cbg.setFlipped(b);
 		paint(dots, corners, selector.getFrom());
 		paint(currentState);
-		panel.repaint();
+		lgp.repaint();
 	}
 	
 	public void setSelectableMoves(List<CMove> selectableMoves)
@@ -212,7 +213,7 @@ class ChessBoardView
 			setInternalSelectionEnabled(true);
 		}
 		
-		panel.repaint();
+		lgp.repaint();
 	}
 	
 	private void clear(BoardViewState bvs)
@@ -250,7 +251,7 @@ class ChessBoardView
 		states.add(initialState);
 		cbg.paintBackground();
 		paint(initialState);
-		panel.repaint();
+		lgp.repaint();
 	}
 	
 	public void addNewState(BoardViewState newState)
@@ -263,31 +264,18 @@ class ChessBoardView
 		return states.size() - 1;
 	}
 	
-	public void setSquareSize(int squareSize)
-	{
-		cbg.setSquareSize(squareSize);
-		updateCursor(cursorSquare);
-		updateSize();
-		
-		if(currentState != null)
-		{
-			paint(currentState);
-			paint(dots, corners, selector.getFrom());
-		}
-	}
-	
 	public JPanel getPanel()
 	{
-		return panel;
+		return lgp;
 	}
-		
+	
 	public void setOccupancy(long occ)
 	{
 		this.occ = occ;
 	}
 	
-	public void close()
+	public BufferedImage getRenderedImage()
 	{
-		ChessboardGraphics.getResourceManager().removeSubscriber(cbg);
+		return cbg.getRenderedImage();
 	}
 }

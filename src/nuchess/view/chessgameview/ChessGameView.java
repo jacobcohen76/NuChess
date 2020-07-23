@@ -1,6 +1,7 @@
-package nuchess.view.gameview;
+package nuchess.view.chessgameview;
 
 import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -12,24 +13,31 @@ import nuchess.view.View;
 
 public class ChessGameView implements View
 {
+	private static final boolean DEFAULT_FLIPPED = false;
+	
 	private JPanel panel;
 	private ChessBoardView boardView;
 	private ActionPanel actionPanel;
 	
 	public ChessGameController controller;
 	
-	public ChessGameView(int squareSize, boolean flipped)
+	public ChessGameView(boolean flipped)
 	{
-		initComponents(squareSize, flipped);
+		initComponents(flipped);
 		putConstraints();
 		addComponents();
 		linkObjects();
 	}
 	
-	private void initComponents(int squareSize, boolean flipped)
+	public ChessGameView()
+	{
+		this(DEFAULT_FLIPPED);
+	}
+	
+	private void initComponents(boolean flipped)
 	{
 		panel = new JPanel();
-		boardView = new ChessBoardView(squareSize, flipped);
+		boardView = new ChessBoardView(flipped);
 		actionPanel = new ActionPanel();
 		actionPanel.getPanel().setPreferredSize(new Dimension(300, 300));
 	}
@@ -81,11 +89,6 @@ public class ChessGameView implements View
 		boardView.setMoveableSquares(moveableSquares);
 	}
 	
-	public void setSquareSize(int squareSize)
-	{
-		boardView.setSquareSize(squareSize);
-	}
-	
 	public void setInitialState(long checkBB, long occBB, String FEN)
 	{
 		boardView.setOccupancy(occBB);
@@ -111,9 +114,19 @@ public class ChessGameView implements View
 		boardView.setSelectionEnabled(b);
 	}
 	
+	public BufferedImage getRenderedImage()
+	{
+		return boardView.getRenderedImage();
+	}
+	
 	public void close()
 	{
-		
+		controller.close();
+	}
+	
+	public void saveGraphicsAs()
+	{
+		controller.saveGraphicsAs();
 	}
 	
 	public String getTitle()

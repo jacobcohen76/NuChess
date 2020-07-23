@@ -1,49 +1,44 @@
-package nuchess.view.fenbuilder;
+package nuchess.view.fenboardeditor;
 
 import java.awt.Cursor;
-import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-import nuchess.control.FENBuilderController;
+import nuchess.control.FENBoardEditorController;
 import nuchess.engine.Piece;
 import nuchess.view.View;
 
-public class FENBuilderView implements View
+public class FENBoardEditorView implements View
 {
 	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
 	private static final int NULL_BUTTON = -1;
+	private static final boolean DEFAULT_FLIPPED = false;
 	
 	private JPanel panel;
-	private FENBuilderBoardView boardView;
-	private FENSettingsView settingsView;
+	private FENBoardView boardView;
+	private SettingsView settingsView;
 	private PieceSelectorPanel pieceSelector;
 	private JTextField FENtextField;
 	private long draggedBB, occ;
 	private int piece, lockedButton;
-	private JButton testingButton;
 	
 	protected boolean shiftHeld;
 	
-	public FENBuilderController controller;
+	public FENBoardEditorController controller;
 	
-	public FENBuilderView(int piece, int squareSize, boolean flipped)
+	public FENBoardEditorView(int piece, boolean flipped)
 	{
 		panel = new JPanel();
-		boardView = new FENBuilderBoardView(squareSize, flipped);
-		settingsView = new FENSettingsView("En Passant Square", "To Move", "Fullmove Clock", "Halfmove Clock");
-		pieceSelector = new PieceSelectorPanel(squareSize, piece);
+		boardView = new FENBoardView(flipped);
+		settingsView = new SettingsView("En Passant Square", "To Move", "Fullmove Clock", "Halfmove Clock");
+		pieceSelector = new PieceSelectorPanel(piece);
 		FENtextField = new JTextField();
-		testingButton = new JButton();
 		
 		this.piece = piece;
 		
@@ -65,9 +60,14 @@ public class FENBuilderView implements View
 		shiftHeld = false;
 	}
 	
-	public FENBuilderView(int squareSize, boolean flipped)
+	public FENBoardEditorView(boolean flipped)
 	{
-		this(Piece.WHITE_PAWN, squareSize, flipped);
+		this(Piece.WHITE_PAWN, flipped);
+	}
+	
+	public FENBoardEditorView()
+	{
+		this(Piece.WHITE_PAWN, DEFAULT_FLIPPED);
 	}
 	
 	protected void pressed(int button, int square)
@@ -118,14 +118,6 @@ public class FENBuilderView implements View
 	
 	private void initListeners()
 	{
-		testingButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent event)
-			{
-				controller.saveRenderedBoardView();
-			}
-		});
-		
 		panel.addKeyListener(new KeyListener()
 		{
 			public void keyPressed(KeyEvent e)
@@ -197,9 +189,6 @@ public class FENBuilderView implements View
 		layout.putConstraint(SpringLayout.EAST, FENtextField, 0, SpringLayout.EAST, boardView.getPanel());
 		layout.putConstraint(SpringLayout.WEST, FENtextField, 0, SpringLayout.WEST, boardView.getPanel());
 		
-		layout.putConstraint(SpringLayout.NORTH, testingButton, 0, SpringLayout.NORTH, panel);
-		layout.putConstraint(SpringLayout.EAST, testingButton, 0, SpringLayout.EAST, panel);
-		
 		panel.setLayout(layout);
 	}
 	
@@ -209,12 +198,6 @@ public class FENBuilderView implements View
 		panel.add(settingsView.getPanel());
 		panel.add(pieceSelector.getPanel());
 		panel.add(FENtextField);
-		panel.add(testingButton);
-	}
-	
-	protected Image[] getScaledResources()
-	{
-		return boardView.getScaledResources();
 	}
 	
 	public void display(String FEN)
@@ -252,7 +235,12 @@ public class FENBuilderView implements View
 	
 	public void close()
 	{
-		
+		controller.close();
+	}
+	
+	public void saveGraphicsAs()
+	{
+		controller.saveGraphicsAs();
 	}
 	
 	public String getTitle()

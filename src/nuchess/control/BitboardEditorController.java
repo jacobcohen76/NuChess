@@ -3,13 +3,13 @@ package nuchess.control;
 import java.io.File;
 
 import nuchess.view.View;
-import nuchess.view.bitboardviewer.BitboardBuilderView;
+import nuchess.view.bitboardeditor.BitboardEditorView;
 
-public class BitboardBuilderController implements Controller
+public class BitboardEditorController implements Controller
 {
-	private BitboardBuilderView view;
+	private BitboardEditorView view;
 	
-	public BitboardBuilderController(BitboardBuilderView view)
+	public BitboardEditorController(BitboardEditorView view)
 	{
 		this.view = view;
 	}
@@ -19,10 +19,20 @@ public class BitboardBuilderController implements Controller
 		view.controller = this;
 	}
 	
-	public void saveRenderedBoardView()
+	public void saveGraphicsAs()
 	{
 		File out = FileSaving.chooseImageFile(view.getPanel(), view.getFileName(view.getDisplaying()));
 		FileSaving.saveRenderedImage(view.getRenderedImage(), out);
+	}
+	
+	public void saveAs()
+	{
+		
+	}
+	
+	public void close()
+	{
+		
 	}
 	
 	public View getView()

@@ -1,4 +1,4 @@
-package nuchess.view.bitboardviewer;
+package nuchess.view.bitboardeditor;
 
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
@@ -21,13 +21,13 @@ public class BitboardBoardView
 	private long displaying;
 	private int button;
 	
-	protected BitboardBuilderView parent;
+	protected BitboardEditorView parent;
 	protected boolean shiftheld;
 	
-	public BitboardBoardView(int squareSize, boolean flipped)
+	public BitboardBoardView(boolean flipped)
 	{
-		LayeredGraphics lg = new LayeredGraphics(squareSize * 8, squareSize * 8);
-		cbg = new ChessboardGraphics(squareSize, flipped, lg);
+		LayeredGraphics lg = new LayeredGraphics(ChessboardGraphics.getSquareSize() * 8, ChessboardGraphics.getSquareSize() * 8);
+		cbg = new ChessboardGraphics(flipped, lg);
 		lgp = new LayeredGraphicsPanel(lg);
 		displaying = 0L;
 		

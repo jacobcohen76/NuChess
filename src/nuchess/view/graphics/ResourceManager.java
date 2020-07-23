@@ -3,56 +3,59 @@ package nuchess.view.graphics;
 import java.awt.Image;
 import java.io.File;
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
 public class ResourceManager implements Serializable
 {
 	private static final long serialVersionUID = 4974654776275600262L;
+	private static final int DEFAULT_SQUARE_SIZE = 100;
+	private static final int DEFAULT_HINTS = Image.SCALE_SMOOTH;
 	
 	public static final File[] DEFAULT_TEXTURE_FILES = new File[]
 	{
-		new File("resources/assets/textures/null.png"),
-		new File("resources/assets/textures/pieces/white/white-pawn.png"),
-		new File("resources/assets/textures/pieces/white/white-knight.png"),
-		new File("resources/assets/textures/pieces/white/white-bishop.png"),
-		new File("resources/assets/textures/pieces/white/white-rook.png"),
-		new File("resources/assets/textures/pieces/white/white-queen.png"),
-		new File("resources/assets/textures/pieces/white/white-king.png"),
-		new File("resources/assets/textures/pieces/black/black-pawn.png"),
-		new File("resources/assets/textures/pieces/black/black-knight.png"),
-		new File("resources/assets/textures/pieces/black/black-bishop.png"),
-		new File("resources/assets/textures/pieces/black/black-rook.png"),
-		new File("resources/assets/textures/pieces/black/black-queen.png"),
-		new File("resources/assets/textures/pieces/black/black-king.png"),
-		new File("resources/assets/textures/marks/dot.png"),
-		new File("resources/assets/textures/marks/corners.png"),
-		new File("resources/assets/textures/marks/check-highlight.png"),
-		new File("resources/assets/textures/marks/last-move-mask.png"),
-		new File("resources/assets/textures/squares/diagonal.png"),
-		new File("resources/assets/textures/squares/anti-diagonal.png"),
+		new File("resources\\assets\\textures\\null.png"),
+		new File("resources\\assets\\textures\\pieces\\white\\white-pawn.png"),
+		new File("resources\\assets\\textures\\pieces\\white\\white-knight.png"),
+		new File("resources\\assets\\textures\\pieces\\white\\white-bishop.png"),
+		new File("resources\\assets\\textures\\pieces\\white\\white-rook.png"),
+		new File("resources\\assets\\textures\\pieces\\white\\white-queen.png"),
+		new File("resources\\assets\\textures\\pieces\\white\\white-king.png"),
+		new File("resources\\assets\\textures\\pieces\\black\\black-pawn.png"),
+		new File("resources\\assets\\textures\\pieces\\black\\black-knight.png"),
+		new File("resources\\assets\\textures\\pieces\\black\\black-bishop.png"),
+		new File("resources\\assets\\textures\\pieces\\black\\black-rook.png"),
+		new File("resources\\assets\\textures\\pieces\\black\\black-queen.png"),
+		new File("resources\\assets\\textures\\pieces\\black\\black-king.png"),
+		new File("resources\\assets\\textures\\marks\\dot.png"),
+		new File("resources\\assets\\textures\\marks\\corners.png"),
+		new File("resources\\assets\\textures\\marks\\check-highlight.png"),
+		new File("resources\\assets\\textures\\marks\\last-move-mask.png"),
+		new File("resources\\assets\\textures\\squares\\diagonal.png"),
+		new File("resources\\assets\\textures\\squares\\anti-diagonal.png"),
 	};
 	
-	transient private Image[] textures;
-	transient private List<ChessboardGraphics> cbgList;
+	transient private Image[] unscaledTextures, scaledTextures;
 	private File[] textureFiles;
+	private int squareSize, hints;
 	
-	public ResourceManager(File[] textureFiles)
+	public ResourceManager(File[] textureFiles, int squareSize, int hints)
 	{
 		this.textureFiles = textureFiles;
+		this.squareSize = squareSize;
+		this.hints = hints;
 		initObject();
 	}
 	
 	public ResourceManager()
 	{
-		this(DEFAULT_TEXTURE_FILES);
+		this(DEFAULT_TEXTURE_FILES, DEFAULT_SQUARE_SIZE, DEFAULT_HINTS);
 	}
 	
 	private void initTextures()
 	{
-		textures = new Image[textureFiles.length];
+		unscaledTextures = new Image[textureFiles.length];
+		scaledTextures = new Image[textureFiles.length];
 		for(int id = 0; id < textureFiles.length; id++)
 		{
 			loadTexture(id);
@@ -61,47 +64,41 @@ public class ResourceManager implements Serializable
 	
 	public void initObject()
 	{
-		cbgList = new LinkedList<ChessboardGraphics>();
 		initTextures();
 	}
 	
-	public void addSubscriber(ChessboardGraphics cbg)
+	public int getSquareSize()
 	{
-		cbgList.add(cbg);
+		return squareSize;
 	}
 	
-	public void removeSubscriber(ChessboardGraphics cbg)
+	public Image[] getScaledTextures()
 	{
-		cbgList.remove(cbg);
-	}
-	
-	public Image[] getScaledTextures(int pixelSize, int hints)
-	{
-		Image[] scaledTextures = new Image[textures.length];
-		for(int id = 0; id < textures.length; id++)
-		{
-			scaledTextures[id] = getScaledTexture(id, pixelSize, hints);
-		}
 		return scaledTextures;
 	}
 	
-	public Image getScaledTexture(int id, int pixelSize, int hints)
+	public Image getTexture(int id)
 	{
-		return textures[id].getScaledInstance(pixelSize, pixelSize, hints);
+		return scaledTextures[id];
 	}
 	
+	public Image getUnscaledTexture(int id)
+	{
+		return unscaledTextures[id];
+	}
+		
 	public void loadTextureFile(int id, File textureFile)
 	{
 		try
 		{
-			textures[id] = ImageIO.read(textureFile);
+			unscaledTextures[id] = ImageIO.read(textureFile);
 			textureFiles[id] = textureFile;
 		}
 		catch(Exception ex1)
 		{
 			try
 			{
-				textures[id] = ImageIO.read(DEFAULT_TEXTURE_FILES[id]);
+				unscaledTextures[id] = ImageIO.read(DEFAULT_TEXTURE_FILES[id]);
 			}
 			catch(Exception ex2)
 			{
@@ -109,23 +106,20 @@ public class ResourceManager implements Serializable
 				System.exit(0);
 			}
 		}
-		for(ChessboardGraphics cbg : cbgList)
-		{
-			cbg.setScaledResource(getScaledTexture(id, cbg.getSquareSize(), Image.SCALE_SMOOTH), id);
-		}
+		scaledTextures[id] = unscaledTextures[id].getScaledInstance(squareSize, squareSize, hints);
 	}
 	
 	private void loadTexture(int id)
 	{
 		try
 		{
-			textures[id] = ImageIO.read(textureFiles[id]);
+			unscaledTextures[id] = ImageIO.read(textureFiles[id]);
 		}
 		catch(Exception ex1)
 		{
 			try
 			{
-				textures[id] = ImageIO.read(DEFAULT_TEXTURE_FILES[id]);
+				unscaledTextures[id] = ImageIO.read(DEFAULT_TEXTURE_FILES[id]);
 			}
 			catch(Exception ex2)
 			{
@@ -133,9 +127,6 @@ public class ResourceManager implements Serializable
 				System.exit(0);
 			}
 		}
-		for(ChessboardGraphics cbg : cbgList)
-		{
-			cbg.setScaledResource(getScaledTexture(id, cbg.getSquareSize(), Image.SCALE_SMOOTH), id);
-		}
+		scaledTextures[id] = unscaledTextures[id].getScaledInstance(squareSize, squareSize, hints);
 	}
 }

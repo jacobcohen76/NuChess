@@ -1,6 +1,5 @@
-package nuchess.view.fenbuilder;
+package nuchess.view.fenboardeditor;
 
-import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -12,18 +11,18 @@ import nuchess.view.graphics.ChessboardGraphics;
 import nuchess.view.graphics.LayeredGraphics;
 import nuchess.view.graphics.LayeredGraphicsPanel;
 
-class FENBuilderBoardView
+class FENBoardView
 {
 	private LayeredGraphicsPanel lgp;
 	private ChessboardGraphics cbg;
 	
-	protected FENBuilderView parent;
+	protected FENBoardEditorView parent;
 	
-	public FENBuilderBoardView(int squareSize, boolean flipped)
+	public FENBoardView(boolean flipped)
 	{
-		LayeredGraphics lg = new LayeredGraphics(squareSize * 8, squareSize * 8);
+		LayeredGraphics lg = new LayeredGraphics(ChessboardGraphics.getSquareSize() * 8, ChessboardGraphics.getSquareSize() * 8);
 		lgp = new LayeredGraphicsPanel(lg);
-		cbg = new ChessboardGraphics(squareSize, flipped, lg);
+		cbg = new ChessboardGraphics(flipped, lg);
 		parent = null;
 		
 		initListeners();
@@ -89,11 +88,6 @@ class FENBuilderBoardView
 	public void clearPieceLayer(long occ)
 	{
 		cbg.clear(occ, ChessboardGraphics.PIECE_LAYER);
-	}
-	
-	public Image[] getScaledResources()
-	{
-		return cbg.getScaledResources();
 	}
 	
 	public JPanel getPanel()

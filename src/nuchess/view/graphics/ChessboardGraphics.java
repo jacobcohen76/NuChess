@@ -82,14 +82,26 @@ public class ChessboardGraphics
 		fos.close();
 	}
 	
+	public static Image getTexture(int id)
+	{
+		return RESOURCE_MANAGER.getTexture(id);
+	}
+	
+	public static Image getUnscaledTexture(int id)
+	{
+		return RESOURCE_MANAGER.getUnscaledTexture(id);
+	}
+	
+	public static int getSquareSize()
+	{
+		return RESOURCE_MANAGER.getSquareSize();
+	}
+	
 	private LayeredGraphics lg;
-	private Image[] scaledResources;
-	private int squareSize;
 	private boolean flipped;
 	
-	public ChessboardGraphics(int squareSize, boolean flipped, LayeredGraphics lg)
+	public ChessboardGraphics(boolean flipped, LayeredGraphics lg)
 	{
-		this.squareSize = squareSize;
 		this.flipped = flipped;
 		this.lg = lg;
 		
@@ -98,24 +110,11 @@ public class ChessboardGraphics
 		{
 			lg.addNewLayer();
 		}
-		
-		scaledResources = RESOURCE_MANAGER.getScaledTextures(squareSize, Image.SCALE_SMOOTH);
-		RESOURCE_MANAGER.addSubscriber(this);
-	}
-	
-	public Image[] getScaledResources()
-	{
-		return scaledResources;
 	}
 	
 	public Graphics2D getLayer(int layer)
 	{
 		return lg.getGraphics(layer);
-	}
-	
-	public int getSquareSize()
-	{
-		return squareSize;
 	}
 	
 	public void setFlipped(boolean b)
@@ -133,14 +132,8 @@ public class ChessboardGraphics
 		ImageIO.write(lg.merge(), formatName, output);
 	}
 	
-	public void setScaledResource(Image scaledResource, int index)
+	public void updateSize(int newSquareSize)
 	{
-		scaledResources[index] = scaledResource;
-	}
-	
-	public void setSquareSize(int squareSize)
-	{
-		this.squareSize = squareSize;
 		resizeLayeredGraphics(getWidth(), getHeight());
 	}
 	
@@ -165,7 +158,7 @@ public class ChessboardGraphics
 	
 	public void clear(int square, int layer)
 	{
-		lg.clear(layer, getX(square), getY(square), squareSize, squareSize);
+		lg.clear(layer, getX(square), getY(square), getSquareSize(), getSquareSize());
 	}
 	
 	public void clearAll()
@@ -189,7 +182,7 @@ public class ChessboardGraphics
 			}
 			else if(FENParser.isPiece(c))
 			{
-				paint(scaledResources[TextureIDs.pieceID(c)], Square.makeSquare(rank, file), PIECE_LAYER);
+				paint(getTexture(TextureIDs.pieceID(c)), Square.makeSquare(rank, file), PIECE_LAYER);
 				file++;
 			}
 			else if(c == '/')
@@ -202,8 +195,8 @@ public class ChessboardGraphics
 	
 	public void paintBackground()
 	{
-		paint(scaledResources[TextureIDs.DARK_SQUARE], DARK_SQUARE_BB, BACKGROUND_LAYER);
-		paint(scaledResources[TextureIDs.LIGHT_SQUARE], LIGHT_SQUARE_BB, BACKGROUND_LAYER);
+		paint(getTexture(TextureIDs.DARK_SQUARE), DARK_SQUARE_BB, BACKGROUND_LAYER);
+		paint(getTexture(TextureIDs.LIGHT_SQUARE), LIGHT_SQUARE_BB, BACKGROUND_LAYER);
 	}
 		
 	public void paintMovedMask(CMove move)
@@ -217,17 +210,17 @@ public class ChessboardGraphics
 	
 	public void paintMovedMask(int square)
 	{
-		paint(scaledResources[TextureIDs.MASK], square, MASK_LAYER);
+		paint(getTexture(TextureIDs.MASK), square, MASK_LAYER);
 	}
 	
 	public void paintDots(long bitboard)
 	{
-		paint(scaledResources[TextureIDs.DOT], bitboard, DOT_LAYER);
+		paint(getTexture(TextureIDs.DOT), bitboard, DOT_LAYER);
 	}
 	
 	public void paintDot(int square)
 	{
-		paint(scaledResources[TextureIDs.DOT], square, DOT_LAYER);
+		paint(getTexture(TextureIDs.DOT), square, DOT_LAYER);
 	}
 	
 	public void paintCorners(long bitboard)
@@ -241,7 +234,7 @@ public class ChessboardGraphics
 	
 	public void paintCorners(int square)
 	{
-		paint(scaledResources[TextureIDs.BORDER], square, CORNER_LAYER);
+		paint(getTexture(TextureIDs.BORDER), square, CORNER_LAYER);
 	}
 	
 	public void paintCheckHighlight(long bitboard)
@@ -255,7 +248,7 @@ public class ChessboardGraphics
 	
 	public void paintCheckHighlight(int square)
 	{
-		paint(scaledResources[TextureIDs.HIGHLIGHT], square, HIGHLIGHT_LAYER);
+		paint(getTexture(TextureIDs.HIGHLIGHT), square, HIGHLIGHT_LAYER);
 	}
 	
 	private void paint(Image img, long bitboard, int layer)
@@ -269,7 +262,7 @@ public class ChessboardGraphics
 	
 	private void paint(Image img, int square, int layer)
 	{
-		lg.getGraphics(layer).drawImage(img, getX(square), getY(square), squareSize, squareSize, null);
+		lg.getGraphics(layer).drawImage(img, getX(square), getY(square), getSquareSize(), getSquareSize(), null);
 	}
 	
 	public Dimension getDimensions()
@@ -279,32 +272,32 @@ public class ChessboardGraphics
 	
 	public int getWidth()
 	{
-		return (squareSize << 3);
+		return (getSquareSize() << 3);
 	}
 	
 	public int getHeight()
 	{
-		return (squareSize << 3);
+		return (getSquareSize() << 3);
 	}
 	
 	public int getX(int square)
 	{
-		return (flipped ? (7 - Square.file(square)) : (Square.file(square))) * squareSize;
+		return (flipped ? (7 - Square.file(square)) : (Square.file(square))) * getSquareSize();
 	}
 	
 	public int getY(int square)
 	{
-		return (flipped ? (Square.rank(square)) : (7 - Square.rank(square))) * squareSize;
+		return (flipped ? (Square.rank(square)) : (7 - Square.rank(square))) * getSquareSize();
 	}
 	
 	public int getRank(int y)
 	{
-		return (flipped ? (y) : (getHeight() - y)) / squareSize;
+		return (flipped ? (y) : (getHeight() - y)) / getSquareSize();
 	}
 	
 	public int getFile(int x)
 	{
-		return (flipped ? (getWidth() - x) : (x)) / squareSize;
+		return (flipped ? (getWidth() - x) : (x)) / getSquareSize();
 	}
 	
 	public int getSquare(int x, int y)

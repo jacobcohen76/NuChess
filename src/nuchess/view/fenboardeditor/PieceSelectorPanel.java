@@ -1,13 +1,13 @@
-package nuchess.view.fenbuilder;
+package nuchess.view.fenboardeditor;
 
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
 import nuchess.engine.Piece;
+import nuchess.view.graphics.ChessboardGraphics;
 import nuchess.view.graphics.LayeredGraphics;
 import nuchess.view.graphics.LayeredGraphicsPanel;
 import nuchess.view.graphics.TextureIDs;
@@ -19,15 +19,14 @@ class PieceSelectorPanel
 	
 	private LayeredGraphicsPanel lgp;
 	private LayeredGraphics lg;
-	private int selected, squareSize;
+	private int selected;
 
-	protected FENBuilderView parent;
+	protected FENBoardEditorView parent;
 	
-	public PieceSelectorPanel(int squareSize, int selected)
+	public PieceSelectorPanel(int selected)
 	{
-		lg = new LayeredGraphics(squareSize * 2, squareSize * 6);
+		lg = new LayeredGraphics(ChessboardGraphics.getSquareSize() * 2, ChessboardGraphics.getSquareSize() * 6);
 		lgp = new LayeredGraphicsPanel(lg);
-		this.squareSize = squareSize;
 		this.selected = selected;
 		parent = null;
 		lg.addNewLayer();
@@ -43,7 +42,7 @@ class PieceSelectorPanel
 	
 	private int getIndex(MouseEvent e)
 	{
-		return (e.getX() / squareSize) + 2 * (e.getY() / squareSize) + 2;
+		return (e.getX() / ChessboardGraphics.getSquareSize()) + 2 * (e.getY() / ChessboardGraphics.getSquareSize()) + 2;
 	}
 	
 	private void pressed(MouseEvent e)
@@ -52,7 +51,7 @@ class PieceSelectorPanel
 		if(selected != index)
 		{
 			clearSelection(selected);
-			paintSelection(parent.getScaledResources(), index);
+			paintSelection(index);
 			parent.setPiece(index);
 			selected = index;
 			lgp.repaint();
@@ -73,37 +72,37 @@ class PieceSelectorPanel
 	
 	private int getX(int selection)
 	{
-		return (selection & 1) * squareSize;
+		return (selection & 1) * ChessboardGraphics.getSquareSize();
 	}
 	
 	private int getY(int selection)
 	{
-		return (selection / 2) * squareSize - squareSize;
+		return (selection / 2) * ChessboardGraphics.getSquareSize() - ChessboardGraphics.getSquareSize();
 	}
 	
 	public void initGraphics()
 	{
-		paintIcons(parent.getScaledResources());
-		paintSelection(parent.getScaledResources(), selected);
+		paintIcons();
+		paintSelection(selected);
 	}
 	
-	private void paintIcons(Image[] icons)
+	private void paintIcons()
 	{
 		Graphics2D g = lg.getGraphics(ICON_LAYER);
 		for(int piece = Piece.WHITE_PAWN; piece <= Piece.BLACK_KING; piece++)
 		{
-			g.drawImage(icons[TextureIDs.pieceID(piece)], getX(piece), getY(piece), squareSize, squareSize, null);
+			g.drawImage(ChessboardGraphics.getTexture(TextureIDs.pieceID(piece)), getX(piece), getY(piece), ChessboardGraphics.getSquareSize(), ChessboardGraphics.getSquareSize(), null);
 		}
 	}
 	
-	private void paintSelection(Image[] icons, int selection)
+	private void paintSelection(int selection)
 	{
-		lg.getGraphics(SELECTION_LAYER).drawImage(icons[TextureIDs.BORDER], getX(selection), getY(selection), squareSize, squareSize, null);
+		lg.getGraphics(SELECTION_LAYER).drawImage(ChessboardGraphics.getTexture(TextureIDs.BORDER), getX(selection), getY(selection), ChessboardGraphics.getSquareSize(), ChessboardGraphics.getSquareSize(), null);
 	}
 	
 	private void clearSelection(int selection)
 	{
-		lg.clear(SELECTION_LAYER, getX(selection), getY(selection), squareSize, squareSize);
+		lg.clear(SELECTION_LAYER, getX(selection), getY(selection), ChessboardGraphics.getSquareSize(), ChessboardGraphics.getSquareSize());
 	}
 	
 	public void repaint()

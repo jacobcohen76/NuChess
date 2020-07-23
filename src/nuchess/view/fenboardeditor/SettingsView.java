@@ -1,4 +1,4 @@
-package nuchess.view.fenbuilder;
+package nuchess.view.fenboardeditor;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-class FENSettingsView
+class SettingsView
 {
 	private JPanel panel;
 	private SpringLayout layout;
@@ -17,7 +17,7 @@ class FENSettingsView
 	private JLabel[] errorLabels;
 	private JTextField[] fields;
 	
-	public FENSettingsView(String... fieldNames)
+	public SettingsView(String... fieldNames)
 	{
 		panel = new JPanel();
 		layout = new SpringLayout();

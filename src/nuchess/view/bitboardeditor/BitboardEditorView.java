@@ -1,4 +1,4 @@
-package nuchess.view.bitboardviewer;
+package nuchess.view.bitboardeditor;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -7,23 +7,23 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-import nuchess.control.BitboardBuilderController;
+import nuchess.control.BitboardEditorController;
 import nuchess.engine.Bits;
 import nuchess.view.View;
 
-public class BitboardBuilderView implements View
+public class BitboardEditorView implements View
 {
 	private static final int BINARY			= 0;
 	private static final int OCTAL			= 1;
 	private static final int DECIMAL		= 2;
 	private static final int HEXADECIMAL	= 3;
+	private static final boolean DEFAULT_FLIPPED = false;
 	
 	private JPanel panel;
 	private BitboardBoardView bbbv;
@@ -31,13 +31,12 @@ public class BitboardBuilderView implements View
 	private JTextField bitboardInputField;
 	private JLabel inputFieldMessageLabel;
 	private JComboBox<String> baseSelector;
-	private JButton testingButton;
 	
-	public BitboardBuilderController controller;
+	public BitboardEditorController controller;
 	
-	public BitboardBuilderView(int squareSize, boolean flipped)
+	public BitboardEditorView(boolean flipped)
 	{
-		initComponents(squareSize, flipped);
+		initComponents(flipped);
 		initListeners();
 		putConstraints();
 		addComponents();
@@ -47,15 +46,19 @@ public class BitboardBuilderView implements View
 		linkObjects();
 	}
 	
-	private void initComponents(int squareSize, boolean flipped)
+	public BitboardEditorView()
+	{
+		this(DEFAULT_FLIPPED);
+	}
+	
+	private void initComponents(boolean flipped)
 	{
 		panel = new JPanel();
-		bbbv = new BitboardBoardView(squareSize, flipped);
+		bbbv = new BitboardBoardView(flipped);
 		
 		bitboardInputField = new JTextField();
 		inputFieldMessageLabel = new JLabel();
 		baseSelector = new JComboBox<String>();
-		testingButton = new JButton();
 		
 		bitboardInputField.setColumns(64);
 		
@@ -68,14 +71,6 @@ public class BitboardBuilderView implements View
 	
 	private void initListeners()
 	{
-		testingButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent event)
-			{
-				controller.saveRenderedBoardView();
-			}
-		});
-		
 		bitboardInputField.addKeyListener(new KeyListener()
 		{
 			public void keyPressed(KeyEvent event)
@@ -147,9 +142,6 @@ public class BitboardBuilderView implements View
 		layout.putConstraint(SpringLayout.NORTH, baseSelector, 0, SpringLayout.NORTH, panel);
 		layout.putConstraint(SpringLayout.WEST, baseSelector, 0, SpringLayout.EAST, bitboardInputField);
 		
-		layout.putConstraint(SpringLayout.NORTH, testingButton, 0, SpringLayout.NORTH, panel);
-		layout.putConstraint(SpringLayout.EAST, testingButton, 0, SpringLayout.EAST, panel);
-		
 		panel.setLayout(layout);
 	}
 	
@@ -159,7 +151,6 @@ public class BitboardBuilderView implements View
 		panel.add(bitboardInputField);
 		panel.add(inputFieldMessageLabel);
 		panel.add(baseSelector);
-		panel.add(testingButton);
 	}
 	
 	private void linkObjects()
@@ -250,6 +241,11 @@ public class BitboardBuilderView implements View
 		return bbbv.getDisplaying();
 	}
 	
+	public void saveGraphicsAs()
+	{
+		controller.saveGraphicsAs();
+	}
+	
 	public JPanel getPanel()
 	{
 		return panel;
@@ -257,7 +253,7 @@ public class BitboardBuilderView implements View
 	
 	public void close()
 	{
-		
+		controller.close();
 	}
 	
 	public String getTitle()

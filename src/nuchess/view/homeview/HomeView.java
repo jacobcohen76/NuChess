@@ -11,9 +11,32 @@ public class HomeView implements View
 	public HomeView()
 	{
 		panel = new JPanel();
+		initComponents();
+		putConstraints();
+		addComponents();
+	}
+	
+	private void initComponents()
+	{
+		
+	}
+	
+	private void putConstraints()
+	{
+		
+	}
+	
+	private void addComponents()
+	{
+		
 	}
 	
 	public void close()
+	{
+		
+	}
+	
+	public void saveGraphicsAs()
 	{
 		
 	}

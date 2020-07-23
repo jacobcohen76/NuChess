@@ -8,15 +8,15 @@ import nuchess.engine.FENParser;
 import nuchess.engine.Piece;
 import nuchess.engine.Square;
 import nuchess.view.View;
-import nuchess.view.fenbuilder.FENBuilderView;
+import nuchess.view.fenboardeditor.FENBoardEditorView;
 
-public class FENBuilderController implements Controller
+public class FENBoardEditorController implements Controller
 {
 	private CBoard board;
-	private FENBuilderView view;
+	private FENBoardEditorView view;
 	private int toMove, castlingRights, epSquare, halfmoveClock, plyCount;
 	
-	public FENBuilderController(CBoard board, FENBuilderView view)
+	public FENBoardEditorController(CBoard board, FENBoardEditorView view)
 	{
 		this.board = board;
 		this.view = view;
@@ -32,7 +32,7 @@ public class FENBuilderController implements Controller
 		board.clearBitboards();
 	}
 	
-	public FENBuilderController()
+	public FENBoardEditorController()
 	{
 		this(null, null);
 	}
@@ -40,6 +40,22 @@ public class FENBuilderController implements Controller
 	public void init()
 	{
 		updateView();
+	}
+	
+	public void saveGraphicsAs()
+	{
+		File out = FileSaving.chooseImageFile(view.getPanel(), getFEN().replace('/', '.'));
+		FileSaving.saveRenderedImage(view.getRenderedImage(), out);
+	}
+	
+	public void saveAs()
+	{
+		
+	}
+	
+	public void close()
+	{
+		
 	}
 	
 	public View getView()
@@ -144,11 +160,5 @@ public class FENBuilderController implements Controller
 		castlingRights = FENParser.parseCastlingRights(elements[2]);
 		epSquare = FENParser.parseEnPassantSquare(elements[3]);
 		updateView(FEN);
-	}
-	
-	public void saveRenderedBoardView()
-	{
-		File out = FileSaving.chooseImageFile(view.getPanel(), getFEN().replace('/', '.'));
-		FileSaving.saveRenderedImage(view.getRenderedImage(), out);
 	}
 }

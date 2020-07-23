@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
+import nuchess.control.Controller;
+
 public class ViewFrame
 {
 	private JFrame frame;
@@ -87,6 +89,16 @@ public class ViewFrame
 	{
 		frame.repaint();
 		root.repaint();
+	}
+	
+	public void display(Controller controller)
+	{
+		display(controller.getView());
+	}
+	
+	public void display(View view)
+	{
+		display(view.getPanel());
 	}
 	
 	public void display(JPanel panel)

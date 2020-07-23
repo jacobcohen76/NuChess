@@ -1,4 +1,4 @@
-package nuchess.view.gameview;
+package nuchess.view.chessgameview;
 
 import java.util.List;
 

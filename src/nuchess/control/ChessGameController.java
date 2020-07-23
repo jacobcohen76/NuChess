@@ -11,7 +11,7 @@ import nuchess.engine.CMove;
 import nuchess.engine.ChessEngine;
 import nuchess.engine.Piece;
 import nuchess.view.View;
-import nuchess.view.gameview.ChessGameView;
+import nuchess.view.chessgameview.ChessGameView;
 
 public class ChessGameController implements Controller
 {
@@ -23,14 +23,14 @@ public class ChessGameController implements Controller
 		DEFAULT_BLACKPLAYER = new Human<CMove>("Default Black Player", "1");
 	}
 	
-	private ChessEngine model;
+	private ChessEngine engine;
 	private ChessGameView view;
 	private LinkedList<CMove> moveHistory;
 	private Player<CMove> player1, player2;
 	
-	public ChessGameController(ChessEngine model, ChessGameView view)
+	public ChessGameController(ChessEngine engine, ChessGameView view)
 	{
-		this.model = model;
+		this.engine = engine;
 		this.view = view;
 		moveHistory = new LinkedList<CMove>();
 		player1 = getDefaultPlayer1();
@@ -45,25 +45,36 @@ public class ChessGameController implements Controller
 	
 	public void updateView(String SAN)
 	{
-		long checkBB = model.inCheck(model.toMove()) ? model.board.bitboard(Piece.WHITE_KING + model.toMove()) : 0L;
-		long occBB = model.board.occ();
+		long checkBB = engine.inCheck(engine.toMove()) ? engine.board.bitboard(Piece.WHITE_KING + engine.toMove()) : 0L;
+		long occBB = engine.board.occ();
 		CMove move = moveHistory.getLast();
-		String FEN = model.getFEN();
+		String FEN = engine.getFEN();
 		
 		view.addNewState(checkBB, occBB, move, FEN, SAN);
-		view.setMoveableSquares(model.board.bitboard(model.toMove()));
-		view.setSelectableMoves(model.generateLegalMoves());
+		view.setMoveableSquares(engine.board.bitboard(engine.toMove()));
+		view.setSelectableMoves(engine.generateLegalMoves());
 	}
 	
-	private void initView()
+	public void init()
 	{
-		long checkBB = model.inCheck(model.toMove()) ? model.board.bitboard(Piece.WHITE_KING + model.toMove()) : 0L;
-		long occBB = model.board.occ();
-		String FEN = model.getFEN();
+		initView();
+		takeTurn(getNextPlayer());
+	}
+	
+	public void saveGraphicsAs()
+	{
+		File out = FileSaving.chooseImageFile(view.getPanel(), engine.getFEN().replace('/', '.'));
+		FileSaving.saveRenderedImage(view.getRenderedImage(), out);
+	}
+	
+	public void saveAs()
+	{
 		
-		view.setInitialState(checkBB, occBB, FEN);
-		view.setMoveableSquares(model.board.bitboard(model.toMove()));
-		view.setSelectableMoves(model.generateLegalMoves());
+	}
+	
+	public void close()
+	{
+		
 	}
 	
 	public View getView()
@@ -71,10 +82,21 @@ public class ChessGameController implements Controller
 		return view;
 	}
 	
+	private void initView()
+	{
+		long checkBB = engine.inCheck(engine.toMove()) ? engine.board.bitboard(Piece.WHITE_KING + engine.toMove()) : 0L;
+		long occBB = engine.board.occ();
+		String FEN = engine.getFEN();
+		
+		view.setInitialState(checkBB, occBB, FEN);
+		view.setMoveableSquares(engine.board.bitboard(engine.toMove()));
+		view.setSelectableMoves(engine.generateLegalMoves());
+	}
+	
 	public void make(CMove move)
 	{
-		String SAN = model.getSAN(move);
-		model.make(move);
+		String SAN = engine.getSAN(move);
+		engine.make(move);
 		moveHistory.add(move);
 		updateView(SAN);
 		takeTurn(getNextPlayer());
@@ -83,7 +105,7 @@ public class ChessGameController implements Controller
 	public void unmake()
 	{
 		CMove move = moveHistory.pollLast();
-		model.unmake(move);
+		engine.unmake(move);
 	}
 	
 	public void setPlayer1(Player<CMove> player1)
@@ -139,12 +161,6 @@ public class ChessGameController implements Controller
 		return moveHistory;
 	}
 	
-	public void init()
-	{
-		initView();
-		takeTurn(getNextPlayer());
-	}
-	
 	public void end()
 	{
 		
@@ -156,7 +172,6 @@ public class ChessGameController implements Controller
 		
 	}
 	
-	
 	public void updateStatistics()
 	{
 		
@@ -164,13 +179,13 @@ public class ChessGameController implements Controller
 	
 	public void takeTurn(Player<CMove> player)
 	{
-		while(player instanceof Computer<?> && model.isGameOver() == false)
+		while(player instanceof Computer<?> && engine.isGameOver() == false)
 		{
 			make(player.selectMove());
 			player = getNextPlayer();
 			System.out.println(player);
 		}
-		if(model.isGameOver())
+		if(engine.isGameOver())
 		{
 			end();
 		}

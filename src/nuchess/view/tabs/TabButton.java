@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 import nuchess.view.View;
 
-public class TabButton extends JPanel
+class TabButton extends JPanel
 {
 	private static final long serialVersionUID = 2230075789276130331L;
 	
@@ -33,8 +33,11 @@ public class TabButton extends JPanel
 		putConstraints();
 		addComponents();
 		initListeners();
-		
-//		setSize(new Dimension(width, height));
+	}
+	
+	public void addCloseButton()
+	{
+		add(new CloseButton(10, 10));
 	}
 	
 	private void initComponents()
@@ -108,5 +111,47 @@ public class TabButton extends JPanel
 		super.paint(g);
 		g.setColor(Color.BLACK);
 		g.drawRect(0, 0, getWidth(), getHeight());
+	}
+	
+	public void saveGraphicsAs()
+	{
+		view.saveGraphicsAs();
+	}
+	
+	private void requestClose()
+	{
+		parent.requestClose(this);
+	}
+	
+	private class CloseButton extends JPanel
+	{
+		private static final long serialVersionUID = 7854005908263578661L;
+		
+		public CloseButton(int width, int height)
+		{
+			setSize(new Dimension(width, height));
+			addMouseListener(new MouseListener()
+			{
+				public void mouseClicked(MouseEvent e)	{}
+				public void mousePressed(MouseEvent e)	{}
+				public void mouseReleased(MouseEvent e)	{ requestClose(); }
+				public void mouseEntered(MouseEvent e)	{}
+				public void mouseExited(MouseEvent e)	{}
+			});
+		}
+		
+		public void setSize(Dimension d)
+		{
+			super.setSize(d);
+			super.setPreferredSize(d);
+		}
+		
+		public void paint(Graphics g)
+		{
+			super.paint(g);
+			g.setColor(Color.RED);
+			g.drawLine(0, 0, getWidth(), getHeight());
+			g.drawLine(0, getHeight(), getWidth(), 0);
+		}
 	}
 }
