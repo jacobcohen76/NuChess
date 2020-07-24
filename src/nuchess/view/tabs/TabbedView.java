@@ -1,6 +1,5 @@
 package nuchess.view.tabs;
 
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
 
@@ -8,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
 import nuchess.view.View;
+import nuchess.view.graphics.ResourceManager;
 
 public class TabbedView implements View
 {
@@ -63,7 +63,8 @@ public class TabbedView implements View
 		tabsLayout.setHgap(0);
 		tabsLayout.setVgap(0);
 		tabsPanel.setLayout(tabsLayout);
-		tabsPanel.setBackground(Color.LIGHT_GRAY);
+		tabsPanel.setBackground(ResourceManager.getBackgroundColor());
+		rootPanel.setBackground(ResourceManager.getBackgroundColor());
 	}
 	
 	private void putConstraints()
@@ -139,8 +140,10 @@ public class TabbedView implements View
 		if(prev != null)
 		{
 			removeContent(prev.view);
+			prev.setBackground(ResourceManager.getBackgroundColor());
 			prev.repaint();
 		}
+		tab.setBackground(ResourceManager.getForegroundColor());
 		tab.repaint();
 		displayContent(tab.view);
 	}

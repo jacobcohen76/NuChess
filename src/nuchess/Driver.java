@@ -6,7 +6,7 @@ import java.io.File;
 
 import nuchess.control.MainController;
 import nuchess.view.ViewFrame;
-import nuchess.view.graphics.ChessboardGraphics;
+import nuchess.view.graphics.ResourceManager;
 import nuchess.view.homeview.HomeView;
 import nuchess.view.homeview.MenuView;
 import nuchess.view.tabs.TabbedView;
@@ -58,12 +58,12 @@ public class Driver
 	private static void bootup()
 	{
 		initSystem();
-		ChessboardGraphics.initResourceManager(RM_PATH);
+		ResourceManager.initManagerObject(RM_PATH);
 	}
 	
 	private static void shutdown()
 	{
-		ChessboardGraphics.closeResourceManager(RM_PATH);
+		ResourceManager.closeManagerObject(RM_PATH);
 		System.exit(0);
 	}
 	

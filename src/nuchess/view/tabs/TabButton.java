@@ -1,9 +1,10 @@
 package nuchess.view.tabs;
 
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -11,16 +12,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import nuchess.view.View;
+import nuchess.view.graphics.IconIDs;
+import nuchess.view.graphics.ResourceManager;
 
 class TabButton extends JPanel
 {
 	private static final long serialVersionUID = 2230075789276130331L;
 	
-	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
-	private static final Cursor DEFAULT_CURSOR = new Cursor(Cursor.DEFAULT_CURSOR);
-	
 	private JLabel titleLabel;
-	
 	protected TabbedView parent;
 	protected View view;
 	
@@ -37,18 +36,24 @@ class TabButton extends JPanel
 	
 	public void addCloseButton()
 	{
-		add(new CloseButton(10, 10));
+		Image icon = ResourceManager.getIcon(IconIDs.X_ICON);
+		add(new CloseButton(icon.getWidth(null), icon.getHeight(null)));
 	}
 	
 	private void initComponents()
 	{
 		titleLabel = new JLabel();
 		titleLabel.setText(view.getTitle());
+		titleLabel.setForeground(Color.WHITE);
 	}
 	
 	private void putConstraints()
 	{
-		
+		FlowLayout layout = new FlowLayout();
+		layout.setHgap(5);
+		layout.setVgap(5);
+		layout.setAlignment(FlowLayout.LEFT);
+		setLayout(layout);
 	}
 	
 	private void initListeners()
@@ -77,7 +82,6 @@ class TabButton extends JPanel
 	{
 		if(parent.displaying != this)
 		{
-			setCursor(DEFAULT_CURSOR);
 			parent.requestDisplay(this);
 		}
 	}
@@ -91,26 +95,22 @@ class TabButton extends JPanel
 	{
 		if(parent.displaying != this)
 		{
-			setCursor(HAND_CURSOR);
+			setBackground(ResourceManager.getHighlightColor());
 		}
 	}
 	
 	private void exited(MouseEvent e)
 	{
-		setCursor(DEFAULT_CURSOR);
+		if(parent.displaying != this && !contains(e.getPoint()))
+		{
+			setBackground(ResourceManager.getBackgroundColor());
+		}
 	}
 	
 	public void setSize(Dimension d)
 	{
 		super.setSize(d);
 		super.setPreferredSize(d);
-	}
-	
-	public void paint(Graphics g)
-	{
-		super.paint(g);
-		g.setColor(Color.BLACK);
-		g.drawRect(0, 0, getWidth(), getHeight());
 	}
 	
 	public void saveGraphicsAs()
@@ -123,21 +123,54 @@ class TabButton extends JPanel
 		parent.requestClose(this);
 	}
 	
+	private Color getButtonBackgroundColor()
+	{
+		return getBackground();
+	}
+	
 	private class CloseButton extends JPanel
 	{
 		private static final long serialVersionUID = 7854005908263578661L;
 		
+		private int icon;
+		
 		public CloseButton(int width, int height)
 		{
+			icon = IconIDs.X_ICON;
 			setSize(new Dimension(width, height));
+			initListeners();
+		}
+		
+		private void initListeners()
+		{
 			addMouseListener(new MouseListener()
 			{
 				public void mouseClicked(MouseEvent e)	{}
 				public void mousePressed(MouseEvent e)	{}
-				public void mouseReleased(MouseEvent e)	{ requestClose(); }
-				public void mouseEntered(MouseEvent e)	{}
-				public void mouseExited(MouseEvent e)	{}
+				public void mouseReleased(MouseEvent e) { released(e); }
+				public void mouseEntered(MouseEvent e)	{ entered(e);  }
+				public void mouseExited(MouseEvent e)	{ exited(e);   }
 			});
+		}
+		
+		private void released(MouseEvent e)
+		{
+			if(icon == IconIDs.X_HOVERING_ICON)
+			{
+				requestClose();
+			}
+		}
+		
+		private void entered(MouseEvent e)
+		{
+			icon = IconIDs.X_HOVERING_ICON;
+			repaint();
+		}
+		
+		private void exited(MouseEvent e)
+		{
+			icon = IconIDs.X_ICON;
+			repaint();
 		}
 		
 		public void setSize(Dimension d)
@@ -149,9 +182,12 @@ class TabButton extends JPanel
 		public void paint(Graphics g)
 		{
 			super.paint(g);
-			g.setColor(Color.RED);
-			g.drawLine(0, 0, getWidth(), getHeight());
-			g.drawLine(0, getHeight(), getWidth(), 0);
+			g.setColor(getButtonBackgroundColor());
+			g.fillRect(0, 0, getWidth(), getHeight());
+			if(g.getColor() == ResourceManager.getForegroundColor() || g.getColor() == ResourceManager.getHighlightColor())
+			{
+				g.drawImage(ResourceManager.getIcon(icon), 0, 0, getWidth(), getHeight(), this);
+			}
 		}
 	}
 }

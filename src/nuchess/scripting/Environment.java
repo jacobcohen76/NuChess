@@ -7,7 +7,7 @@ public class Environment
 {
 	public HashMap<String, Integer> variableMap;
 	public ArrayList<String> memory;
-		
+	
 	public void declare(String name)
 	{
 		if(variableMap.containsKey(name))
@@ -32,6 +32,4 @@ public class Environment
 			throw new Error(name + " cannot be resolved to a variable");
 		}
 	}
-	
-	
 }

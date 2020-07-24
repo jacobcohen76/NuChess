@@ -36,6 +36,8 @@ class ActionPanel
 		prevButton = new JButton();
 		nextButton = new JButton();
 		headButton = new JButton();
+		
+		panel.setOpaque(false);
 		prevButton.setEnabled(false);
 		tailButton.setEnabled(false);
 		nextButton.setEnabled(false);

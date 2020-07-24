@@ -7,9 +7,9 @@ import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 
 import nuchess.engine.Piece;
-import nuchess.view.graphics.ChessboardGraphics;
 import nuchess.view.graphics.LayeredGraphics;
 import nuchess.view.graphics.LayeredGraphicsPanel;
+import nuchess.view.graphics.ResourceManager;
 import nuchess.view.graphics.TextureIDs;
 
 class PieceSelectorPanel
@@ -25,7 +25,7 @@ class PieceSelectorPanel
 	
 	public PieceSelectorPanel(int selected)
 	{
-		lg = new LayeredGraphics(ChessboardGraphics.getSquareSize() * 2, ChessboardGraphics.getSquareSize() * 6);
+		lg = new LayeredGraphics(ResourceManager.getSquareSize() * 2, ResourceManager.getSquareSize() * 6);
 		lgp = new LayeredGraphicsPanel(lg);
 		this.selected = selected;
 		parent = null;
@@ -42,7 +42,7 @@ class PieceSelectorPanel
 	
 	private int getIndex(MouseEvent e)
 	{
-		return (e.getX() / ChessboardGraphics.getSquareSize()) + 2 * (e.getY() / ChessboardGraphics.getSquareSize()) + 2;
+		return (e.getX() / ResourceManager.getSquareSize()) + 2 * (e.getY() / ResourceManager.getSquareSize()) + 2;
 	}
 	
 	private void pressed(MouseEvent e)
@@ -72,12 +72,12 @@ class PieceSelectorPanel
 	
 	private int getX(int selection)
 	{
-		return (selection & 1) * ChessboardGraphics.getSquareSize();
+		return (selection & 1) * ResourceManager.getSquareSize();
 	}
 	
 	private int getY(int selection)
 	{
-		return (selection / 2) * ChessboardGraphics.getSquareSize() - ChessboardGraphics.getSquareSize();
+		return (selection / 2) * ResourceManager.getSquareSize() - ResourceManager.getSquareSize();
 	}
 	
 	public void initGraphics()
@@ -91,18 +91,18 @@ class PieceSelectorPanel
 		Graphics2D g = lg.getGraphics(ICON_LAYER);
 		for(int piece = Piece.WHITE_PAWN; piece <= Piece.BLACK_KING; piece++)
 		{
-			g.drawImage(ChessboardGraphics.getTexture(TextureIDs.pieceID(piece)), getX(piece), getY(piece), ChessboardGraphics.getSquareSize(), ChessboardGraphics.getSquareSize(), null);
+			g.drawImage(ResourceManager.getTexture(piece), getX(piece), getY(piece), ResourceManager.getSquareSize(), ResourceManager.getSquareSize(), null);
 		}
 	}
 	
 	private void paintSelection(int selection)
 	{
-		lg.getGraphics(SELECTION_LAYER).drawImage(ChessboardGraphics.getTexture(TextureIDs.BORDER), getX(selection), getY(selection), ChessboardGraphics.getSquareSize(), ChessboardGraphics.getSquareSize(), null);
+		lg.getGraphics(SELECTION_LAYER).drawImage(ResourceManager.getTexture(TextureIDs.BORDER), getX(selection), getY(selection), ResourceManager.getSquareSize(), ResourceManager.getSquareSize(), null);
 	}
 	
 	private void clearSelection(int selection)
 	{
-		lg.clear(SELECTION_LAYER, getX(selection), getY(selection), ChessboardGraphics.getSquareSize(), ChessboardGraphics.getSquareSize());
+		lg.clear(SELECTION_LAYER, getX(selection), getY(selection), ResourceManager.getSquareSize(), ResourceManager.getSquareSize());
 	}
 	
 	public void repaint()

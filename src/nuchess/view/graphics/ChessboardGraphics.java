@@ -5,11 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import javax.imageio.ImageIO;
 
@@ -22,7 +18,6 @@ public class ChessboardGraphics
 {
 	private static final long DARK_SQUARE_BB 			= 0xAA55AA55AA55AA55L;
 	private static final long LIGHT_SQUARE_BB 			= 0x55AA55AA55AA55AAL;
-	private static ResourceManager RESOURCE_MANAGER		= null;
 	
 	public static final int BACKGROUND_LAYER			= 0;
 	public static final int MASK_LAYER					= 1;
@@ -33,69 +28,6 @@ public class ChessboardGraphics
 	public static final int RING_LAYER					= 6;
 	public static final int ARROW_LAYER					= 7;
 	public static final int NUM_LAYERS					= 8;
-	
-	public static ResourceManager getResourceManager()
-	{
-		return RESOURCE_MANAGER;
-	}
-	
-	public static void initResourceManager(File file)
-	{
-		try
-		{
-			loadResourceManager(file);
-		}
-		catch(Exception ex)
-		{
-			RESOURCE_MANAGER = new ResourceManager();
-		}
-	}
-	
-	public static void closeResourceManager(File file)
-	{
-		try
-		{
-			saveResourceManager(file);
-		}
-		catch(Exception ex)
-		{
-			
-		}
-	}
-	
-	private static void loadResourceManager(File f) throws IOException, ClassNotFoundException
-	{
-		FileInputStream fis = new FileInputStream(f);
-		ObjectInputStream ois = new ObjectInputStream(fis);
-		RESOURCE_MANAGER = (ResourceManager) ois.readObject();
-		RESOURCE_MANAGER.initObject();
-		ois.close();
-		fis.close();
-	}
-	
-	private static void saveResourceManager(File f) throws IOException
-	{
-		FileOutputStream fos = new FileOutputStream(f);
-		ObjectOutputStream oos = new ObjectOutputStream(fos);
-		oos.writeObject(RESOURCE_MANAGER);
-		oos.close();
-		fos.close();
-	}
-	
-	public static Image getTexture(int id)
-	{
-		return RESOURCE_MANAGER.getTexture(id);
-	}
-	
-	public static Image getUnscaledTexture(int id)
-	{
-		return RESOURCE_MANAGER.getUnscaledTexture(id);
-	}
-	
-	public static int getSquareSize()
-	{
-		return RESOURCE_MANAGER.getSquareSize();
-	}
 	
 	private LayeredGraphics lg;
 	private boolean flipped;
@@ -158,7 +90,7 @@ public class ChessboardGraphics
 	
 	public void clear(int square, int layer)
 	{
-		lg.clear(layer, getX(square), getY(square), getSquareSize(), getSquareSize());
+		lg.clear(layer, getX(square), getY(square), ResourceManager.getSquareSize(), ResourceManager.getSquareSize());
 	}
 	
 	public void clearAll()
@@ -182,7 +114,7 @@ public class ChessboardGraphics
 			}
 			else if(FENParser.isPiece(c))
 			{
-				paint(getTexture(TextureIDs.pieceID(c)), Square.makeSquare(rank, file), PIECE_LAYER);
+				paint(ResourceManager.getTexture(FENParser.pieceCode(c)), Square.makeSquare(rank, file), PIECE_LAYER);
 				file++;
 			}
 			else if(c == '/')
@@ -195,8 +127,8 @@ public class ChessboardGraphics
 	
 	public void paintBackground()
 	{
-		paint(getTexture(TextureIDs.DARK_SQUARE), DARK_SQUARE_BB, BACKGROUND_LAYER);
-		paint(getTexture(TextureIDs.LIGHT_SQUARE), LIGHT_SQUARE_BB, BACKGROUND_LAYER);
+		paint(ResourceManager.getTexture(TextureIDs.DARK_SQUARE), DARK_SQUARE_BB, BACKGROUND_LAYER);
+		paint(ResourceManager.getTexture(TextureIDs.LIGHT_SQUARE), LIGHT_SQUARE_BB, BACKGROUND_LAYER);
 	}
 		
 	public void paintMovedMask(CMove move)
@@ -210,17 +142,17 @@ public class ChessboardGraphics
 	
 	public void paintMovedMask(int square)
 	{
-		paint(getTexture(TextureIDs.MASK), square, MASK_LAYER);
+		paint(ResourceManager.getTexture(TextureIDs.MASK), square, MASK_LAYER);
 	}
 	
 	public void paintDots(long bitboard)
 	{
-		paint(getTexture(TextureIDs.DOT), bitboard, DOT_LAYER);
+		paint(ResourceManager.getTexture(TextureIDs.DOT), bitboard, DOT_LAYER);
 	}
 	
 	public void paintDot(int square)
 	{
-		paint(getTexture(TextureIDs.DOT), square, DOT_LAYER);
+		paint(ResourceManager.getTexture(TextureIDs.DOT), square, DOT_LAYER);
 	}
 	
 	public void paintCorners(long bitboard)
@@ -234,7 +166,7 @@ public class ChessboardGraphics
 	
 	public void paintCorners(int square)
 	{
-		paint(getTexture(TextureIDs.BORDER), square, CORNER_LAYER);
+		paint(ResourceManager.getTexture(TextureIDs.BORDER), square, CORNER_LAYER);
 	}
 	
 	public void paintCheckHighlight(long bitboard)
@@ -248,7 +180,7 @@ public class ChessboardGraphics
 	
 	public void paintCheckHighlight(int square)
 	{
-		paint(getTexture(TextureIDs.HIGHLIGHT), square, HIGHLIGHT_LAYER);
+		paint(ResourceManager.getTexture(TextureIDs.HIGHLIGHT), square, HIGHLIGHT_LAYER);
 	}
 	
 	private void paint(Image img, long bitboard, int layer)
@@ -262,7 +194,7 @@ public class ChessboardGraphics
 	
 	private void paint(Image img, int square, int layer)
 	{
-		lg.getGraphics(layer).drawImage(img, getX(square), getY(square), getSquareSize(), getSquareSize(), null);
+		lg.getGraphics(layer).drawImage(img, getX(square), getY(square), ResourceManager.getSquareSize(), ResourceManager.getSquareSize(), null);
 	}
 	
 	public Dimension getDimensions()
@@ -272,32 +204,32 @@ public class ChessboardGraphics
 	
 	public int getWidth()
 	{
-		return (getSquareSize() << 3);
+		return (ResourceManager.getSquareSize() << 3);
 	}
 	
 	public int getHeight()
 	{
-		return (getSquareSize() << 3);
+		return (ResourceManager.getSquareSize() << 3);
 	}
 	
 	public int getX(int square)
 	{
-		return (flipped ? (7 - Square.file(square)) : (Square.file(square))) * getSquareSize();
+		return (flipped ? (7 - Square.file(square)) : (Square.file(square))) * ResourceManager.getSquareSize();
 	}
 	
 	public int getY(int square)
 	{
-		return (flipped ? (Square.rank(square)) : (7 - Square.rank(square))) * getSquareSize();
+		return (flipped ? (Square.rank(square)) : (7 - Square.rank(square))) * ResourceManager.getSquareSize();
 	}
 	
 	public int getRank(int y)
 	{
-		return (flipped ? (y) : (getHeight() - y)) / getSquareSize();
+		return (flipped ? (y) : (getHeight() - y)) / ResourceManager.getSquareSize();
 	}
 	
 	public int getFile(int x)
 	{
-		return (flipped ? (getWidth() - x) : (x)) / getSquareSize();
+		return (flipped ? (getWidth() - x) : (x)) / ResourceManager.getSquareSize();
 	}
 	
 	public int getSquare(int x, int y)

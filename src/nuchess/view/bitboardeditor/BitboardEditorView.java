@@ -60,8 +60,8 @@ public class BitboardEditorView implements View
 		inputFieldMessageLabel = new JLabel();
 		baseSelector = new JComboBox<String>();
 		
+		panel.setOpaque(false);
 		bitboardInputField.setColumns(64);
-		
 		baseSelector.insertItemAt("Binary", BINARY);
 		baseSelector.insertItemAt("Octal", OCTAL);
 		baseSelector.insertItemAt("Decimal", DECIMAL);

@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import nuchess.view.graphics.ChessboardGraphics;
 import nuchess.view.graphics.LayeredGraphics;
 import nuchess.view.graphics.LayeredGraphicsPanel;
+import nuchess.view.graphics.ResourceManager;
 
 public class BitboardBoardView
 {
@@ -26,7 +27,7 @@ public class BitboardBoardView
 	
 	public BitboardBoardView(boolean flipped)
 	{
-		LayeredGraphics lg = new LayeredGraphics(ChessboardGraphics.getSquareSize() * 8, ChessboardGraphics.getSquareSize() * 8);
+		LayeredGraphics lg = new LayeredGraphics(ResourceManager.getSquareSize() * 8, ResourceManager.getSquareSize() * 8);
 		cbg = new ChessboardGraphics(flipped, lg);
 		lgp = new LayeredGraphicsPanel(lg);
 		displaying = 0L;

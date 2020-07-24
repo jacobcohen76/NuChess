@@ -10,7 +10,6 @@ public class HomeView implements View
 	
 	public HomeView()
 	{
-		panel = new JPanel();
 		initComponents();
 		putConstraints();
 		addComponents();
@@ -18,7 +17,8 @@ public class HomeView implements View
 	
 	private void initComponents()
 	{
-		
+		panel = new JPanel();
+		panel.setOpaque(false);
 	}
 	
 	private void putConstraints()
@@ -31,21 +31,25 @@ public class HomeView implements View
 		
 	}
 	
+	@Override
 	public void close()
 	{
 		
 	}
 	
+	@Override
 	public void saveGraphicsAs()
 	{
 		
 	}
 
+	@Override
 	public JPanel getPanel()
 	{
 		return panel;
 	}
 	
+	@Override
 	public String getTitle()
 	{
 		return "Home";
