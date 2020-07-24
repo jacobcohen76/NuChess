@@ -31,6 +31,7 @@ class PieceSelectorPanel
 		parent = null;
 		lg.addNewLayer();
 		lg.addNewLayer();
+		lgp.setOpaque(false);
 		resizePanel();
 		initListeners();
 	}

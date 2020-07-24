@@ -52,6 +52,7 @@ public class FENBoardEditorView implements View
 		putConstraints();
 		addComponents();
 		
+		panel.setOpaque(false);
 		pieceSelector.getPanel().setCursor(HAND_CURSOR);
 		boardView.getPanel().setCursor(HAND_CURSOR);
 		
