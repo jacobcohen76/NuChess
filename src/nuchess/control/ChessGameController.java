@@ -11,7 +11,7 @@ import nuchess.engine.CMove;
 import nuchess.engine.ChessEngine;
 import nuchess.engine.Piece;
 import nuchess.view.View;
-import nuchess.view.chessgameview.ChessGameView;
+import nuchess.view.chessgame.ChessGameView;
 
 public class ChessGameController implements Controller
 {

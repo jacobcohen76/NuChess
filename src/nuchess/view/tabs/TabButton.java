@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import nuchess.view.View;
+import nuchess.view.graphics.ColorIDs;
 import nuchess.view.graphics.IconIDs;
 import nuchess.view.graphics.ResourceManager;
 
@@ -22,11 +23,13 @@ class TabButton extends JPanel
 	private JLabel titleLabel;
 	protected TabbedView parent;
 	protected View view;
+	protected int color;
 	
 	public TabButton(View view, TabbedView parent)
 	{
 		this.parent = parent;
 		this.view = view;
+		setBackground(ColorIDs.TAB);
 		
 		initComponents();
 		putConstraints();
@@ -82,6 +85,7 @@ class TabButton extends JPanel
 	{
 		if(parent.displaying != this)
 		{
+			setBackground(ColorIDs.SELECTED_TAB);
 			parent.requestDisplay(this);
 		}
 	}
@@ -95,7 +99,7 @@ class TabButton extends JPanel
 	{
 		if(parent.displaying != this)
 		{
-			setBackground(ResourceManager.getHighlightColor());
+			setBackground(ColorIDs.HOVERING_TAB);
 		}
 	}
 	
@@ -103,7 +107,7 @@ class TabButton extends JPanel
 	{
 		if(parent.displaying != this && !contains(e.getPoint()))
 		{
-			setBackground(ResourceManager.getBackgroundColor());
+			setBackground(ColorIDs.TAB);
 		}
 	}
 	
@@ -123,9 +127,10 @@ class TabButton extends JPanel
 		parent.requestClose(this);
 	}
 	
-	private Color getButtonBackgroundColor()
+	public void setBackground(int id)
 	{
-		return getBackground();
+		color = id;
+		setBackground(ResourceManager.getColor(color));
 	}
 	
 	private class CloseButton extends JPanel
@@ -137,6 +142,7 @@ class TabButton extends JPanel
 		public CloseButton(int width, int height)
 		{
 			icon = IconIDs.X_ICON;
+			color = ColorIDs.TAB;
 			setSize(new Dimension(width, height));
 			initListeners();
 		}
@@ -182,9 +188,9 @@ class TabButton extends JPanel
 		public void paint(Graphics g)
 		{
 			super.paint(g);
-			g.setColor(getButtonBackgroundColor());
+			g.setColor(ResourceManager.getColor(color));
 			g.fillRect(0, 0, getWidth(), getHeight());
-			if(g.getColor() == ResourceManager.getForegroundColor() || g.getColor() == ResourceManager.getHighlightColor())
+			if(color == ColorIDs.SELECTED_TAB || color == ColorIDs.HOVERING_TAB)
 			{
 				g.drawImage(ResourceManager.getIcon(icon), 0, 0, getWidth(), getHeight(), this);
 			}

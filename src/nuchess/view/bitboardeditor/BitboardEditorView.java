@@ -79,18 +79,11 @@ public class BitboardEditorView implements View
 				{
 					inputBitboard(bitboardInputField.getText(), baseSelector.getSelectedIndex());
 				}
-				else if(event.getKeyCode() == KeyEvent.VK_SHIFT)
-				{
-					bbbv.shiftheld = true;
-				}
 			}
 
 			public void keyReleased(KeyEvent event)
 			{
-				if(event.getKeyCode() == KeyEvent.VK_SHIFT)
-				{
-					bbbv.shiftheld = false;
-				}
+				
 			}
 			
 			public void keyTyped(KeyEvent event)	{}
@@ -102,26 +95,6 @@ public class BitboardEditorView implements View
 			{
 				setInputBitboard(bbbv.getDisplaying());
 			}
-		});
-		baseSelector.addKeyListener(new KeyListener()
-		{
-			public void keyPressed(KeyEvent event)
-			{
-				if(event.getKeyCode() == KeyEvent.VK_SHIFT)
-				{
-					bbbv.shiftheld = true;
-				}
-			}
-			
-			public void keyReleased(KeyEvent event)
-			{
-				if(event.getKeyCode() == KeyEvent.VK_SHIFT)
-				{
-					bbbv.shiftheld = false;
-				}
-			}
-			
-			public void keyTyped(KeyEvent event)	{}
 		});
 	}
 	

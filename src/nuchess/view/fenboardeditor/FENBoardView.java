@@ -70,7 +70,7 @@ class FENBoardView
 	
 	private void dragged(MouseEvent e)
 	{
-		if(lgp.contains(e.getPoint()))
+		if(lgp.contains(e.getPoint()) && ((e.getModifiersEx() >> 6) & 1) == 1)
 		{
 			parent.dragged(cbg.getSquare(e.getX(), e.getY()));
 		}

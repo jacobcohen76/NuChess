@@ -1,4 +1,4 @@
-package nuchess.view.homeview;
+package nuchess.view.home;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;

@@ -23,7 +23,6 @@ public class BitboardBoardView
 	private int button;
 	
 	protected BitboardEditorView parent;
-	protected boolean shiftheld;
 	
 	public BitboardBoardView(boolean flipped)
 	{
@@ -33,7 +32,6 @@ public class BitboardBoardView
 		displaying = 0L;
 		
 		parent = null;
-		shiftheld = false;
 		
 		initGraphics();
 		initListeners();
@@ -76,7 +74,7 @@ public class BitboardBoardView
 		{
 			public void mouseDragged(MouseEvent e)
 			{
-				if(shiftheld && lgp.contains(e.getPoint()))
+				if(((e.getModifiersEx() >> 6) & 1) == 1 && lgp.contains(e.getPoint()))
 				{
 					pressed(e);
 				}

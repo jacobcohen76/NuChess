@@ -28,8 +28,6 @@ public class FENBoardEditorView implements View
 	private long draggedBB, occ;
 	private int piece, lockedButton;
 	
-	protected boolean shiftHeld;
-	
 	public FENBoardEditorController controller;
 	
 	public FENBoardEditorView(int piece, boolean flipped)
@@ -44,7 +42,6 @@ public class FENBoardEditorView implements View
 		
 		lockedButton = NULL_BUTTON;
 		draggedBB = occ = 0L;
-		shiftHeld = false;
 		controller = null;
 		
 		linkObjects();
@@ -57,8 +54,6 @@ public class FENBoardEditorView implements View
 		boardView.getPanel().setCursor(HAND_CURSOR);
 		
 		pieceSelector.initGraphics();
-		
-		shiftHeld = false;
 	}
 	
 	public FENBoardEditorView(boolean flipped)
@@ -94,16 +89,13 @@ public class FENBoardEditorView implements View
 	
 	protected void dragged(int square)
 	{
-		if(shiftHeld)
+		if(((draggedBB >> square) & 1) == 0)
 		{
-			if(((draggedBB >> square) & 1) == 0)
-			{
-				draggedBB |= (1L << square);
-				if(lockedButton == MouseEvent.BUTTON1 && ((occ >> square) & 1) == 0)
-					controller.put(piece, square);
-				else if(lockedButton == MouseEvent.BUTTON3 && ((occ >> square) & 1) == 1)
-					controller.capture(square);
-			}
+			draggedBB |= (1L << square);
+			if(lockedButton == MouseEvent.BUTTON1 && ((occ >> square) & 1) == 0)
+				controller.put(piece, square);
+			else if(lockedButton == MouseEvent.BUTTON3 && ((occ >> square) & 1) == 1)
+				controller.capture(square);
 		}
 		else
 		{
@@ -118,31 +110,7 @@ public class FENBoardEditorView implements View
 	}
 	
 	private void initListeners()
-	{
-		panel.addKeyListener(new KeyListener()
-		{
-			public void keyPressed(KeyEvent e)
-			{
-				if(e.getKeyCode() == KeyEvent.VK_SHIFT)
-				{
-					shiftHeld = true;
-				}
-			}
-			
-			public void keyReleased(KeyEvent e)
-			{
-				if(e.getKeyCode() == KeyEvent.VK_SHIFT)
-				{
-					shiftHeld = false;
-				}
-			}
-			
-			public void keyTyped(KeyEvent e)
-			{
-				
-			}
-		});
-		
+	{		
 		FENtextField.addKeyListener(new KeyListener()
 		{
 			public void keyPressed(KeyEvent e)
@@ -151,18 +119,11 @@ public class FENBoardEditorView implements View
 				{
 					controller.setFEN(FENtextField.getText());
 				}
-				else if(e.getKeyCode() == KeyEvent.VK_SHIFT)
-				{
-					shiftHeld = true;
-				}
 			}
 			
 			public void keyReleased(KeyEvent e)
 			{
-				if(e.getKeyCode() == KeyEvent.VK_SHIFT)
-				{
-					shiftHeld = false;
-				}
+				
 			}
 			
 			public void keyTyped(KeyEvent e)

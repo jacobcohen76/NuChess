@@ -1,4 +1,4 @@
-package nuchess.view.chessgameview;
+package nuchess.view.chessgame;
 
 import nuchess.engine.CMove;
 

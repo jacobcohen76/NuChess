@@ -16,14 +16,10 @@ public class ResourceManager implements Serializable
 {
 	private static final long serialVersionUID = 4974654776275600262L;
 	
-	private static final Color DEFAULT_FOREGROUND = new Color(57, 57, 57);
-	private static final Color DEFAULT_BACKGROUND = new Color(34, 34, 34);
-	private static final Color DEFAULT_HIGHLIGHT = new Color(42, 42, 42);
-	
 	private static final int DEFAULT_SQUARE_SIZE = 100;
 	private static final int DEFAULT_HINTS = Image.SCALE_SMOOTH;
 	
-	public static final File[] DEFAULT_TEXTURE_FILES = new File[]
+	private static final File[] DEFAULT_TEXTURE_FILES = new File[]
 	{
 		new File("resources\\assets\\textures\\null.png"),
 		new File("resources\\assets\\textures\\marks\\dot.png"),
@@ -46,10 +42,21 @@ public class ResourceManager implements Serializable
 		new File("resources\\assets\\textures\\squares\\anti-diagonal.png"),
 	};
 	
-	public static final File[] DEFAULT_ICON_FILES = new File[]
+	private static final File[] DEFAULT_ICON_FILES = new File[]
 	{
 		new File("resources\\assets\\icons\\x.png"),
 		new File("resources\\assets\\icons\\x-hovering.png"),
+	};
+	
+	private static final Color[] DEFAULT_COLORS = new Color[]
+	{
+		new Color( 34,  34,  34),
+		new Color( 42,  42,  42),
+		new Color( 57,  57,  57),
+		new Color(255, 255, 255),
+		new Color( 53,  24, 122),
+		new Color(255, 255, 255),
+		new Color(  0,   0,   0),
 	};
 	
 	private static ResourceManager MANAGER_OBJECT;
@@ -81,6 +88,8 @@ public class ResourceManager implements Serializable
 		}
 		catch(Exception ex)
 		{
+			ex.printStackTrace();
+			System.out.println("Error loading manager object from \"" + file + "\"");
 			MANAGER_OBJECT = new ResourceManager();
 		}
 	}
@@ -93,28 +102,13 @@ public class ResourceManager implements Serializable
 		}
 		catch(Exception ex)
 		{
-			
+			ex.printStackTrace();
 		}
 	}
 	
 	public static int getSquareSize()
 	{
 		return MANAGER_OBJECT.squareSize;
-	}
-	
-	public static Color getForegroundColor()
-	{
-		return MANAGER_OBJECT.foreground;
-	}
-	
-	public static Color getBackgroundColor()
-	{
-		return MANAGER_OBJECT.background;
-	}
-	
-	public static Color getHighlightColor()
-	{
-		return MANAGER_OBJECT.highlight;
 	}
 	
 	public static Image[] getScaledTextures()
@@ -127,14 +121,24 @@ public class ResourceManager implements Serializable
 		return MANAGER_OBJECT.scaledTextures[id];
 	}
 	
+	public static Image getUnscaledTexture(int id)
+	{
+		return MANAGER_OBJECT.unscaledTextures[id];
+	}
+	
 	public static Image getIcon(int id)
 	{
 		return MANAGER_OBJECT.icons[id];
 	}
 	
-	public static Image getUnscaledTexture(int id)
+	public static Color getColor(int id)
 	{
-		return MANAGER_OBJECT.unscaledTextures[id];
+		return MANAGER_OBJECT.colors[id];
+	}
+	
+	public static File getTextureFile(int id)
+	{
+		return MANAGER_OBJECT.textureFiles[id];
 	}
 	
 	public static void loadTextureFile(int id, File textureFile)
@@ -149,16 +153,14 @@ public class ResourceManager implements Serializable
 	
 	transient private Image[] unscaledTextures, scaledTextures, icons;
 	private File[] textureFiles, iconFiles;
-	private Color foreground, background, highlight;
+	private Color[] colors;
 	private int squareSize, hints;
 	
-	private ResourceManager(File[] textureFiles, File[] iconFiles, Color foreground, Color background, Color highlight, int squareSize, int hints)
+	private ResourceManager(File[] textureFiles, File[] iconFiles, Color[] colors, int squareSize, int hints)
 	{
 		this.textureFiles = textureFiles;
 		this.iconFiles = iconFiles;
-		this.foreground = foreground;
-		this.background = background;
-		this.highlight = highlight;
+		this.colors = colors;
 		this.squareSize = squareSize;
 		this.hints = hints;
 		initObject();
@@ -166,7 +168,7 @@ public class ResourceManager implements Serializable
 	
 	private ResourceManager()
 	{
-		this(DEFAULT_TEXTURE_FILES, DEFAULT_ICON_FILES, DEFAULT_FOREGROUND, DEFAULT_BACKGROUND, DEFAULT_HIGHLIGHT, DEFAULT_SQUARE_SIZE, DEFAULT_HINTS);
+		this(DEFAULT_TEXTURE_FILES, DEFAULT_ICON_FILES, DEFAULT_COLORS, DEFAULT_SQUARE_SIZE, DEFAULT_HINTS);
 	}
 	
 	private void initObject()

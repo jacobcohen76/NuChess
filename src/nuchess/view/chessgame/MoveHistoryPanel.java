@@ -1,4 +1,4 @@
-package nuchess.view.chessgameview;
+package nuchess.view.chessgame;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;

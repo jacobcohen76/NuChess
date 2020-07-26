@@ -5,33 +5,34 @@ import java.awt.event.WindowListener;
 import java.io.File;
 
 import nuchess.control.MainController;
+import nuchess.engine.Piece;
 import nuchess.view.ViewFrame;
 import nuchess.view.graphics.ResourceManager;
-import nuchess.view.homeview.HomeView;
-import nuchess.view.homeview.MenuView;
+import nuchess.view.home.HomeView;
+import nuchess.view.home.MenuView;
+import nuchess.view.settings.SettingPieceSelection;
+import nuchess.view.settings.SettingsView;
 import nuchess.view.tabs.TabbedView;
 
 public class Driver
 {
 	public static final String OS = System.getProperty("os.name");
 	
-	private static File saveDirectory = new File("/home/jacob/Desktop");
-	
-	public static File getCurrentSaveDirectory()
-	{
-		return saveDirectory;
-	}
-	
-	public static void setCurrentSaveDirectory(File file)
-	{
-		saveDirectory = file;
-	}
-	
 	public static void main(String args[])
 	{
 		bootup();
 		ViewFrame view = getNewViewFrame();
-		view.display(constructNewMainController());
+//		view.display(constructNewMainController());
+		
+		SettingsView settingsView = new SettingsView(500, 500, 200, 30, 3, 2);
+		settingsView.addSetting("Pawn", new SettingPieceSelection(Piece.PAWN));
+		settingsView.addSetting("Knight", new SettingPieceSelection(Piece.KNIGHT));
+		settingsView.addSetting("Bishop", new SettingPieceSelection(Piece.BISHOP));
+		settingsView.addSetting("Rook", new SettingPieceSelection(Piece.ROOK));
+		settingsView.addSetting("Queen", new SettingPieceSelection(Piece.QUEEN));
+		settingsView.addSetting("King", new SettingPieceSelection(Piece.KING));
+		view.display(settingsView);
+		
 		view.setVisible(true);
 	}
 	

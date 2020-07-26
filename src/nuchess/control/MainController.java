@@ -13,10 +13,10 @@ import nuchess.engine.CBoard;
 import nuchess.engine.ChessEngine;
 import nuchess.view.View;
 import nuchess.view.bitboardeditor.BitboardEditorView;
-import nuchess.view.chessgameview.ChessGameView;
+import nuchess.view.chessgame.ChessGameView;
 import nuchess.view.fenboardeditor.FENBoardEditorView;
-import nuchess.view.homeview.HomeView;
-import nuchess.view.homeview.MenuView;
+import nuchess.view.home.HomeView;
+import nuchess.view.home.MenuView;
 import nuchess.view.tabs.TabbedView;
 
 public class MainController implements Controller

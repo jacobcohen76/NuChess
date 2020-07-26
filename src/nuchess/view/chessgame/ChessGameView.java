@@ -1,4 +1,4 @@
-package nuchess.view.chessgameview;
+package nuchess.view.chessgame;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
