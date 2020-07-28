@@ -141,7 +141,7 @@ public class TabbedView implements View
 		if(prev != null)
 		{
 			removeContent(prev.view);
-			prev.setBackground(ResourceManager.getColor(ColorIDs.TAB));
+			prev.setBackground(ColorIDs.TAB);
 			prev.repaint();
 		}
 		tab.setBackground(ColorIDs.SELECTED_TAB);

@@ -122,9 +122,16 @@ public class MainController implements Controller
 	
 	private void initMainMenuBar()
 	{
-		menuView.add(constructFileMenu());
-		menuView.add(constructToolMenu());
-		menuView.add(constructHelpMenu());
+		menuView.addLeft(constructFileMenu());
+		menuView.addLeft(constructToolMenu());
+		menuView.addLeft(constructHelpMenu());
+		
+		JMenu menu = new JMenu("yo");
+		for(int i = 0; i < 10; i++)
+		{
+			menu.add(new JMenuItem("" + i));
+		}
+		menuView.addRight(menu);
 	}
 	
 	private JMenuItem constructFileMenu()

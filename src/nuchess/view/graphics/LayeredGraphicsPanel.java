@@ -38,7 +38,9 @@ public class LayeredGraphicsPanel extends JPanel
 	public void setMouseListener(MouseListener ml)
 	{
 		if(mouseListener != null)
+		{
 			removeMouseListener(mouseListener);
+		}
 		addMouseListener(ml);
 		mouseListener = ml;
 	}
@@ -46,7 +48,9 @@ public class LayeredGraphicsPanel extends JPanel
 	public void setMouseMotionListener(MouseMotionListener mml)
 	{
 		if(mouseMotionListener != null)
+		{
 			removeMouseMotionListener(mouseMotionListener);
+		}
 		addMouseMotionListener(mml);
 		mouseMotionListener = mml;
 	}

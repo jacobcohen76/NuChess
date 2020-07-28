@@ -12,8 +12,8 @@ public class TextureIDs
 	public static final int BLACK_BISHOP		=  7;
 	public static final int WHITE_ROOK			=  8;
 	public static final int BLACK_ROOK			=  9;
-	public static final int BLACK_QUEEN			= 10;
-	public static final int WHITE_QUEEN			= 11;
+	public static final int WHITE_QUEEN			= 10;
+	public static final int BLACK_QUEEN			= 11;
 	public static final int WHITE_KING			= 12;
 	public static final int BLACK_KING			= 13;
 	public static final int BORDER				= 14;

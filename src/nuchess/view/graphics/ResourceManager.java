@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 import javax.imageio.ImageIO;
 
-public class ResourceManager implements Serializable
+public final class ResourceManager implements Serializable
 {
 	private static final long serialVersionUID = 4974654776275600262L;
 	
@@ -21,31 +21,31 @@ public class ResourceManager implements Serializable
 	
 	private static final File[] DEFAULT_TEXTURE_FILES = new File[]
 	{
-		new File("resources\\assets\\textures\\null.png"),
-		new File("resources\\assets\\textures\\marks\\dot.png"),
-		new File("resources\\assets\\textures\\pieces\\white\\white-pawn.png"),
-		new File("resources\\assets\\textures\\pieces\\black\\black-pawn.png"),
-		new File("resources\\assets\\textures\\pieces\\white\\white-knight.png"),
-		new File("resources\\assets\\textures\\pieces\\black\\black-knight.png"),
-		new File("resources\\assets\\textures\\pieces\\white\\white-bishop.png"),
-		new File("resources\\assets\\textures\\pieces\\black\\black-bishop.png"),
-		new File("resources\\assets\\textures\\pieces\\white\\white-rook.png"),
-		new File("resources\\assets\\textures\\pieces\\black\\black-rook.png"),
-		new File("resources\\assets\\textures\\pieces\\white\\white-queen.png"),
-		new File("resources\\assets\\textures\\pieces\\black\\black-queen.png"),
-		new File("resources\\assets\\textures\\pieces\\white\\white-king.png"),
-		new File("resources\\assets\\textures\\pieces\\black\\black-king.png"),
-		new File("resources\\assets\\textures\\marks\\corners.png"),
-		new File("resources\\assets\\textures\\marks\\check-highlight.png"),
-		new File("resources\\assets\\textures\\marks\\last-move-mask.png"),
-		new File("resources\\assets\\textures\\squares\\diagonal.png"),
-		new File("resources\\assets\\textures\\squares\\anti-diagonal.png"),
+		new File("resources\\assets\\textures\\null.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\marks\\dot.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\pieces\\white\\white-pawn.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\pieces\\black\\black-pawn.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\pieces\\white\\white-knight.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\pieces\\black\\black-knight.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\pieces\\white\\white-bishop.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\pieces\\black\\black-bishop.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\pieces\\white\\white-rook.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\pieces\\black\\black-rook.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\pieces\\white\\white-queen.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\pieces\\black\\black-queen.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\pieces\\white\\white-king.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\pieces\\black\\black-king.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\marks\\corners.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\marks\\check-highlight.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\marks\\last-move-mask.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\squares\\diagonal.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\textures\\squares\\anti-diagonal.png".replace('\\', File.separatorChar)),
 	};
 	
 	private static final File[] DEFAULT_ICON_FILES = new File[]
 	{
-		new File("resources\\assets\\icons\\x.png"),
-		new File("resources\\assets\\icons\\x-hovering.png"),
+		new File("resources\\assets\\icons\\x.png".replace('\\', File.separatorChar)),
+		new File("resources\\assets\\icons\\x-hovering.png".replace('\\', File.separatorChar)),
 	};
 	
 	private static final Color[] DEFAULT_COLORS = new Color[]
@@ -61,7 +61,7 @@ public class ResourceManager implements Serializable
 	
 	private static ResourceManager MANAGER_OBJECT;
 	
-	private static void loadManagerObject(File f) throws IOException, ClassNotFoundException
+	private static final void loadManagerObject(File f) throws IOException, ClassNotFoundException
 	{
 		FileInputStream fis = new FileInputStream(f);
 		ObjectInputStream ois = new ObjectInputStream(fis);
@@ -71,7 +71,7 @@ public class ResourceManager implements Serializable
 		fis.close();
 	}
 	
-	private static void saveManagerObject(File f) throws IOException
+	private static final void saveManagerObject(File f) throws IOException
 	{
 		FileOutputStream fos = new FileOutputStream(f);
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -80,7 +80,7 @@ public class ResourceManager implements Serializable
 		fos.close();
 	}
 	
-	public static void initManagerObject(File file)
+	public static final void initManagerObject(File file)
 	{
 		try
 		{
@@ -94,7 +94,7 @@ public class ResourceManager implements Serializable
 		}
 	}
 	
-	public static void closeManagerObject(File file)
+	public static final void closeManagerObject(File file)
 	{
 		try
 		{
@@ -106,49 +106,74 @@ public class ResourceManager implements Serializable
 		}
 	}
 	
-	public static int getSquareSize()
+	public static final int getSquareSize()
 	{
 		return MANAGER_OBJECT.squareSize;
 	}
 	
-	public static Image[] getScaledTextures()
+	public static final Image[] getScaledTextures()
 	{
 		return MANAGER_OBJECT.scaledTextures;
 	}
 	
-	public static Image getTexture(int id)
+	public static final Image getTexture(int id)
 	{
 		return MANAGER_OBJECT.scaledTextures[id];
 	}
 	
-	public static Image getUnscaledTexture(int id)
+	public static final Image getUnscaledTexture(int id)
 	{
 		return MANAGER_OBJECT.unscaledTextures[id];
 	}
 	
-	public static Image getIcon(int id)
+	public static final Image getIcon(int id)
 	{
 		return MANAGER_OBJECT.icons[id];
 	}
 	
-	public static Color getColor(int id)
+	public static final Color getColor(int id)
 	{
 		return MANAGER_OBJECT.colors[id];
 	}
 	
-	public static File getTextureFile(int id)
+	public static final File getTextureFile(int id)
 	{
 		return MANAGER_OBJECT.textureFiles[id];
 	}
 	
-	public static void loadTextureFile(int id, File textureFile)
+	public static final void loadTextureFile(int id, File textureFile)
 	{
 		MANAGER_OBJECT.loadTextureFile(id, textureFile, 0);
 	}
 	
-	public static void loadIconFile(int id, File iconFile)
+	public static final void loadIconFile(int id, File iconFile)
 	{
 		MANAGER_OBJECT.loadIconFile(id, iconFile, 0);
+	}
+	
+	public static final void setColor(int id, Color color)
+	{
+		MANAGER_OBJECT.colors[id] = color;
+	}
+	
+	public static final int getDefaultSquareSize()
+	{
+		return DEFAULT_SQUARE_SIZE;
+	}
+	
+	public static final File getDefaultTextureFile(int id)
+	{
+		return DEFAULT_TEXTURE_FILES[id];
+	}
+	
+	public static final File getDefaultIconFile(int id)
+	{
+		return DEFAULT_ICON_FILES[id];
+	}
+	
+	public static final Color getDefaultColor(int id)
+	{
+		return DEFAULT_COLORS[id];
 	}
 	
 	transient private Image[] unscaledTextures, scaledTextures, icons;
@@ -171,13 +196,13 @@ public class ResourceManager implements Serializable
 		this(DEFAULT_TEXTURE_FILES, DEFAULT_ICON_FILES, DEFAULT_COLORS, DEFAULT_SQUARE_SIZE, DEFAULT_HINTS);
 	}
 	
-	private void initObject()
+	private final void initObject()
 	{
 		initTextures();
 		initIcons();
 	}
 	
-	private void initTextures()
+	private final void initTextures()
 	{
 		unscaledTextures = new Image[textureFiles.length];
 		scaledTextures = new Image[textureFiles.length];
@@ -187,7 +212,7 @@ public class ResourceManager implements Serializable
 		}
 	}
 	
-	private void initIcons()
+	private final void initIcons()
 	{
 		icons = new Image[iconFiles.length];
 		for(int id = 0; id < iconFiles.length; id++)
@@ -196,7 +221,7 @@ public class ResourceManager implements Serializable
 		}
 	}
 	
-	private void loadTextureFile(int id, File textureFile, int nothing)
+	private final void loadTextureFile(int id, File textureFile, int nothing)
 	{
 		try
 		{
@@ -218,7 +243,7 @@ public class ResourceManager implements Serializable
 		scaledTextures[id] = unscaledTextures[id].getScaledInstance(squareSize, squareSize, hints);
 	}
 	
-	private void loadIconFile(int id, File iconFile, int nothing)
+	private final void loadIconFile(int id, File iconFile, int nothing)
 	{
 		try
 		{
@@ -239,7 +264,7 @@ public class ResourceManager implements Serializable
 		}
 	}
 	
-	private void loadTexture(int id)
+	private final void loadTexture(int id)
 	{
 		try
 		{
@@ -260,7 +285,7 @@ public class ResourceManager implements Serializable
 		scaledTextures[id] = unscaledTextures[id].getScaledInstance(squareSize, squareSize, hints);
 	}
 	
-	private void loadIcon(int id)
+	private final void loadIcon(int id)
 	{
 		try
 		{

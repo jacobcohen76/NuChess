@@ -15,6 +15,11 @@ import nuchess.view.graphics.ResourceManager;
 public class XButton extends JPanel
 {
 	private static final long serialVersionUID = -6927566984109380117L;
+	private static final ActionListener NULL_ACTION_LISTENER = new ActionListener()
+	{
+		@Override
+		public void actionPerformed(ActionEvent e) {}
+	};
 	
 	private int icon;
 	private boolean iconVisible;
@@ -25,7 +30,7 @@ public class XButton extends JPanel
 		initListeners();
 		icon = IconIDs.X_ICON;
 		iconVisible = true;
-		listener = null;
+		listener = NULL_ACTION_LISTENER;
 		setSize(new Dimension(10, 10));
 		setOpaque(false);
 	}
@@ -51,22 +56,19 @@ public class XButton extends JPanel
 		});
 	}
 	
-	public void setActionListener(ActionListener listener)
+	public void addActionListener(ActionListener listener)
 	{
 		this.listener = listener;
 	}
 	
 	private void pressed(MouseEvent e)
 	{
-		if(listener != null)
-		{
-			listener.actionPerformed(null);
-		}
+		
 	}
 	
 	private void released(MouseEvent e)
 	{
-		
+		listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "PRESSED", 0L, e.getModifiersEx()));
 	}
 	
 	private void entered(MouseEvent e)

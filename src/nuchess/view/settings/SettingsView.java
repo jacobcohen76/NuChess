@@ -1,6 +1,5 @@
 package nuchess.view.settings;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 
@@ -11,6 +10,7 @@ import javax.swing.Spring;
 import javax.swing.SpringLayout;
 import javax.swing.border.BevelBorder;
 
+import nuchess.control.SettingsController;
 import nuchess.view.View;
 
 public class SettingsView implements View
@@ -18,9 +18,15 @@ public class SettingsView implements View
 	private JPanel panel, container, sizeSettingSpring, gapSettingSpring;
 	private SpringLayout layout;
 	private ArrayList<JPanel> settingList;
+	private Setting hovering;
+	private String title;
 	
-	public SettingsView(int width, int height, int horizontalSize, int verticalSize, int borderGap, int verticalGap)
+	public SettingsController controller;
+	
+	public SettingsView(String title, int width, int height, int horizontalSize, int verticalSize, int borderGap, int verticalGap)
 	{
+		this.title = title;
+		controller = null;
 		initComponents(width, height, horizontalSize, verticalSize, borderGap, verticalGap);
 		putConstraints();
 		initListeners();
@@ -38,7 +44,8 @@ public class SettingsView implements View
 		sizeSettingSpring.setPreferredSize(new Dimension(horizontalSize, verticalSize));
 		gapSettingSpring.setPreferredSize(new Dimension(borderGap, verticalGap));
 		panel.setPreferredSize(new Dimension(width, height));
-		container.setBackground(Color.BLUE);
+		panel.setOpaque(false);
+		container.setOpaque(false);
 	}
 	
 	private void putConstraints()
@@ -67,6 +74,8 @@ public class SettingsView implements View
 	
 	public void addSetting(String settingName, Setting setting)
 	{
+		setting.parent = this;
+		
 		JPanel settingPanel = getSettingPanel(settingName, setting);
 		if(settingList.isEmpty())
 		{
@@ -84,9 +93,7 @@ public class SettingsView implements View
 	}
 	
 	private JPanel getSettingPanel(String settingName, Setting setting)
-	{
-		setting.setBackground(Color.GREEN);
-		
+	{		
 		JPanel settingPanel = new JPanel();
 		JLabel settingTitle = new JLabel(settingName);
 		SpringLayout settingPanelLayout = new SpringLayout();
@@ -101,8 +108,14 @@ public class SettingsView implements View
 		settingPanelLayout.putConstraint(SpringLayout.VERTICAL_CENTER, setting, 0, SpringLayout.VERTICAL_CENTER, settingPanel);
 		settingPanelLayout.putConstraint(SpringLayout.EAST, settingTitle, 0, SpringLayout.WEST, setting);
 		settingPanel.setLayout(settingPanelLayout);
-		settingPanel.setBackground(Color.RED);
+		settingPanel.setOpaque(false);
 		return settingPanel;
+	}
+	
+	public void finalize()
+	{
+		JPanel last = settingList.get(settingList.size() - 1);
+		layout.putConstraint(SpringLayout.SOUTH, panel, Spring.width(gapSettingSpring), SpringLayout.SOUTH, last);
 	}
 	
 	@Override
@@ -116,7 +129,7 @@ public class SettingsView implements View
 	{
 		
 	}
-
+	
 	@Override
 	public JPanel getPanel()
 	{
@@ -126,6 +139,19 @@ public class SettingsView implements View
 	@Override
 	public String getTitle()
 	{
-		return "Settings View";
+		return title;
+	}
+	
+	protected void setHoveringSetting(Setting setting)
+	{
+		if(hovering != null)
+		{
+			hovering.unflagAsHovering();
+		}
+		if(setting != null)
+		{
+			setting.flagAsHovering();
+		}
+		hovering = setting;
 	}
 }
