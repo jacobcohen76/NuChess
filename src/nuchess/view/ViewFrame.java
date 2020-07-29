@@ -123,6 +123,11 @@ public class ViewFrame
 		componentListener = cl;
 	}
 	
+	public JFrame getFrame()
+	{
+		return frame;
+	}
+	
 	public void setWindowListener(WindowListener wl)
 	{
 		frame.removeWindowListener(windowListener);

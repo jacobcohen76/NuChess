@@ -12,6 +12,7 @@ import javax.swing.SpringLayout;
 
 import nuchess.control.FENBoardEditorController;
 import nuchess.engine.Piece;
+import nuchess.view.Tab;
 import nuchess.view.View;
 
 public class FENBoardEditorView implements View
@@ -25,6 +26,7 @@ public class FENBoardEditorView implements View
 	private SettingsView settingsView;
 	private PieceSelectorPanel pieceSelector;
 	private JTextField FENtextField;
+	private Tab tab;
 	private long draggedBB, occ;
 	private int piece, lockedButton;
 	
@@ -37,6 +39,8 @@ public class FENBoardEditorView implements View
 		settingsView = new SettingsView("En Passant Square", "To Move", "Fullmove Clock", "Halfmove Clock");
 		pieceSelector = new PieceSelectorPanel(piece);
 		FENtextField = new JTextField();
+		tab = new Tab(this);
+		tab.addCloseButton();
 		
 		this.piece = piece;
 		
@@ -208,5 +212,10 @@ public class FENBoardEditorView implements View
 	public String getTitle()
 	{
 		return "FEN Builder";
+	}
+	
+	public Tab getTab()
+	{
+		return tab;
 	}
 }

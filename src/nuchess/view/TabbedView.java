@@ -1,4 +1,4 @@
-package nuchess.view.tabs;
+package nuchess.view;
 
 import java.awt.FlowLayout;
 import java.util.ArrayList;
@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
-import nuchess.view.View;
 import nuchess.view.graphics.ColorIDs;
 import nuchess.view.graphics.ResourceManager;
 
@@ -14,16 +13,16 @@ public class TabbedView implements View
 {
 	private JPanel rootPanel, tabsPanel;
 	private SpringLayout layout;
-	private ArrayList<TabButton> tabButtons;
+	private ArrayList<View> views;
 	
-	protected TabButton displaying;
+	protected Tab displaying;
 	
 	public TabbedView()
 	{
 		rootPanel = new JPanel();
 		tabsPanel = new JPanel();
 		layout = new SpringLayout();
-		tabButtons = new ArrayList<TabButton>();
+		views = new ArrayList<View>();
 		
 		displaying = null;
 		
@@ -50,6 +49,11 @@ public class TabbedView implements View
 	public String getTitle()
 	{
 		return "Tabbed View";
+	}
+	
+	public Tab getTab()
+	{
+		return null;
 	}
 	
 	public View getDisplayingView()
@@ -81,72 +85,49 @@ public class TabbedView implements View
 		rootPanel.add(tabsPanel);
 	}
 	
-	private TabButton getNewHomeTabButton(View view)
+	public void openTab(View view)
 	{
-		TabButton button = new TabButton(view, this);
-		return button;
-	}
-	
-	private TabButton getNewTabButton(View view)
-	{
-		TabButton button = new TabButton(view, this);
-		button.addCloseButton();
-		return button;
-	}
-	
-	public void addHomeTab(View view)
-	{
-		TabButton tabButton = getNewHomeTabButton(view);
-		tabButtons.add(tabButton);
-		tabsPanel.add(tabButton);
+		view.getTab().parent = this;
+		
+		views.add(view);
+		tabsPanel.add(view.getTab());
 		tabsPanel.revalidate();
 	}
 	
-	public void addNewTab(View view)
+	public void closeTab(View view)
 	{
-		TabButton tabButton = getNewTabButton(view);
-		tabButtons.add(tabButton);
-		tabsPanel.add(tabButton);
-		tabsPanel.revalidate();
+		view.getTab().parent = null;
+		
+		int index = views.indexOf(view);
+		tabsPanel.remove(view.getTab());
+		requestDisplay(index + (index == views.size() - 1 ? -1 : +1));
+		views.remove(index);
+		view.close();
 	}
 	
-	public void removeTab(TabButton tabButton)
+	public void requestDisplay(int index)
 	{
-		int index = tabButtons.indexOf(tabButton);
-		tabsPanel.remove(tabButton);
-		requestDisplay(index + (index == tabButtons.size() - 1 ? -1 : +1));
-		tabButtons.remove(index);
-		tabButton.view.close();
-	}
-	
-	public void requestClose(TabButton tabButton)
-	{
-		removeTab(tabButton);
-	}
-	
-	public void requestDisplay(int tabIndex)
-	{
-		requestDisplay(tabButtons.get(tabIndex));
+		requestDisplay(views.get(index));
 	}
 	
 	public int getNumTabs()
 	{
-		return tabButtons.size();
+		return views.size();
 	}
 	
-	protected void requestDisplay(TabButton tab)
+	protected void requestDisplay(View view)
 	{
-		TabButton prev = displaying;
-		displaying = tab;
+		Tab prev = displaying;
+		displaying = view.getTab();
 		if(prev != null)
 		{
 			removeContent(prev.view);
 			prev.setBackground(ColorIDs.TAB);
 			prev.repaint();
 		}
-		tab.setBackground(ColorIDs.SELECTED_TAB);
-		tab.repaint();
-		displayContent(tab.view);
+		displaying.setBackground(ColorIDs.SELECTED_TAB);
+		displaying.repaint();
+		displayContent(view);
 	}
 	
 	private void displayContent(View view)

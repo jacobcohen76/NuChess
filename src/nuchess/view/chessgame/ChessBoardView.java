@@ -102,12 +102,15 @@ class ChessBoardView
 	
 	private void pressed(MouseEvent e)
 	{
-		clear(dots, corners, selector.getFrom());
-		selector.select(cbg.getSquare(e.getX(), e.getY()));
-		dots = selector.getDestinations() & ~occ;
-		corners = (selector.getDestinations() & occ);
-		paint(dots, corners, selector.getFrom());
-		lgp.repaint();
+		if(e.getButton() == MouseEvent.BUTTON1)
+		{
+			clear(dots, corners, selector.getFrom());
+			selector.select(cbg.getSquare(e.getX(), e.getY()));
+			dots = selector.getDestinations() & ~occ;
+			corners = (selector.getDestinations() & occ);
+			paint(dots, corners, selector.getFrom());
+			lgp.repaint();
+		}
 	}
 	
 	private void moved(MouseEvent e)
@@ -119,10 +122,7 @@ class ChessBoardView
 	
 	private void updateCursor(int square)
 	{
-		if(selector.isClickable(square))
-			lgp.setCursor(HAND_CURSOR);
-		else
-			lgp.setCursor(DEFAULT_CURSOR);
+		lgp.setCursor(selector.isClickable(square) ? HAND_CURSOR : DEFAULT_CURSOR);
 		cursorSquare = square;
 	}
 	

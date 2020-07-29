@@ -15,6 +15,7 @@ import javax.swing.SpringLayout;
 
 import nuchess.control.BitboardEditorController;
 import nuchess.engine.Bits;
+import nuchess.view.Tab;
 import nuchess.view.View;
 
 public class BitboardEditorView implements View
@@ -27,6 +28,7 @@ public class BitboardEditorView implements View
 	
 	private JPanel panel;
 	private BitboardBoardView bbbv;
+	private Tab tab;
 	
 	private JTextField bitboardInputField;
 	private JLabel inputFieldMessageLabel;
@@ -55,6 +57,8 @@ public class BitboardEditorView implements View
 	{
 		panel = new JPanel();
 		bbbv = new BitboardBoardView(flipped);
+		tab = new Tab(this);
+		tab.addCloseButton();
 		
 		bitboardInputField = new JTextField();
 		inputFieldMessageLabel = new JLabel();
@@ -232,5 +236,10 @@ public class BitboardEditorView implements View
 	public String getTitle()
 	{
 		return "Bitboard Viewer";
+	}
+	
+	public Tab getTab()
+	{
+		return tab;
 	}
 }

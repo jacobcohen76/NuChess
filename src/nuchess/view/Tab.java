@@ -1,22 +1,20 @@
-package nuchess.view.tabs;
+package nuchess.view;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import nuchess.view.View;
 import nuchess.view.graphics.ColorIDs;
 import nuchess.view.graphics.IconIDs;
 import nuchess.view.graphics.ResourceManager;
 
-class TabButton extends JPanel
+public class Tab extends JPanel
 {
 	private static final long serialVersionUID = 2230075789276130331L;
 	
@@ -25,38 +23,44 @@ class TabButton extends JPanel
 	protected View view;
 	protected int color;
 	
-	public TabButton(View view, TabbedView parent)
+	public Tab(View view)
 	{
-		this.parent = parent;
+		this(view, null);
+	}
+	
+	public Tab(View view, Image image)
+	{
 		this.view = view;
 		setBackground(ColorIDs.TAB);
 		
-		initComponents();
+		initComponents(view.getTitle());
 		putConstraints();
 		addComponents();
 		initListeners();
+		
+		if(image != null)
+		{
+			titleLabel.setIcon(new ImageIcon(image));
+		}
 	}
 	
 	public void addCloseButton()
 	{
 		Image icon = ResourceManager.getIcon(IconIDs.X_ICON);
-		add(new CloseButton(icon.getWidth(null), icon.getHeight(null)));
+		CloseButton closeButton = new CloseButton(icon.getWidth(null), icon.getHeight(null));
+		add(closeButton);
 	}
 	
-	private void initComponents()
+	private void initComponents(String text)
 	{
 		titleLabel = new JLabel();
-		titleLabel.setText(view.getTitle());
-		titleLabel.setForeground(Color.WHITE);
+		titleLabel.setText(text);
+		titleLabel.setForeground(ResourceManager.getColor(ColorIDs.TAB_FONT));
 	}
 	
 	private void putConstraints()
 	{
-		FlowLayout layout = new FlowLayout();
-		layout.setHgap(5);
-		layout.setVgap(5);
-		layout.setAlignment(FlowLayout.LEFT);
-		setLayout(layout);
+		
 	}
 	
 	private void initListeners()
@@ -86,7 +90,7 @@ class TabButton extends JPanel
 		if(parent.displaying != this)
 		{
 			setBackground(ColorIDs.SELECTED_TAB);
-			parent.requestDisplay(this);
+			parent.requestDisplay(view);
 		}
 	}
 	
@@ -124,7 +128,7 @@ class TabButton extends JPanel
 	
 	private void requestClose()
 	{
-		parent.requestClose(this);
+		parent.closeTab(view);
 	}
 	
 	public void setBackground(int id)

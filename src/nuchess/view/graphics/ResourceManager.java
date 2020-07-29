@@ -19,33 +19,45 @@ public final class ResourceManager implements Serializable
 	private static final int DEFAULT_SQUARE_SIZE = 100;
 	private static final int DEFAULT_HINTS = Image.SCALE_SMOOTH;
 	
+	private static final File constructFile(String... elements)
+	{
+		String path = "";
+		int i = 0;
+		while(i < elements.length - 1)
+		{
+			path += elements[i++] + File.separatorChar;
+		}
+		return new File(path + (i > 0 ? elements[i] : ""));
+	}
+	
 	private static final File[] DEFAULT_TEXTURE_FILES = new File[]
 	{
-		new File("resources\\assets\\textures\\null.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\marks\\dot.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\pieces\\white\\white-pawn.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\pieces\\black\\black-pawn.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\pieces\\white\\white-knight.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\pieces\\black\\black-knight.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\pieces\\white\\white-bishop.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\pieces\\black\\black-bishop.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\pieces\\white\\white-rook.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\pieces\\black\\black-rook.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\pieces\\white\\white-queen.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\pieces\\black\\black-queen.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\pieces\\white\\white-king.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\pieces\\black\\black-king.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\marks\\corners.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\marks\\check-highlight.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\marks\\last-move-mask.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\squares\\diagonal.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\textures\\squares\\anti-diagonal.png".replace('\\', File.separatorChar)),
+		constructFile("resources", "assets", "textures", "null.png"),
+		constructFile("resources", "assets", "textures", "marks", "dot.png"),
+		constructFile("resources", "assets", "textures", "pieces", "white", "white-pawn.png"),
+		constructFile("resources", "assets", "textures", "pieces", "black", "black-pawn.png"),
+		constructFile("resources", "assets", "textures", "pieces", "white", "white-knight.png"),
+		constructFile("resources", "assets", "textures", "pieces", "black", "black-knight.png"),
+		constructFile("resources", "assets", "textures", "pieces", "white", "white-bishop.png"),
+		constructFile("resources", "assets", "textures", "pieces", "black", "black-bishop.png"),
+		constructFile("resources", "assets", "textures", "pieces", "white", "white-rook.png"),
+		constructFile("resources", "assets", "textures", "pieces", "black", "black-rook.png"),
+		constructFile("resources", "assets", "textures", "pieces", "white", "white-queen.png"),
+		constructFile("resources", "assets", "textures", "pieces", "black", "black-queen.png"),
+		constructFile("resources", "assets", "textures", "pieces", "white", "white-king.png"),
+		constructFile("resources", "assets", "textures", "pieces", "black", "black-king.png"),
+		constructFile("resources", "assets", "textures", "marks", "corners.png"),
+		constructFile("resources", "assets", "textures", "marks", "check-highlight.png"),
+		constructFile("resources", "assets", "textures", "marks", "last-move-mask.png"),
+		constructFile("resources", "assets", "textures", "squares", "diagonal.png"),
+		constructFile("resources", "assets", "textures", "squares", "anti-diagonal.png"),
 	};
 	
 	private static final File[] DEFAULT_ICON_FILES = new File[]
 	{
-		new File("resources\\assets\\icons\\x.png".replace('\\', File.separatorChar)),
-		new File("resources\\assets\\icons\\x-hovering.png".replace('\\', File.separatorChar)),
+		constructFile("resources", "assets", "icons", "x.png"),
+		constructFile("resources", "assets", "icons", "x-hovering.png"),
+		constructFile("resources", "assets", "icons", "home.png"),
 	};
 	
 	private static final Color[] DEFAULT_COLORS = new Color[]

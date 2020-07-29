@@ -9,6 +9,7 @@ import javax.swing.SpringLayout;
 
 import nuchess.control.ChessGameController;
 import nuchess.engine.CMove;
+import nuchess.view.Tab;
 import nuchess.view.View;
 
 public class ChessGameView implements View
@@ -18,11 +19,19 @@ public class ChessGameView implements View
 	private JPanel panel;
 	private ChessBoardView boardView;
 	private ActionPanel actionPanel;
+	private Tab tab;
+	
+	private String whitePlayerName, blackPlayerName;
 	
 	public ChessGameController controller;
 	
-	public ChessGameView(boolean flipped)
+	public ChessGameView(boolean flipped, String whitePlayerName, String blackPlayerName)
 	{
+		this.whitePlayerName = whitePlayerName;
+		this.blackPlayerName = blackPlayerName;
+		tab = new Tab(this);
+		tab.addCloseButton();
+		
 		initComponents(flipped);
 		putConstraints();
 		addComponents();
@@ -31,7 +40,7 @@ public class ChessGameView implements View
 	
 	public ChessGameView()
 	{
-		this(DEFAULT_FLIPPED);
+		this(DEFAULT_FLIPPED, "WHITE", "BLACK");
 	}
 	
 	private void initComponents(boolean flipped)
@@ -133,6 +142,11 @@ public class ChessGameView implements View
 	
 	public String getTitle()
 	{
-		return "Chess Game";
+		return "[Standard] " + whitePlayerName + " vs " + blackPlayerName;
+	}
+	
+	public Tab getTab()
+	{
+		return tab;
 	}
 }

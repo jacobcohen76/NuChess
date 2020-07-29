@@ -127,7 +127,5 @@ public class SettingsColorSelection extends Setting
 		color = ResourceManager.getDefaultColor(id);
 		iconLabel.setIcon(new ImageIcon(ResourceCreator.createSolidSquare(30, color)));
 		ResourceManager.setColor(id, color);
-		
-		System.out.println("X Button Pressed");
 	}
 }

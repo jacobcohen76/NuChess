@@ -11,6 +11,7 @@ import javax.swing.SpringLayout;
 import javax.swing.border.BevelBorder;
 
 import nuchess.control.SettingsController;
+import nuchess.view.Tab;
 import nuchess.view.View;
 
 public class SettingsView implements View
@@ -20,6 +21,7 @@ public class SettingsView implements View
 	private ArrayList<JPanel> settingList;
 	private Setting hovering;
 	private String title;
+	private Tab tab;
 	
 	public SettingsController controller;
 	
@@ -40,6 +42,7 @@ public class SettingsView implements View
 		sizeSettingSpring = new JPanel();
 		gapSettingSpring = new JPanel();
 		settingList = new ArrayList<JPanel>();
+		tab = new Tab(this);
 		
 		sizeSettingSpring.setPreferredSize(new Dimension(horizontalSize, verticalSize));
 		gapSettingSpring.setPreferredSize(new Dimension(borderGap, verticalGap));
@@ -118,28 +121,29 @@ public class SettingsView implements View
 		layout.putConstraint(SpringLayout.SOUTH, panel, Spring.width(gapSettingSpring), SpringLayout.SOUTH, last);
 	}
 	
-	@Override
 	public void close()
 	{
 		
 	}
 
-	@Override
 	public void saveGraphicsAs()
 	{
 		
 	}
 	
-	@Override
 	public JPanel getPanel()
 	{
 		return container;
 	}
 
-	@Override
 	public String getTitle()
 	{
 		return title;
+	}
+	
+	public Tab getTab()
+	{
+		return tab;
 	}
 	
 	protected void setHoveringSetting(Setting setting)

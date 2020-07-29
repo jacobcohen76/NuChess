@@ -11,31 +11,43 @@ import javax.swing.KeyStroke;
 
 import nuchess.engine.CBoard;
 import nuchess.engine.ChessEngine;
+import nuchess.view.TabbedView;
 import nuchess.view.View;
+import nuchess.view.ViewFrame;
 import nuchess.view.bitboardeditor.BitboardEditorView;
 import nuchess.view.chessgame.ChessGameView;
 import nuchess.view.fenboardeditor.FENBoardEditorView;
+import nuchess.view.graphics.ColorIDs;
+import nuchess.view.graphics.TextureIDs;
 import nuchess.view.home.HomeView;
 import nuchess.view.home.MenuView;
-import nuchess.view.tabs.TabbedView;
+import nuchess.view.settings.SettingTextureSelection;
+import nuchess.view.settings.SettingsColorSelection;
+import nuchess.view.settings.SettingsDialog;
+import nuchess.view.settings.SettingsView;
 
 public class MainController implements Controller
 {
+	private ViewFrame view;
 	private MenuView menuView;
 	private TabbedView tabbedView;
 	private HomeView homeView;
 	
-	public MainController(MenuView menuView, TabbedView tabbedView, HomeView homeView)
+	private SettingsDialog graphicsSettingsDialog;
+	
+	public MainController(ViewFrame view, MenuView menuView, TabbedView tabbedView, HomeView homeView)
 	{
+		this.view = view;
 		this.menuView = menuView;
 		this.tabbedView = tabbedView;
 		this.homeView = homeView;
+		graphicsSettingsDialog = constructNewGraphicsSettingsDialog();
 	}
 	
 	public void init()
 	{
 		menuView.display(tabbedView);
-		tabbedView.addHomeTab(homeView);
+		tabbedView.openTab(homeView);
 		tabbedView.requestDisplay(tabbedView.getNumTabs() - 1);
 		initMainMenuBar();
 	}
@@ -72,7 +84,7 @@ public class MainController implements Controller
 	
 	private void newGameActionPerformed(ActionEvent e)
 	{
-		addNewTab(constructNewChessGameController());
+		openTab(constructNewChessGameController());
 	}
 	
 	private void newAIActionPerformed(ActionEvent e)
@@ -82,19 +94,37 @@ public class MainController implements Controller
 	
 	private void FENBoardEditorActionPerformed(ActionEvent e)
 	{
-		addNewTab(constructNewFENBoardEditor());
+		openTab(constructNewFENBoardEditor());
 	}
 	
 	private void bitboardEditorActionPerformed(ActionEvent e)
 	{
-		addNewTab(constructNewBitboardEditor());
+		openTab(constructNewBitboardEditor());
 	}
 	
-	private void addNewTab(Controller controller)
+	private void graphicsSettingsActionPerformed(ActionEvent e)
 	{
+		graphicsSettingsDialog.setVisible(true);
+	}
+	
+	private void openTab(Controller controller)
+	{
+		long start, end;
+		
+		start = System.currentTimeMillis();
 		controller.init();
-		tabbedView.addNewTab(controller.getView());
+		end = System.currentTimeMillis();
+		System.out.println("controller.init(); " + (end - start) + " ms");
+		
+		start = System.currentTimeMillis();
+		tabbedView.openTab(controller.getView());
+		end = System.currentTimeMillis();
+		System.out.println("tabbedView.openTab(controller.getView()); " + (end - start) + " ms");
+
+		start = System.currentTimeMillis();
 		tabbedView.requestDisplay(tabbedView.getNumTabs() - 1);
+		end = System.currentTimeMillis();
+		System.out.println("tabbedView.requestDisplay(tabbedView.getNumTabs() - 1); " + (end - start) + " ms");
 	}
 	
 	private Controller constructNewChessGameController()
@@ -124,14 +154,8 @@ public class MainController implements Controller
 	{
 		menuView.addLeft(constructFileMenu());
 		menuView.addLeft(constructToolMenu());
+		menuView.addLeft(constructSettingsMenu());
 		menuView.addLeft(constructHelpMenu());
-		
-		JMenu menu = new JMenu("yo");
-		for(int i = 0; i < 10; i++)
-		{
-			menu.add(new JMenuItem("" + i));
-		}
-		menuView.addRight(menu);
 	}
 	
 	private JMenuItem constructFileMenu()
@@ -223,11 +247,65 @@ public class MainController implements Controller
 		return toolMenu;
 	}
 	
+	private JMenuItem constructSettingsMenu()
+	{
+		JMenu settingsMenu = new JMenu();
+		settingsMenu.setText("Settings");
+		
+		JMenuItem graphicsSettings = new JMenuItem();
+		graphicsSettings.setText("Graphics Settings");
+		graphicsSettings.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				graphicsSettingsActionPerformed(e);
+			}
+		});
+		settingsMenu.add(graphicsSettings);
+		
+		return settingsMenu;
+	}
+	
 	private JMenuItem constructHelpMenu()
 	{
 		JMenu helpMenu = new JMenu();
 		helpMenu.setText("Help");
 		
 		return helpMenu;
+	}
+	
+	private SettingsDialog constructNewGraphicsSettingsDialog()
+	{
+		SettingsView textureSettingsView = new SettingsView("Textures", 500, 900, 200, 30, 3, 2);
+		SettingsView colorSettingsView = new SettingsView("Colors", 500, 900, 200, 30, 3, 2);
+		
+		textureSettingsView.addSetting("NULL", new SettingTextureSelection(TextureIDs.NULL));
+		textureSettingsView.addSetting("Dot", new SettingTextureSelection(TextureIDs.DOT));
+		textureSettingsView.addSetting("White Pawn", new SettingTextureSelection(TextureIDs.WHITE_PAWN));
+		textureSettingsView.addSetting("White Knight", new SettingTextureSelection(TextureIDs.WHITE_KNIGHT));
+		textureSettingsView.addSetting("White Bishop", new SettingTextureSelection(TextureIDs.WHITE_BISHOP));
+		textureSettingsView.addSetting("White Rook", new SettingTextureSelection(TextureIDs.WHITE_ROOK));
+		textureSettingsView.addSetting("White Queen", new SettingTextureSelection(TextureIDs.WHITE_QUEEN));
+		textureSettingsView.addSetting("White King", new SettingTextureSelection(TextureIDs.WHITE_KING));
+		textureSettingsView.addSetting("Black Pawn", new SettingTextureSelection(TextureIDs.BLACK_PAWN));
+		textureSettingsView.addSetting("Black Knight", new SettingTextureSelection(TextureIDs.BLACK_KNIGHT));
+		textureSettingsView.addSetting("Black Bishop", new SettingTextureSelection(TextureIDs.BLACK_BISHOP));
+		textureSettingsView.addSetting("Black Rook", new SettingTextureSelection(TextureIDs.BLACK_ROOK));
+		textureSettingsView.addSetting("Black Queen", new SettingTextureSelection(TextureIDs.BLACK_QUEEN));
+		textureSettingsView.addSetting("Black King", new SettingTextureSelection(TextureIDs.BLACK_KING));
+		textureSettingsView.addSetting("Border", new SettingTextureSelection(TextureIDs.BORDER));
+		textureSettingsView.addSetting("Highlight", new SettingTextureSelection(TextureIDs.HIGHLIGHT));
+		textureSettingsView.addSetting("Mask", new SettingTextureSelection(TextureIDs.MASK));
+		textureSettingsView.addSetting("Dark Square", new SettingTextureSelection(TextureIDs.DARK_SQUARE));
+		textureSettingsView.addSetting("Light Square", new SettingTextureSelection(TextureIDs.LIGHT_SQUARE));
+		
+		colorSettingsView.addSetting("Tab", new SettingsColorSelection("Tab", ColorIDs.TAB));
+		colorSettingsView.addSetting("Hovering Tab", new SettingsColorSelection("Hovering Tab", ColorIDs.HOVERING_TAB));
+		colorSettingsView.addSetting("Selected Tab", new SettingsColorSelection("Selected Tab", ColorIDs.SELECTED_TAB));
+		colorSettingsView.addSetting("Tab Font", new SettingsColorSelection("Tab Font", ColorIDs.TAB_FONT));
+		colorSettingsView.addSetting("Main Menu Background", new SettingsColorSelection("Main Menu Background", ColorIDs.MAIN_MENU_BACKGROUND));
+		colorSettingsView.addSetting("Main Menu Font", new SettingsColorSelection("Main Menu Font", ColorIDs.MAIN_MENU_FONT));
+		
+		return new SettingsDialog(view.getFrame(), textureSettingsView, colorSettingsView);
 	}
 }

@@ -1,13 +1,11 @@
 package nuchess.view.home;
 
-import java.awt.FlowLayout;
-
-import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
+import nuchess.view.Tab;
 import nuchess.view.View;
 
 public class MenuView implements View
@@ -46,10 +44,8 @@ public class MenuView implements View
 	{
 		layout.putConstraint(SpringLayout.NORTH, leftMenuBar, 0, SpringLayout.NORTH, panel);
 		layout.putConstraint(SpringLayout.WEST, leftMenuBar, 0, SpringLayout.WEST, panel);
-//		layout.putConstraint(SpringLayout.EAST, leftMenuBar, 0, SpringLayout.WEST, rightMenuBar);
 		layout.putConstraint(SpringLayout.NORTH, rightMenuBar, 0, SpringLayout.NORTH, leftMenuBar);
 		layout.putConstraint(SpringLayout.EAST, rightMenuBar, 0, SpringLayout.EAST, panel);
-//		layout.putConstraint(SpringLayout.WEST, rightMenuBar, 0, SpringLayout.EAST, leftMenuBar);
 		layout.putConstraint(SpringLayout.SOUTH, rightMenuBar, 0, SpringLayout.SOUTH, leftMenuBar);
 		panel.setLayout(layout);
 	}
@@ -100,5 +96,10 @@ public class MenuView implements View
 	public String getTitle()
 	{
 		return "Menu";
+	}
+	
+	public Tab getTab()
+	{
+		return null;
 	}
 }
