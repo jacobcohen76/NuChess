@@ -1,6 +1,5 @@
 package nuchess.view.chessgame;
 
-import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -48,9 +47,7 @@ public class ChessGameView implements View
 		panel = new JPanel();
 		boardView = new ChessBoardView(flipped);
 		actionPanel = new ActionPanel();
-		
 		panel.setOpaque(false);
-		actionPanel.getPanel().setPreferredSize(new Dimension(300, 300));
 	}
 	
 	private void putConstraints()

@@ -22,9 +22,9 @@ public class ChessboardGraphics
 	public static final int BACKGROUND_LAYER			= 0;
 	public static final int MASK_LAYER					= 1;
 	public static final int HIGHLIGHT_LAYER				= 2;
-	public static final int DOT_LAYER					= 3;
-	public static final int CORNER_LAYER				= 4;
-	public static final int PIECE_LAYER					= 5;
+	public static final int PIECE_LAYER					= 3;
+	public static final int DOT_LAYER					= 4;
+	public static final int CORNER_LAYER				= 5;
 	public static final int RING_LAYER					= 6;
 	public static final int ARROW_LAYER					= 7;
 	public static final int NUM_LAYERS					= 8;

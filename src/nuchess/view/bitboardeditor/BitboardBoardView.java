@@ -51,12 +51,12 @@ public class BitboardBoardView
 			public void mouseClicked(MouseEvent e)	{}
 			public void mousePressed(MouseEvent e)
 			{
-				if(button == MouseEvent.NOBUTTON)
-				{
-					button = e.getButton();
-				}
 				if(lgp.contains(e.getPoint()))
 				{
+					if(button == MouseEvent.NOBUTTON)
+					{
+						button = e.getButton();
+					}
 					pressed(e);
 				}
 			}
@@ -91,24 +91,27 @@ public class BitboardBoardView
 	private void pressed(MouseEvent e)
 	{
 		int square = cbg.getSquare(e.getX(), e.getY());
-		if(button == MouseEvent.BUTTON1)
+		if(0 <= square && square <= 64)
 		{
-			if(((displaying >> square) & 1) == 0)
+			if(button == MouseEvent.BUTTON1)
 			{
-				displaying |= 1L << square;
-				cbg.paintDot(square);
-				parent.setInputBitboard(displaying);
-				repaint();
+				if(((displaying >> square) & 1) == 0)
+				{
+					displaying |= 1L << square;
+					cbg.paintDot(square);
+					parent.setInputBitboard(displaying);
+					repaint();
+				}
 			}
-		}
-		else if(button == MouseEvent.BUTTON3)
-		{
-			if(((displaying >> square) & 1) == 1)
+			else if(button == MouseEvent.BUTTON3)
 			{
-				displaying &= ~(1L << square);
-				cbg.clear(square, ChessboardGraphics.DOT_LAYER);
-				parent.setInputBitboard(displaying);
-				repaint();
+				if(((displaying >> square) & 1) == 1)
+				{
+					displaying &= ~(1L << square);
+					cbg.clear(square, ChessboardGraphics.DOT_LAYER);
+					parent.setInputBitboard(displaying);
+					repaint();
+				}
 			}
 		}
 	}

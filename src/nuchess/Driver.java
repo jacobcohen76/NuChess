@@ -41,6 +41,16 @@ public class Driver
 		return view;
 	}
 	
+	private static MainController constructNewMainController(ViewFrame view)
+	{
+		MenuView menuView = new MenuView();
+		TabbedView tabbedView = new TabbedView();
+		HomeView homeView = new HomeView();
+		MainController controller = new MainController(view, menuView, tabbedView, homeView);
+		controller.init();
+		return controller;
+	}
+	
 	private static final File RM_PATH = new File("resources/serial/resmanager/resource-manager");
 	
 	private static void bootup()
@@ -58,15 +68,5 @@ public class Driver
 	private static void initSystem()
 	{
 		System.setProperty("sun.java2d.opengl","True");
-	}
-	
-	private static MainController constructNewMainController(ViewFrame view)
-	{
-		MenuView menuView = new MenuView();
-		TabbedView tabbedView = new TabbedView();
-		HomeView homeView = new HomeView();
-		MainController controller = new MainController(view, menuView, tabbedView, homeView);
-		controller.init();
-		return controller;
 	}
 }

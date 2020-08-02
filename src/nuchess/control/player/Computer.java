@@ -1,19 +1,30 @@
 package nuchess.control.player;
 
-public abstract class Computer<Move> extends Player<Move>
+import nuchess.engine.CMove;
+import nuchess.engine.ChessEngine;
+
+public abstract class Computer extends Player
 {
 	private static final long serialVersionUID = -5199764752116960751L;
 	
-	public Computer(String username, String userid)
+	protected ChessEngine engine;
+	
+	public Computer(String username, String userid, ChessEngine engine)
 	{
 		super(username, userid);
+		this.engine = engine;
 	}
 	
-	@Override
-	public final Move selectMove()
+	public void setEngine(ChessEngine engine)
 	{
+		this.engine = engine;
+	}
+	
+	public CMove computeMove(String FEN)
+	{
+		engine.loadFEN(FEN);
 		return computeMove();
 	}
 	
-	public abstract Move computeMove();
+	public abstract CMove computeMove();
 }

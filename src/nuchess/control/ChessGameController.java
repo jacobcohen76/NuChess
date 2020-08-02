@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import nuchess.control.player.Computer;
-import nuchess.control.player.Human;
 import nuchess.control.player.Player;
 import nuchess.engine.CMove;
 import nuchess.engine.ChessEngine;
@@ -15,82 +14,26 @@ import nuchess.view.chessgame.ChessGameView;
 
 public class ChessGameController implements Controller
 {
-	public static final Player<CMove> DEFAULT_WHITEPLAYER, DEFAULT_BLACKPLAYER;
-	
-	static
-	{
-		DEFAULT_WHITEPLAYER = new Human<CMove>("Default White Player", "0");
-		DEFAULT_BLACKPLAYER = new Human<CMove>("Default Black Player", "1");
-	}
-	
-	private ChessEngine engine;
 	private ChessGameView view;
+	private ChessEngine engine;
 	private LinkedList<CMove> moveHistory;
-	private Player<CMove> player1, player2;
+	private Player white, black;
+	private boolean gameover;
 	
-	public ChessGameController(ChessEngine engine, ChessGameView view)
+	public ChessGameController(ChessGameView view, Player white, Player black, String FEN)
 	{
-		this.engine = engine;
 		this.view = view;
+		this.white = white;
+		this.black = black;
+		engine = new ChessEngine(FEN);
 		moveHistory = new LinkedList<CMove>();
-		player1 = getDefaultPlayer1();
-		player2 = getDefaultPlayer2();
-		linkObjects();
-	}
-	
-	private void linkObjects()
-	{
 		view.controller = this;
+		gameover = false;
 	}
 	
-	public void updateView(String SAN)
-	{
-		long checkBB = engine.inCheck(engine.toMove()) ? engine.board.bitboard(Piece.WHITE_KING + engine.toMove()) : 0L;
-		long occBB = engine.board.occ();
-		CMove move = moveHistory.getLast();
-		String FEN = engine.getFEN();
-		
-		view.addNewState(checkBB, occBB, move, FEN, SAN);
-		view.setMoveableSquares(engine.board.bitboard(engine.toMove()));
-		view.setSelectableMoves(engine.generateLegalMoves());
-	}
-	
-	public void init()
-	{
-		initView();
-		takeTurn(getNextPlayer());
-	}
-	
-	public void saveGraphicsAs()
-	{
-		File out = FileSaving.chooseImageFile(view.getPanel(), engine.getFEN().replace('/', '.'));
-		FileSaving.saveRenderedImage(view.getRenderedImage(), out);
-	}
-	
-	public void saveAs()
+	public void replay()
 	{
 		
-	}
-	
-	public void close()
-	{
-		
-	}
-	
-	public View getView()
-	{
-		return view;
-	}
-	
-	private void initView()
-	{
-		long checkBB = engine.inCheck(engine.toMove()) ? engine.board.bitboard(Piece.WHITE_KING + engine.toMove()) : 0L;
-		long occBB = engine.board.occ();
-		String FEN = engine.getFEN();
-		
-		view.setInitialState(checkBB, occBB, FEN);
-		view.setMoveableSquares(engine.board.bitboard(engine.toMove()));
-		view.setSelectableMoves(engine.generateLegalMoves());
 	}
 	
 	public void make(CMove move)
@@ -99,95 +42,118 @@ public class ChessGameController implements Controller
 		engine.make(move);
 		moveHistory.add(move);
 		updateView(SAN);
-		takeTurn(getNextPlayer());
+		
+		if(getNextPlayer() instanceof Computer && !gameover)
+		{
+			view.setSelectionEnabled(false);
+			dispatchThread((Computer) getNextPlayer());
+		}
+		else
+		{
+			view.setSelectionEnabled(!gameover);
+		}
 	}
-
+	
+	public void updateView(String SAN)
+	{
+		long checkBB = engine.inCheck(engine.toMove()) ? engine.board.bitboard(Piece.WHITE_KING + engine.toMove()) : 0L;
+		long occBB = engine.board.occ();
+		CMove move = moveHistory.getLast();
+		List<CMove> legalMoves = engine.generateLegalMoves();
+		String FEN = engine.getFEN();
+		view.addNewState(checkBB, occBB, move, FEN, SAN);
+		view.setMoveableSquares(engine.board.bitboard(engine.toMove()));
+		view.setSelectableMoves(legalMoves);
+		
+		if(legalMoves.isEmpty())
+		{
+			gameover = true;
+		}
+	}
+	
 	public void unmake()
 	{
 		CMove move = moveHistory.pollLast();
 		engine.unmake(move);
 	}
 	
-	public void setPlayer1(Player<CMove> player1)
+	@Override
+	public void init()
 	{
-		this.player1 = player1;
-	}
-
-	
-	public void setPlayer2(Player<CMove> player2)
-	{
-		this.player2 = player2;		
-	}
-
-	
-	public Player<CMove> getDefaultPlayer1()
-	{
-		return DEFAULT_WHITEPLAYER;
-	}
-
-	
-	public Player<CMove> getDefaultPlayer2()
-	{
-		return DEFAULT_BLACKPLAYER;
-	}
-
-	
-	public Player<CMove> getPlayer1()
-	{
-		return player1;
-	}
-
-	
-	public Player<CMove> getPlayer2()
-	{
-		return player2;
-	}
-
-	
-	public Player<CMove> getNextPlayer()
-	{
-		return (moveHistory.size() & 1) == 0 ? getPlayer1() : getPlayer2();
-	}
-
-	
-	public Player<CMove> getWinner()
-	{
-		return null;
-	}
-
-	
-	public List<CMove> getMoveHistory()
-	{
-		return moveHistory;
-	}
-	
-	public void end()
-	{
+		long checkBB = engine.inCheck(engine.toMove()) ? engine.board.bitboard(Piece.WHITE_KING + engine.toMove()) : 0L;
+		long occBB = engine.board.occ();
+		String FEN = engine.getFEN();
+		view.setInitialState(checkBB, occBB, FEN);
+		view.setMoveableSquares(engine.board.bitboard(engine.toMove()));
+		view.setSelectableMoves(engine.generateLegalMoves());
 		
-		updateStatistics();
-	}
-	
-	public void savePGN(File f)
-	{
-		
-	}
-	
-	public void updateStatistics()
-	{
-		
-	}
-	
-	public void takeTurn(Player<CMove> player)
-	{
-		while(player instanceof Computer<?> && engine.isGameOver() == false)
+		if(getNextPlayer() instanceof Computer && !gameover)
 		{
-			make(player.selectMove());
-			player = getNextPlayer();
-			System.out.println(player);
+			view.setSelectionEnabled(false);
+			dispatchThread((Computer) getNextPlayer());
 		}
-		if(engine.isGameOver())
+		else
 		{
-			end();
+			view.setSelectionEnabled(!gameover);
+		}
+	}
+	
+	@Override
+	public void saveGraphicsAs()
+	{
+		File out = FileSaving.chooseImageFile(view.getPanel(), engine.getFEN().replace('/', '.'));
+		FileSaving.saveRenderedImage(view.getRenderedImage(), out);
+	}
+	
+	@Override
+	public void saveAs()
+	{
+		
+	}
+	
+	@Override
+	public void close()
+	{
+		
+	}
+	
+	@Override
+	public View getView()
+	{
+		return view;
+	}
+	
+	public Player getNextPlayer()
+	{
+		return (moveHistory.size() & 1) == 0 ? white : black;
+	}
+	
+	private void dispatchThread(Computer computer)
+	{
+		new SelectMoveThread(computer).start();
+	}
+	
+	private class SelectMoveThread extends Thread
+	{
+		private Computer computer;
+		
+		public SelectMoveThread(Computer computer)
+		{
+			this.computer = computer;
+		}
+		
+		public void run()
+		{
+			CMove move = computer.computeMove(engine.getFEN());
+			try
+			{
+				Thread.sleep(1000L);
+			}
+			catch (InterruptedException iex)
+			{
+				iex.printStackTrace();
+			}
+			make(move);
 		}
 	}
 }

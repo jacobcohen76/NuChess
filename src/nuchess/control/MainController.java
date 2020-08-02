@@ -9,8 +9,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import nuchess.control.player.RandomAI;
 import nuchess.engine.CBoard;
-import nuchess.engine.ChessEngine;
 import nuchess.view.TabbedView;
 import nuchess.view.View;
 import nuchess.view.ViewFrame;
@@ -109,29 +109,15 @@ public class MainController implements Controller
 	
 	private void openTab(Controller controller)
 	{
-		long start, end;
-		
-		start = System.currentTimeMillis();
 		controller.init();
-		end = System.currentTimeMillis();
-		System.out.println("controller.init(); " + (end - start) + " ms");
-		
-		start = System.currentTimeMillis();
 		tabbedView.openTab(controller.getView());
-		end = System.currentTimeMillis();
-		System.out.println("tabbedView.openTab(controller.getView()); " + (end - start) + " ms");
-
-		start = System.currentTimeMillis();
 		tabbedView.requestDisplay(tabbedView.getNumTabs() - 1);
-		end = System.currentTimeMillis();
-		System.out.println("tabbedView.requestDisplay(tabbedView.getNumTabs() - 1); " + (end - start) + " ms");
 	}
 	
 	private Controller constructNewChessGameController()
 	{
-		ChessEngine engine = new ChessEngine();
 		ChessGameView view = new ChessGameView();
-		ChessGameController controller = new ChessGameController(engine, view);
+		ChessGameController controller = new ChessGameController(view, new RandomAI("Random1", ""), new RandomAI("Random2", ""), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 		return controller;
 	}
 	

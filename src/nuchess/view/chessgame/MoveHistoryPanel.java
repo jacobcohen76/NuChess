@@ -1,5 +1,6 @@
 package nuchess.view.chessgame;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -12,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
+import javax.swing.Spring;
 import javax.swing.SpringLayout;
 
 class MoveHistoryPanel
@@ -19,32 +21,42 @@ class MoveHistoryPanel
 	private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
 	private static final Cursor DEFAULT_CURSOR = new Cursor(Cursor.DEFAULT_CURSOR);
 	
-	private JPanel panel;
+	private JPanel panel, cellSpring;
 	private JScrollPane scrollPane;
 	private ArrayList<JLabel> labels;
 	private ArrayList<JToggleButton> buttons;
 	private SpringLayout layout;
 	private Color selectedColor, hoverColor;
-	private int selected, labelWidth;
+	private int selected;
 	private Font font;
 	
 	protected ActionPanel parent;
 	
-	public MoveHistoryPanel(int labelWidth, Color selectedColor, Color hoverColor, Font font)
+	public MoveHistoryPanel(int cellWidth, int cellHeight, Color selectedColor, Color hoverColor, Font font)
 	{
 		panel = new JPanel();
+		cellSpring = new JPanel();
 		scrollPane = new JScrollPane(panel);
 		labels = new ArrayList<JLabel>();
 		buttons = new ArrayList<JToggleButton>();
-		layout = new SpringLayout();
+		layout = new SpringLayout()
+		{
+			public Dimension preferredLayoutSize(Container parent)
+			{
+		        return new Dimension(cellWidth * 5, labels.size() * cellHeight);
+		    }
+		};
 		selected = 0;
 		
 		parent = null;
 		
-		this.labelWidth = labelWidth;
 		this.selectedColor = selectedColor;
 		this.hoverColor = hoverColor;
 		this.font = font;
+		
+		Dimension d = new Dimension(cellWidth, cellHeight);
+		cellSpring.setPreferredSize(d);
+		cellSpring.setSize(d);
 		
 		scrollPane.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 0));
 		scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
@@ -99,12 +111,14 @@ class MoveHistoryPanel
 			if(labels.isEmpty())
 			{
 				layout.putConstraint(SpringLayout.NORTH, newLabel, 0, SpringLayout.NORTH, panel);
-				layout.putConstraint(SpringLayout.EAST, newLabel, labelWidth, SpringLayout.WEST, panel);
+				layout.putConstraint(SpringLayout.EAST, newLabel, Spring.width(cellSpring), SpringLayout.WEST, newLabel);
+				layout.putConstraint(SpringLayout.SOUTH, newLabel, Spring.height(cellSpring), SpringLayout.NORTH, newLabel);
 			}
 			else
 			{
 				layout.putConstraint(SpringLayout.NORTH, newLabel, 0, SpringLayout.SOUTH, labels.get(labels.size() - 1));
 				layout.putConstraint(SpringLayout.EAST, newLabel, 0, SpringLayout.EAST, labels.get(labels.size() - 1));
+				layout.putConstraint(SpringLayout.SOUTH, newLabel, Spring.height(cellSpring), SpringLayout.NORTH, newLabel);
 			}
 			layout.putConstraint(SpringLayout.WEST, newLabel, 0, SpringLayout.WEST, panel);
 			
@@ -117,8 +131,7 @@ class MoveHistoryPanel
 		if((buttons.size() & 1) == 1)
 		{
 			layout.putConstraint(SpringLayout.WEST, toggleButton, 0, SpringLayout.EAST, labels.get(labels.size() - 1));
-			layout.putConstraint(SpringLayout.EAST, toggleButton, labelWidth / 2, SpringLayout.HORIZONTAL_CENTER, panel);
-			layout.putConstraint(SpringLayout.SOUTH, labels.get(labels.size() - 1), 0, SpringLayout.SOUTH, toggleButton);
+			layout.putConstraint(SpringLayout.EAST, toggleButton, Spring.sum(Spring.width(cellSpring), Spring.width(cellSpring)), SpringLayout.WEST, toggleButton);
 		}
 		else
 		{
@@ -126,6 +139,8 @@ class MoveHistoryPanel
 			layout.putConstraint(SpringLayout.EAST, toggleButton, 0, SpringLayout.EAST, panel);
 		}
 		layout.putConstraint(SpringLayout.NORTH, toggleButton, 0, SpringLayout.NORTH, labels.get(labels.size() - 1));
+		layout.putConstraint(SpringLayout.SOUTH, toggleButton, 0, SpringLayout.SOUTH, labels.get(labels.size() - 1));
+
 		
 		buttons.add(toggleButton);
 		panel.add(toggleButton);
@@ -188,7 +203,8 @@ class MoveHistoryPanel
 	{
 		JToggleButton toggleButton = new JToggleButton();
 		toggleButton.setText(formattedMove);
-		toggleButton.setHorizontalAlignment(JToggleButton.RIGHT);
+		toggleButton.setHorizontalTextPosition(JToggleButton.LEFT);
+		toggleButton.setHorizontalAlignment(JToggleButton.LEFT);
 		toggleButton.setFocusable(false);
 		toggleButton.setBorderPainted(false);
 		toggleButton.setContentAreaFilled(false);

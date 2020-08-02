@@ -2,7 +2,7 @@ package nuchess.control.player;
 
 import java.io.Serializable;
 
-public abstract class Player<Move> implements Serializable
+public abstract class Player implements Serializable
 {
 	private static final long serialVersionUID = -7647221331149589179L;
 	
@@ -14,9 +14,7 @@ public abstract class Player<Move> implements Serializable
 		this.username = username;
 		this.userid = userid;
 	}
-	
-	public abstract Move selectMove();
-	
+		
 	public final String getUsername()
 	{
 		return username;

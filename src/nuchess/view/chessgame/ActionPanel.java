@@ -1,6 +1,7 @@
 package nuchess.view.chessgame;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,11 +10,12 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.Spring;
 import javax.swing.SpringLayout;
 
 class ActionPanel
 {
-	private JPanel panel;
+	private JPanel panel, cellSpring;
 	private MoveHistoryPanel mhp;
 	private JLabel topLabel, bottomLabel;
 	private JToggleButton flipToggleButton, drawButton, requestTakebackButton, surrenderButton;
@@ -21,10 +23,11 @@ class ActionPanel
 	
 	protected ChessGameView parent;
 	
-	public ActionPanel(String whitePlayerLabel, String blackPlayerLabel, int labelWidth, Color selectedColor, Color hoverColor, Font font)
+	public ActionPanel(String whitePlayerLabel, String blackPlayerLabel, int cellWidth, int cellHeight, Color selectedColor, Color hoverColor, Font font)
 	{
 		panel = new JPanel();
-		mhp = new MoveHistoryPanel(labelWidth, selectedColor, hoverColor, font);
+		cellSpring = new JPanel();
+		mhp = new MoveHistoryPanel(cellWidth, cellHeight, selectedColor, hoverColor, font);
 		topLabel = new JLabel(blackPlayerLabel);
 		bottomLabel = new JLabel(whitePlayerLabel);
 		flipToggleButton = new JToggleButton();
@@ -46,15 +49,21 @@ class ActionPanel
 		mhp.parent = this;
 		parent = null;
 		
+		Dimension d = new Dimension(cellWidth, cellHeight);
+		cellSpring.setPreferredSize(d);
+		cellSpring.setSize(d);
+		
 		putConstraints();
 		addComponents();
 		addListeners();
 		setFont(font);
+		
+		panel.setPreferredSize(new Dimension(cellWidth * 5, cellHeight * 8));
 	}
 	
 	public ActionPanel()
 	{
-		this("WHITE", "BLACK", 30, Color.GREEN, Color.CYAN, new Font("Consolas", Font.BOLD, 14));
+		this("WHITE", "BLACK", 64, 30, Color.GREEN, Color.CYAN, new Font("Consolas", Font.BOLD, 14));
 	}
 	
 	public void setFont(Font font)
@@ -168,32 +177,43 @@ class ActionPanel
 		layout.putConstraint(SpringLayout.NORTH, flipToggleButton, 0, SpringLayout.SOUTH, topLabel);
 		layout.putConstraint(SpringLayout.WEST, flipToggleButton, 0, SpringLayout.WEST, panel);
 		
+		layout.putConstraint(SpringLayout.EAST, flipToggleButton, Spring.width(cellSpring), SpringLayout.WEST, flipToggleButton);
+		layout.putConstraint(SpringLayout.SOUTH, flipToggleButton, Spring.height(cellSpring), SpringLayout.NORTH, flipToggleButton);
+		
 		layout.putConstraint(SpringLayout.NORTH, tailButton, 0, SpringLayout.NORTH, flipToggleButton);
 		layout.putConstraint(SpringLayout.SOUTH, tailButton, 0, SpringLayout.SOUTH, flipToggleButton);
 		layout.putConstraint(SpringLayout.WEST, tailButton, 0, SpringLayout.EAST, flipToggleButton);
+		layout.putConstraint(SpringLayout.EAST, tailButton, Spring.width(cellSpring), SpringLayout.WEST, tailButton);
 		
 		layout.putConstraint(SpringLayout.NORTH, prevButton, 0, SpringLayout.NORTH, flipToggleButton);
 		layout.putConstraint(SpringLayout.SOUTH, prevButton, 0, SpringLayout.SOUTH, flipToggleButton);
 		layout.putConstraint(SpringLayout.WEST, prevButton, 0, SpringLayout.EAST, tailButton);
+		layout.putConstraint(SpringLayout.EAST, prevButton, Spring.width(cellSpring), SpringLayout.WEST, prevButton);
 		
 		layout.putConstraint(SpringLayout.NORTH, nextButton, 0, SpringLayout.NORTH, flipToggleButton);
 		layout.putConstraint(SpringLayout.SOUTH, nextButton, 0, SpringLayout.SOUTH, flipToggleButton);
 		layout.putConstraint(SpringLayout.WEST, nextButton, 0, SpringLayout.EAST, prevButton);
+		layout.putConstraint(SpringLayout.EAST, nextButton, Spring.width(cellSpring), SpringLayout.WEST, nextButton);
 
 		layout.putConstraint(SpringLayout.NORTH, headButton, 0, SpringLayout.NORTH, flipToggleButton);
 		layout.putConstraint(SpringLayout.SOUTH, headButton, 0, SpringLayout.SOUTH, flipToggleButton);
 		layout.putConstraint(SpringLayout.WEST, headButton, 0, SpringLayout.EAST, nextButton);
+		layout.putConstraint(SpringLayout.EAST, headButton, Spring.width(cellSpring), SpringLayout.WEST, headButton);
 		
-		layout.putConstraint(SpringLayout.SOUTH, drawButton, 0, SpringLayout.NORTH, bottomLabel);
-		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, drawButton, 0, SpringLayout.HORIZONTAL_CENTER, panel);
+		layout.putConstraint(SpringLayout.SOUTH, requestTakebackButton, 0, SpringLayout.NORTH, bottomLabel);
+		layout.putConstraint(SpringLayout.WEST, requestTakebackButton, 0, SpringLayout.EAST, flipToggleButton);
+		layout.putConstraint(SpringLayout.EAST, requestTakebackButton, Spring.width(cellSpring), SpringLayout.WEST, requestTakebackButton);
+		layout.putConstraint(SpringLayout.NORTH, requestTakebackButton, Spring.minus(Spring.height(cellSpring)), SpringLayout.SOUTH, requestTakebackButton);
 		
-		layout.putConstraint(SpringLayout.NORTH, requestTakebackButton, 0, SpringLayout.NORTH, drawButton);
-		layout.putConstraint(SpringLayout.SOUTH, requestTakebackButton, 0, SpringLayout.SOUTH, drawButton);
-		layout.putConstraint(SpringLayout.EAST, requestTakebackButton, 0, SpringLayout.WEST, drawButton);
+		layout.putConstraint(SpringLayout.WEST, drawButton, 0, SpringLayout.EAST, requestTakebackButton);
+		layout.putConstraint(SpringLayout.NORTH, drawButton, 0, SpringLayout.NORTH, requestTakebackButton);
+		layout.putConstraint(SpringLayout.SOUTH, drawButton, 0, SpringLayout.SOUTH, requestTakebackButton);
+		layout.putConstraint(SpringLayout.EAST, drawButton, Spring.width(cellSpring), SpringLayout.WEST, drawButton);
 		
-		layout.putConstraint(SpringLayout.NORTH, surrenderButton, 0, SpringLayout.NORTH, drawButton);
-		layout.putConstraint(SpringLayout.SOUTH, surrenderButton, 0, SpringLayout.SOUTH, drawButton);
 		layout.putConstraint(SpringLayout.WEST, surrenderButton, 0, SpringLayout.EAST, drawButton);
+		layout.putConstraint(SpringLayout.NORTH, surrenderButton, 0, SpringLayout.NORTH, requestTakebackButton);
+		layout.putConstraint(SpringLayout.SOUTH, surrenderButton, 0, SpringLayout.SOUTH, requestTakebackButton);
+		layout.putConstraint(SpringLayout.EAST, surrenderButton, Spring.width(cellSpring), SpringLayout.WEST, surrenderButton);
 		
 		layout.putConstraint(SpringLayout.NORTH, mhp.getScrollPane(), 0, SpringLayout.SOUTH, flipToggleButton);
 		layout.putConstraint(SpringLayout.SOUTH, mhp.getScrollPane(), 0, SpringLayout.NORTH, drawButton);

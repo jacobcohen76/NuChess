@@ -93,17 +93,20 @@ public class FENBoardEditorView implements View
 	
 	protected void dragged(int square)
 	{
-		if(((draggedBB >> square) & 1) == 0)
+		if(0 <= square && square <= 64)
 		{
-			draggedBB |= (1L << square);
-			if(lockedButton == MouseEvent.BUTTON1 && ((occ >> square) & 1) == 0)
-				controller.put(piece, square);
-			else if(lockedButton == MouseEvent.BUTTON3 && ((occ >> square) & 1) == 1)
-				controller.capture(square);
-		}
-		else
-		{
-			draggedBB = 0L;
+			if(((draggedBB >> square) & 1) == 0)
+			{
+				draggedBB |= (1L << square);
+				if(lockedButton == MouseEvent.BUTTON1 && ((occ >> square) & 1) == 0)
+					controller.put(piece, square);
+				else if(lockedButton == MouseEvent.BUTTON3 && ((occ >> square) & 1) == 1)
+					controller.capture(square);
+			}
+			else
+			{
+				draggedBB = 0L;
+			}
 		}
 	}
 	
@@ -172,7 +175,7 @@ public class FENBoardEditorView implements View
 		boardView.clearPieceLayer(occ);
 		boardView.paintFEN(FEN);
 	}
-		
+	
 	public void repaint()
 	{
 		panel.repaint();

@@ -229,58 +229,70 @@ public class ChessEngine implements Engine<CMove>
 	public String getSAN(CMove move)
 	{
 		StringBuilder SAN = new StringBuilder();
-		int moving = board.pieceAt(move.from());
-		if(Piece.pieceType(moving) == Piece.PAWN)
+		
+		if(move.flags() == CMove.KING_CASTLE)
 		{
-			if(move.isCapture())
-			{
-				SAN.append(Square.fileCharacter(Square.file(move.from())));
-			}
+			SAN.append("O-O");
+		}
+		else if(move.flags() == CMove.QUEEN_CASTLE)
+		{
+			SAN.append("O-O-O");
 		}
 		else
 		{
-			SAN.append(FENParser.pieceChar(moving));
-			long alt = Attacks.attacks(moving, move.to(), board.occ()) & board.bitboard(moving) & ~(1L << move.from());
-			boolean disambiguateFile = false, disambiguateRank = false;
-			int numAlts = 0;
-			while(alt != 0)
+			int moving = board.pieceAt(move.from());
+			if(Piece.pieceType(moving) == Piece.PAWN)
 			{
-				int square = Bits.bitscanForward(alt);
-				disambiguateFile |= Square.file(square) != Square.rank(move.from());
-				disambiguateRank |= Square.rank(square) != Square.rank(move.from());
-				alt &= alt ^ -alt;
-				numAlts++;
+				if(move.isCapture())
+				{
+					SAN.append(Square.fileCharacter(Square.file(move.from())));
+				}
 			}
-			if(disambiguateFile && disambiguateRank && 2 <= numAlts)
+			else
 			{
-				SAN.append(Square.fileCharacter(Square.file(move.from())));
-				SAN.append(Square.rank(move.from()) + 1);
+				SAN.append(FENParser.pieceChar(moving));
+				long alt = Attacks.attacks(moving, move.to(), board.occ()) & board.bitboard(moving) & ~(1L << move.from());
+				boolean disambiguateFile = false, disambiguateRank = false;
+				int numAlts = 0;
+				while(alt != 0)
+				{
+					int square = Bits.bitscanForward(alt);
+					disambiguateFile |= Square.file(square) != Square.rank(move.from());
+					disambiguateRank |= Square.rank(square) != Square.rank(move.from());
+					alt &= alt ^ -alt;
+					numAlts++;
+				}
+				if(disambiguateFile && disambiguateRank && 2 <= numAlts)
+				{
+					SAN.append(Square.fileCharacter(Square.file(move.from())));
+					SAN.append(Square.rank(move.from()) + 1);
+				}
+				else if(disambiguateFile)
+				{
+					SAN.append(Square.fileCharacter(Square.file(move.from())));
+				}
+				else if(disambiguateRank)
+				{
+					SAN.append(Square.rank(move.from()) + 1);
+				}
 			}
-			else if(disambiguateFile)
+			if(move.isCapture())
 			{
-				SAN.append(Square.fileCharacter(Square.file(move.from())));
+				SAN.append('x');
 			}
-			else if(disambiguateRank)
+			SAN.append(Square.coord(move.to()));
+			if(move.flags() == CMove.EP_CAPTURE)
 			{
-				SAN.append(Square.rank(move.from()) + 1);
+				SAN.append("e.p.");
 			}
-		}
-		if(move.isCapture())
-		{
-			SAN.append('x');
-		}
-		SAN.append(Square.coord(move.to()));
-		if(move.flags() == CMove.EP_CAPTURE)
-		{
-			SAN.append("e.p.");
-		}
-		else if(move.isPromo())
-		{
-			SAN.append(FENParser.pieceChar(Piece.pieceCode(move.promotedTo(), toMove())));
-		}
-		if(isCheck(move))
-		{
-			SAN.append('+');
+			else if(move.isPromo())
+			{
+				SAN.append(FENParser.pieceChar(Piece.pieceCode(move.promotedTo(), toMove())));
+			}
+			if(isCheck(move))
+			{
+				SAN.append('+');
+			}
 		}
 		return SAN.toString();
 	}
