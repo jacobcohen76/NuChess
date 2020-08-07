@@ -1,6 +1,6 @@
 package nuchess.engine;
 
-import util.StringUtil;
+import nuchess.util.StringUtil;
 
 public class Bits
 {

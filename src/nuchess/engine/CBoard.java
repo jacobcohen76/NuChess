@@ -157,7 +157,7 @@ public final class CBoard
 				Attacks.queenAttacks  (square, occ)    & bitboards[Piece.WHITE_QUEEN  + by] |
 				Attacks.kingAttacks   (square)         & bitboards[Piece.WHITE_KING   + by];
 	}
-		
+	
 	public final boolean isAttacked(int square, int by)
 	{
 		return isAttacked(square, by, occ());

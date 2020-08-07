@@ -18,6 +18,11 @@ public final class Square
 		}
 	}
 	
+	public static final char rankCharacter(int rank)
+	{
+		return (char) ('1' + rank);
+	}
+	
 	public static final String coord(int square)
 	{
 		return "" + (char) ('a' + file(square)) + (rank(square) + 1);

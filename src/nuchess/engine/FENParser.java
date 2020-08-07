@@ -1,9 +1,21 @@
 package nuchess.engine;
 
-import util.StringUtil;
+import nuchess.util.StringUtil;
 
 public final class FENParser
-{	
+{
+	private static final int KING_CASTLE_WHITE    = 0b1000;
+	private static final int QUEEN_CASTLE_WHITE   = 0b0100;
+	private static final int KING_CASTLE_BLACK    = 0b0010;
+	private static final int QUEEN_CASTLE_BLACK   = 0b0001;
+	
+	public static final int LAYOUT                = 0;
+	public static final int TO_MOVE               = 1;
+	public static final int CASTLING_RIGHTS       = 2;
+	public static final int EP_TARGET             = 3;
+	public static final int HALFMOVE_CLOCK        = 4;
+	public static final int FULLMOVE_NUMBER       = 5;
+	
 	public static final boolean isDigit(char ch)
 	{
 		return '0' <= ch && ch <= '9';
@@ -46,9 +58,9 @@ public final class FENParser
 		}
 	}
 	
-	public static final int pieceCode(char pieceChar)
+	public static final int piece(char pieceCharacter)
 	{
-		switch(pieceChar)
+		switch(pieceCharacter)
 		{
 			case 'K':	return Piece.WHITE_KING;
 			case 'Q':	return Piece.WHITE_QUEEN;
@@ -66,58 +78,69 @@ public final class FENParser
 		}
 	}
 	
-	public static final char pieceChar(int pieceCode)
+	public static final int castlingRightBit(char castlingRightCharacter)
 	{
-		switch(pieceCode)
+		switch(castlingRightCharacter)
 		{
-			case Piece.WHITE_KING:			return 'K';
-			case Piece.WHITE_QUEEN:			return 'Q';
-			case Piece.WHITE_ROOK:			return 'R'; 
-			case Piece.WHITE_BISHOP:		return 'B';
-			case Piece.WHITE_KNIGHT:		return 'N';
-			case Piece.WHITE_PAWN:			return 'P'; 
-			case Piece.BLACK_KING:			return 'k';
-			case Piece.BLACK_QUEEN:			return 'q';
-			case Piece.BLACK_ROOK:			return 'r'; 
-			case Piece.BLACK_BISHOP:		return 'b';
-			case Piece.BLACK_KNIGHT:		return 'n';
-			case Piece.BLACK_PAWN:			return 'p'; 
-			default:						return '?';
+			case 'K':	return KING_CASTLE_WHITE;
+			case 'Q':	return QUEEN_CASTLE_WHITE;
+			case 'k':	return KING_CASTLE_BLACK;
+			case 'q':	return QUEEN_CASTLE_BLACK;
+			default:	return 0;
 		}
 	}
 	
-	public static final int castlingRightsBit(char c)
+	public static final int parseFENcastlingRights(String FENcastlingRights)
 	{
-		switch(c)
+		int castlingRights = 0;
+		for(int i = 0; i < FENcastlingRights.length(); i++)
 		{
-			case 'K':	return 0x8;
-			case 'Q':	return 0x4;
-			case 'k':	return 0x2;
-			case 'q':	return 0x1;
-			default:	return 0x0;
+			castlingRights |= castlingRightBit(FENcastlingRights.charAt(i));
 		}
+		return castlingRights;
 	}
 	
-	public static final void loadBoardPostion(CBoard board, String FENpos)
+	public static final int parseFENtoMove(String FENtoMove)
+	{
+		return FENtoMove.equals("w") ? Color.WHITE : Color.BLACK;
+	}
+	
+	public static final int parseFENepTarget(String FENepTarget)
+	{
+		return FENepTarget.equals("-") ? Square.NULL : Square.makeSquare(FENepTarget);
+	}
+	
+	public static final int parseFENhalfmoveClock(String FENhalfmoveClock)
+	{
+		return Integer.valueOf(FENhalfmoveClock);
+	}
+	
+	public static final int parseFENfullmoveNumber(String FENfullmoveNumber)
+	{
+		return Integer.valueOf(FENfullmoveNumber);
+	}
+	
+	//legacy code below this point.
+	
+	public static final void loadBoardPostion(CBoard board, String FEN)
 	{
 		board.clearBitboards();
-		
-		char c;
 		int i = 0, rank = 7, file = 0;
-		while(i < FENpos.length() && (c = FENpos.charAt(i++)) != ' ')
+		char ch;
+		while(i < FEN.length() && (ch = FEN.charAt(i++)) != ' ')
 		{
-			if(c == '/')
+			if(ch == '/')
 			{
 				rank--;
 				file = 0;
 			}
-			else if(isDigit(c))
+			else if(isDigit(ch))
 			{
-				file += c - '0';
+				file += ch - '0';
 			}
 			else
 			{
-				board.put(pieceCode(c), Square.makeSquare(rank, file));
+				board.put(piece(ch), Square.makeSquare(rank, file));
 				file++;
 			}
 		}
@@ -133,7 +156,7 @@ public final class FENParser
 		int castlingRights = 0, i = 0;
 		while(i < FENcr.length())
 		{
-			castlingRights |= castlingRightsBit(FENcr.charAt(i));
+			castlingRights |= castlingRightBit(FENcr.charAt(i));
 			i++;
 		}
 		return castlingRights;
@@ -156,8 +179,8 @@ public final class FENParser
 	
 	public static final String formatBoardPosition(CBoard board)
 	{
-		StringBuilder FEN = new StringBuilder();
 		int emptyCount = 0;
+		StringBuilder sb = new StringBuilder();
 		for(int rank = 7; 0 <= rank; rank--)
 		{
 			for(int file = 0; file < 8; file++)
@@ -168,24 +191,24 @@ public final class FENParser
 				}
 				else
 				{
-					FEN.append(emptyCount == 0 ? "" : emptyCount);
-					FEN.append(pieceChar(board.pieceAt(Square.makeSquare(rank, file))));
+					sb.append(emptyCount == 0 ? "" : emptyCount);
+					sb.append(FENFormatter.pieceCharacter(board.pieceAt(Square.makeSquare(rank, file))));
 					emptyCount = 0;
 				}
 			}
-			FEN.append(emptyCount == 0 ? "" : emptyCount);
-			FEN.append(rank == 0 ? "" : "/");
+			sb.append(emptyCount == 0 ? "" : emptyCount);
+			sb.append(rank == 0 ? "" : "/");
 			emptyCount = 0;
 		}
-		return FEN.toString();
+		return sb.toString();
 	}
 	
 	public static final String formatCastlingRights(int castlingRights)
 	{
-		return	(((castlingRights >> 3) & 1) == 1 ? "K" : "") +
-				(((castlingRights >> 2) & 1) == 1 ? "Q" : "") +
-				(((castlingRights >> 1) & 1) == 1 ? "k" : "") +
-				(((castlingRights >> 0) & 1) == 1 ? "q" : "") +
+		return	((castlingRights & KING_CASTLE_WHITE)   != 0 ? "K" : "") +
+				((castlingRights & QUEEN_CASTLE_WHITE)  != 0 ? "Q" : "") +
+				((castlingRights & KING_CASTLE_BLACK)   != 0 ? "k" : "") +
+				((castlingRights & QUEEN_CASTLE_BLACK)  != 0 ? "q" : "") +
 				(castlingRights == 0 ? "-" : "");
 	}
 	

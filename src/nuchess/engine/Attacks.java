@@ -29,12 +29,12 @@ public final class Attacks
 	
 	public static final long bishopAttacks(int square, long blockers)
 	{
-		return MagicBitboard.bishopAttacks(square, blockers);
+		return MagicBitboards.bishopAttacks(square, blockers);
 	}
 	
 	public static final long rookAttacks(int square, long blockers)
 	{
-		return MagicBitboard.rookAttacks(square, blockers);
+		return MagicBitboards.rookAttacks(square, blockers);
 	}
 	
 	public static final long queenAttacks(int square, long blockers)

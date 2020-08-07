@@ -59,9 +59,14 @@ public final class CMove
 		return ((move >> 15) & 1) == 1;
 	}
 	
+	public boolean equals(Object obj)
+	{
+		return obj == this || (obj instanceof CMove && ((CMove) obj).move == move);
+	}
+	
 	public final String toString()
 	{
-		return Square.coord(from()) + " -> " + Square.coord(to()) + ": " + flagsToString(flags());
+		return Square.coord(from()) + Square.coord(to());
 	}
 	
 	public final int hashCode()
