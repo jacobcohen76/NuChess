@@ -14,6 +14,8 @@ public abstract class Algorithm extends Computer
 	private Chessboard board;
 	private BoardEvaluator boardEvaluator;
 	private MoveEvaluator moveEvaluator;
+	private int[] moveEvaluations;
+	private int[] stack;
 	protected int depth;
 	
 	public Algorithm(String username, String userid, Chessboard board, BoardEvaluator boardEvaluator, MoveEvaluator moveEvaluator, int depth)
@@ -22,6 +24,8 @@ public abstract class Algorithm extends Computer
 		this.board = board;
 		this.boardEvaluator = boardEvaluator;
 		this.moveEvaluator = moveEvaluator;
+		this.moveEvaluations = new int[256];
+		this.stack = new int[256];
 		this.depth = depth;
 	}
 	
@@ -33,19 +37,76 @@ public abstract class Algorithm extends Computer
 		return computeMove();
 	}
 	
-	public void orderMoves(CMove[] moves, int n)
+	public void orderMoves(MoveList moves)
 	{
-		
+		for(int i = 0; i < moves.n; i++)
+		{
+			moveEvaluations[i] = moveEvaluator.evaluate(board, moves.array[i]);
+		}
+		quicksort(moveEvaluations, moves.array, 0, moves.n);
 	}
 	
-	public int evaluate(Chessboard board)
+	private int partition(int[] evaluations, CMove[] moves, int low, int high)
+	{
+		int pivot = evaluations[high];
+		int i = (low - 1);
+		
+		int tempEval;
+		CMove tempCMove;
+		
+		for(int j = low; j <= high - 1; j++)
+		{
+			if(evaluations[j] <= pivot)
+			{
+				i++;
+				
+				tempEval = evaluations[i];
+				evaluations[i] = evaluations[j];
+				evaluations[j] = tempEval;
+				
+				tempCMove = moves[i];
+				moves[i] = moves[j];
+				moves[j] = tempCMove;
+			}
+		}
+		
+		tempEval = evaluations[i + i];
+		evaluations[i + 1] = evaluations[high];
+		evaluations[high] = tempEval;
+		
+		tempCMove = moves[i + 1];
+		moves[i + 1] = moves[high];
+		moves[high] = tempCMove;
+		
+		return i + 1;
+	}
+	
+	private void quicksort(int[] evaluations, CMove[] moves, int l, int h)
+	{
+		int top = -1, p;
+		stack[++top] = l;
+		stack[++top] = h;
+		while(top >= 0)
+		{
+			h = stack[top--];
+			l = stack[top--];
+			p = partition(evaluations, moves, l, h);
+			if(p - 1 > l)
+			{
+				stack[++top] = l;
+				stack[++top] = p - 1;
+			}
+			if(p + 1 < h)
+			{
+				stack[++top] = p + 1;
+				stack[++top] = h;
+			}
+		}
+	}
+	
+	public int getBoardEvaluation()
 	{
 		return boardEvaluator.evaluate(board);
-	}
-	
-	public int evaluate(CMove move)
-	{
-		return moveEvaluator.evaluate(board, move);
 	}
 	
 	public MoveList generateMoves()

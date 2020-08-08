@@ -10,7 +10,11 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import nuchess.engine.CBoard;
+import nuchess.engine.Chessboard;
 import nuchess.player.Player;
+import nuchess.player.computer.algorithm.MiniMax;
+import nuchess.player.computer.evaluator.BoardEvaluator;
+import nuchess.player.computer.evaluator.SimpleBoardEvaluator;
 import nuchess.player.human.Human;
 import nuchess.ui.Control;
 import nuchess.ui.View;
@@ -113,15 +117,15 @@ public class RootControl implements Control
 	
 	private Control constructNewGameController()
 	{
-//		Chessboard engine;
-//		Evaluator evaluator;
-//		int depth;
+		Chessboard board;
+		BoardEvaluator evaluator;
+		int depth;
 		
-//		engine = new Chessboard();
-//		evaluator = new MaterialEvaluator();
-//		depth = 6;
-//		Player white = new MiniMax("MiniMax Material Evaluator, Depth = " + depth, "", engine, evaluator, depth);
-		Player white = new Human("Jacob Cohen", "");
+		board = new Chessboard();
+		evaluator = new SimpleBoardEvaluator();
+		depth = 5;
+		Player white = new MiniMax("MiniMax, Depth = " + depth, "", board, evaluator, depth);
+//		Player white = new Human("Jacob Cohen", "");
 
 		
 //		engine = new ChessEngine();
@@ -131,7 +135,7 @@ public class RootControl implements Control
 		Player black = new Human("Jacob Cohen", "");
 		
 		GameView view = new GameView();
-		GameControl control = new GameControl(view, white, black, "r3k2r/p1p1qpb1/bn1ppnp1/3PN3/1p2P3/P1N2Q1p/1PPB1PPP/R3KB1R w KQkq - 1 2");
+		GameControl control = new GameControl(view, white, black, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 		return control;
 	}
 	

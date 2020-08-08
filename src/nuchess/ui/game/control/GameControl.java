@@ -61,7 +61,7 @@ public class GameControl implements Control
 	
 	public void updateView(String SAN)
 	{
-		long checkBB = engine.inCheck() ? engine.bitboards[Piece.WHITE_KING + engine.toMove] : 0L;
+		long checkBB = engine.inCheck() ? engine.bitboards[Piece.WHITE_KING + engine.toMove]: 0L;
 		long occBB = engine.bitboards[Chessboard.OCC];
 		CMove move = moveHistory.getLast();
 		List<CMove> legalMoves = generateLegalMoves();
@@ -78,7 +78,7 @@ public class GameControl implements Control
 		ArrayList<CMove> moves = new ArrayList<CMove>();
 		for(int i = 0; i < moveList.n; i++)
 		{
-			if(moveList.array[i] != null)
+			if(engine.canMake(moveList.array[i]))
 			{
 				moves.add(moveList.array[i]);
 			}

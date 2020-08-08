@@ -37,7 +37,7 @@ public class Testing
 //		System.out.println(board.attacksTo(board.king[board.toMove], board.toMove ^ 1, board.bitboards[Chessboard.OCC]));
 //		System.out.println(board.generateLegalMoves());
 		
-		runPerft("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 8);
+		runPerft("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 6);
 	}
 	
 	private static Chessboard board;
