@@ -11,7 +11,7 @@ public abstract class Algorithm extends Computer
 {
 	private static final long serialVersionUID = -4720820152801149073L;
 	
-	private Chessboard board;
+	protected Chessboard board;
 	private BoardEvaluator boardEvaluator;
 	private MoveEvaluator moveEvaluator;
 	private int[] moveEvaluations;
@@ -43,13 +43,13 @@ public abstract class Algorithm extends Computer
 		{
 			moveEvaluations[i] = moveEvaluator.evaluate(board, moves.array[i]);
 		}
-		quicksort(moveEvaluations, moves.array, 0, moves.n);
+		quicksort(moveEvaluations, moves.array, 0, moves.n - 1);
 	}
 	
 	private int partition(int[] evaluations, CMove[] moves, int low, int high)
 	{
 		int pivot = evaluations[high];
-		int i = (low - 1);
+		int i = low - 1;
 		
 		int tempEval;
 		CMove tempCMove;
@@ -70,7 +70,7 @@ public abstract class Algorithm extends Computer
 			}
 		}
 		
-		tempEval = evaluations[i + i];
+		tempEval = evaluations[i + 1];
 		evaluations[i + 1] = evaluations[high];
 		evaluations[high] = tempEval;
 		

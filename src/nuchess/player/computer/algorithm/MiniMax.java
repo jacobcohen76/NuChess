@@ -26,12 +26,12 @@ public class MiniMax extends Algorithm
 			{
 				make(moves.array[i]);
 				score = mini(depth - 1);
+				unmake(moves.array[i]);
 				if(score > max)
 				{
 					max = score;
 					move = moves.array[i];
 				}
-				unmake(moves.array[i]);
 			}
 		}
 		return move;
@@ -53,11 +53,11 @@ public class MiniMax extends Algorithm
 				{
 					make(moves.array[i]);
 					score = mini(depth - 1);
+					unmake(moves.array[i]);
 					if(score > max)
 					{
 						max = score;
 					}
-					unmake(moves.array[i]);
 				}
 			}
 			return max;
@@ -80,11 +80,11 @@ public class MiniMax extends Algorithm
 				{
 					make(moves.array[i]);
 					score = maxi(depth - 1);
+					unmake(moves.array[i]);
 					if(score < min)
 					{
 						min = score;
 					}
-					unmake(moves.array[i]);
 				}
 			}
 			return min;

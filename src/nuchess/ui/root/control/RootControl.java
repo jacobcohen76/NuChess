@@ -12,9 +12,12 @@ import javax.swing.KeyStroke;
 import nuchess.engine.CBoard;
 import nuchess.engine.Chessboard;
 import nuchess.player.Player;
+import nuchess.player.computer.algorithm.AlphaBeta;
 import nuchess.player.computer.algorithm.MiniMax;
 import nuchess.player.computer.evaluator.BoardEvaluator;
+import nuchess.player.computer.evaluator.MoveEvaluator;
 import nuchess.player.computer.evaluator.SimpleBoardEvaluator;
+import nuchess.player.computer.evaluator.SimpleMoveEvaluator;
 import nuchess.player.human.Human;
 import nuchess.ui.Control;
 import nuchess.ui.View;
@@ -118,13 +121,16 @@ public class RootControl implements Control
 	private Control constructNewGameController()
 	{
 		Chessboard board;
-		BoardEvaluator evaluator;
+		BoardEvaluator boardEvaluator;
+		MoveEvaluator moveEvaluator;
 		int depth;
 		
 		board = new Chessboard();
-		evaluator = new SimpleBoardEvaluator();
-		depth = 5;
-		Player white = new MiniMax("MiniMax, Depth = " + depth, "", board, evaluator, depth);
+		boardEvaluator = new SimpleBoardEvaluator();
+		moveEvaluator = new SimpleMoveEvaluator();
+		depth = 7;
+		Player white = new AlphaBeta("AlphaBeta, Depth = " + depth, "", board, boardEvaluator, moveEvaluator, depth);
+//		Player white = new MiniMax("MiniMax, Depth = " + depth, "", board, boardEvaluator, depth);
 //		Player white = new Human("Jacob Cohen", "");
 
 		

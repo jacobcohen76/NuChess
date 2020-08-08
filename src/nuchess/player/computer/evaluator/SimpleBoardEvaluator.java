@@ -7,26 +7,21 @@ public class SimpleBoardEvaluator implements BoardEvaluator
 {
 	private static final int[] VALUE = new int[]
 	{
-		0,
-		0,
+		+0,
 		+1,
-		-1,
 		+3,
-		-3,
 		+3,
-		-3,
 		+5,
-		-5,
 		+9,
-		-9,
+		+0,
 	};
 	
 	public int evaluate(Chessboard board)
 	{
 		int score = 0;
-		for(int piece = Piece.WHITE_PAWN; piece <= Piece.BLACK_QUEEN; piece++)
+		for(int piece = Piece.WHITE_PAWN; piece <= Piece.BLACK_KING; piece += 2)
 		{
-			score += VALUE[piece] * board.material[piece];
+			score += VALUE[Piece.pieceType(piece)] * (board.material[piece + board.toMove] - board.material[piece + board.toMove ^ 1]);
 		}
 		return score;
 	}

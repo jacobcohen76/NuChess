@@ -46,7 +46,7 @@ public final class Chessboard
 		checks = 0L;
 		material = new int[15];
 		king = new int[2];
-		unmakeInfo = new int[50];
+		unmakeInfo = new int[200];
 		toMove = Color.WHITE;
 		ply = 0;
 		halfmoveClock = 0;

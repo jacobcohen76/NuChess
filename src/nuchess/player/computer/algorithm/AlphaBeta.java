@@ -21,6 +21,7 @@ public class AlphaBeta extends Algorithm
 		int max = Integer.MIN_VALUE, score;
 		CMove move = null;
 		MoveList moves = generateMoves();
+//		orderMoves(moves);
 		for(int i = 0; i < moves.n; i++)
 		{
 			if(canMake(moves.array[i]))
@@ -48,12 +49,14 @@ public class AlphaBeta extends Algorithm
 		{
 			int score;
 			MoveList moves = generateMoves();
+//			orderMoves(moves);
 			for(int i = 0; i < moves.n; i++)
 			{
 				if(canMake(moves.array[i]))
 				{
 					make(moves.array[i]);
 					score = abMin(a, b, depth - 1);
+					unmake(moves.array[i]);
 					if(score >= b)
 					{
 						return b;
@@ -62,7 +65,6 @@ public class AlphaBeta extends Algorithm
 					{
 						a = score;
 					}
-					unmake(moves.array[i]);
 				}
 			}
 			return a;
@@ -79,12 +81,14 @@ public class AlphaBeta extends Algorithm
 		{
 			int score;
 			MoveList moves = generateMoves();
+//			orderMoves(moves);
 			for(int i = 0; i < moves.n; i++)
 			{
 				if(canMake(moves.array[i]))
 				{
 					make(moves.array[i]);
 					score = abMax(a, b, depth - 1);
+					unmake(moves.array[i]);
 					if(score <= a)
 					{
 						return a;
@@ -93,7 +97,6 @@ public class AlphaBeta extends Algorithm
 					{
 						b = score;
 					}
-					unmake(moves.array[i]);
 				}
 			}
 			return b;
