@@ -103,6 +103,11 @@ public final class CMove
 		return flags;
 	}
 	
+	public static final int flags(short raw16bits)
+	{
+		return (raw16bits >> 12) & 0xF;
+	}
+	
 	public static final String flagsToString(int flags)
 	{
 		switch(flags)

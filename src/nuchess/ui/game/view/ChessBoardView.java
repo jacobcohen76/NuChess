@@ -113,6 +113,16 @@ class ChessBoardView
 		}
 	}
 	
+	public int getX(int square)
+	{
+		return cbg.getX(square);
+	}
+	
+	public int getY(int square)
+	{
+		return cbg.getY(square);
+	}
+	
 	private void moved(MouseEvent e)
 	{
 		int square = cbg.getSquare(e.getX(), e.getY());
@@ -128,8 +138,14 @@ class ChessBoardView
 	
 	protected void requestMove(CMove move)
 	{
-		parent.requestMove(move);
 		lgp.setCursor(DEFAULT_CURSOR);
+		parent.requestMove(move);
+	}
+	
+	protected void requestPromoMove(boolean isCapture, int from, int to)
+	{
+		lgp.setCursor(DEFAULT_CURSOR);
+		parent.requestPromoMove(isCapture, from, to);
 	}
 	
 	public void setSelectionEnabled(boolean b)

@@ -120,20 +120,19 @@ public class RootControl implements Control
 	
 	private Control constructNewGameController()
 	{
-		Chessboard board;
-		BoardEvaluator boardEvaluator;
-		MoveEvaluator moveEvaluator;
-		int depth;
-		
-		board = new Chessboard();
-		boardEvaluator = new SimpleBoardEvaluator();
-		moveEvaluator = new SimpleMoveEvaluator();
-		depth = 7;
-		Player white = new AlphaBeta("AlphaBeta, Depth = " + depth, "", board, boardEvaluator, moveEvaluator, depth);
+//		Chessboard board;
+//		BoardEvaluator boardEvaluator;
+//		MoveEvaluator moveEvaluator;
+//		int depth;
+//		
+//		board = new Chessboard();
+//		boardEvaluator = new SimpleBoardEvaluator();
+//		moveEvaluator = new SimpleMoveEvaluator();
+//		depth = 7;
+//		Player white = new AlphaBeta("AlphaBeta, Depth = " + depth, "", board, boardEvaluator, moveEvaluator, depth);
 //		Player white = new MiniMax("MiniMax, Depth = " + depth, "", board, boardEvaluator, depth);
-//		Player white = new Human("Jacob Cohen", "");
+		Player white = new Human("Jacob Cohen", "");
 
-		
 //		engine = new ChessEngine();
 //		evaluator = new MaterialEvaluator();
 //		depth = 5;
@@ -141,7 +140,8 @@ public class RootControl implements Control
 		Player black = new Human("Jacob Cohen", "");
 		
 		GameView view = new GameView();
-		GameControl control = new GameControl(view, white, black, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+//		GameControl control = new GameControl(view, white, black, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+		GameControl control = new GameControl(view, white, black, "rnbkqb1r/ppppppPp/5n2/8/8/8/PPPPP1PP/RNBKQBNR w - - 0 5");
 		return control;
 	}
 	

@@ -154,6 +154,25 @@ class MoveSelector
 	
 	private void requestMove(int from, int to)
 	{
-		parent.requestMove(new CMove(moves[from][to]));
+		switch(CMove.flags(moves[from][to]))
+		{
+			case CMove.KNIGHT_PROMO:
+			case CMove.BISHOP_PROMO:
+			case CMove.ROOK_PROMO:
+			case CMove.QUEEN_PROMO:
+				parent.requestPromoMove(false, from, to);
+				break;
+				
+			case CMove.KNIGHT_PROMO_CAP:
+			case CMove.BISHOP_PROMO_CAP:
+			case CMove.ROOK_PROMO_CAP:
+			case CMove.QUEEN_PROMO_CAP:
+				parent.requestPromoMove(true, from, to);
+				break;
+				
+			default:
+				parent.requestMove(new CMove(moves[from][to]));
+				break;
+		}
 	}
 }

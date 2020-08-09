@@ -18,6 +18,7 @@ public class GameView implements View
 	private JPanel panel;
 	private ChessBoardView boardView;
 	private ActionPanel actionPanel;
+	private PromotionDialog promotionDialog;
 	private Tab tab;
 	
 	private String whitePlayerName, blackPlayerName;
@@ -47,6 +48,7 @@ public class GameView implements View
 		panel = new JPanel();
 		boardView = new ChessBoardView(flipped);
 		actionPanel = new ActionPanel();
+		promotionDialog = new PromotionDialog();
 		panel.setOpaque(false);
 	}
 	
@@ -72,9 +74,34 @@ public class GameView implements View
 		actionPanel.parent = this;
 	}
 	
+	private void displayPromoDialog(boolean isCapture, int from, int to)
+	{
+		System.out.println("test");
+//		short move = 0;
+		if(isCapture)
+		{
+			promotionDialog.setColor(actionPanel.getMaxPly() & 1);
+			promotionDialog.setLocation(boardView.getPanel().getX() + boardView.getX(to), boardView.getPanel().getY() + boardView.getY(to));
+			promotionDialog.setVisible(true);
+		}
+		else
+		{
+			promotionDialog.setColor(actionPanel.getMaxPly() & 1);
+			java.awt.Point p = boardView.getPanel().getLocationOnScreen();
+			promotionDialog.setLocation(boardView.getX(to) + p.x, boardView.getY(to) + p.y);
+			promotionDialog.setVisible(true);
+		}
+//		control.make(new CMove(move));
+	}
+	
 	protected void requestMove(CMove move)
 	{
 		control.make(move);
+	}
+	
+	protected void requestPromoMove(boolean isCapture, int from, int to)
+	{
+		displayPromoDialog(isCapture, from, to);
 	}
 	
 	protected void displayState(int ply)

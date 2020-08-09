@@ -96,6 +96,11 @@ class ActionPanel
 		parent.displayState(ply);
 	}
 	
+	public int getMaxPly()
+	{
+		return mhp.getMaxPly();
+	}
+	
 	protected void toggleFlipped()
 	{
 		swapPlayerLabels();
