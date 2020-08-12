@@ -101,7 +101,8 @@ public class GameView implements View
 	
 	protected void requestPromoMove(boolean isCapture, int from, int to)
 	{
-		displayPromoDialog(isCapture, from, to);
+//		parent.setPromoState(true);
+//		displayPromoDialog(isCapture, from, to);
 	}
 	
 	protected void displayState(int ply)

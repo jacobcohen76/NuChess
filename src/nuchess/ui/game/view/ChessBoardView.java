@@ -25,13 +25,13 @@ class ChessBoardView
 	private LayeredGraphicsPanel lgp;
 	private MoveSelector selector;
 	private ChessboardGraphics cbg;
-	private MouseMotionListener enabledMML, disabledMML;
-	private MouseListener enabledML, disabledML;
+	private MouseMotionListener enabledMML, promoMML, disabledMML;
+	private MouseListener enabledML, promoML, disabledML;
 	private ArrayList<BoardViewState> states;
 	private BoardViewState currentState;
-	private long occ, dots, corners;
-	private int cursorSquare;
-	private boolean externalSelectionEnabled, internalSelectionEnabled;
+	private long occ, dots, corners, promo;
+	private int cursorSquare, promoFrom, promoTo;
+	private boolean externalSelectionEnabled, internalSelectionEnabled, promoState, promoIsCapture;
 	
 	protected GameView parent;
 	
@@ -46,10 +46,11 @@ class ChessBoardView
 		states = new ArrayList<BoardViewState>();
 		currentState = null;
 		cursorSquare = Square.NULL;
-		occ = dots = corners = 0L;
+		occ = dots = corners = promo = 0L;
 		
 		externalSelectionEnabled = true;
 		internalSelectionEnabled = true;
+		promoState = false;
 		
 		initListeners();
 		linkObjects();
@@ -71,6 +72,19 @@ class ChessBoardView
 		{
 			public void mouseClicked(MouseEvent e)	{}
 			public void mousePressed(MouseEvent e)	{ pressed(e); }
+			public void mouseReleased(MouseEvent e)	{}
+			public void mouseEntered(MouseEvent e)	{}
+			public void mouseExited(MouseEvent e)	{}
+		};
+		promoMML = new MouseMotionListener()
+		{
+			public void mouseDragged(MouseEvent e)	{ promoMoved(e); }
+			public void mouseMoved(MouseEvent e)	{ promoMoved(e); }
+		};
+		promoML = new MouseListener()
+		{
+			public void mouseClicked(MouseEvent e)	{}
+			public void mousePressed(MouseEvent e)	{ promoPressed(e); }
 			public void mouseReleased(MouseEvent e)	{}
 			public void mouseEntered(MouseEvent e)	{}
 			public void mouseExited(MouseEvent e)	{}
@@ -113,21 +127,54 @@ class ChessBoardView
 		}
 	}
 	
-	public int getX(int square)
-	{
-		return cbg.getX(square);
-	}
-	
-	public int getY(int square)
-	{
-		return cbg.getY(square);
-	}
-	
 	private void moved(MouseEvent e)
 	{
 		int square = cbg.getSquare(e.getX(), e.getY());
 		if(square != cursorSquare)
+		{
 			updateCursor(square);
+		}
+	}
+	
+	private void promoPressed(MouseEvent e)
+	{
+		int square = cbg.getSquare(e.getX(), e.getY());
+		if(((promo >> square) & 1) == 1)
+		{
+			switch(Square.rank(square))
+			{
+				case Square.rank_1:
+				case Square.rank_8:
+					parent.requestMove(new CMove(promoFrom, promoTo, promoIsCapture ? CMove.QUEEN_PROMO_CAP : CMove.QUEEN_PROMO));
+					break;
+					
+				case Square.rank_2:
+				case Square.rank_7:
+					parent.requestMove(new CMove(promoFrom, promoTo, promoIsCapture ? CMove.KNIGHT_PROMO_CAP : CMove.KNIGHT_PROMO));
+					break;
+					
+				case Square.rank_3:
+				case Square.rank_6:
+					parent.requestMove(new CMove(promoFrom, promoTo, promoIsCapture ? CMove.ROOK_PROMO_CAP : CMove.ROOK_PROMO));
+					break;
+					
+				case Square.rank_4:
+				case Square.rank_5:
+					parent.requestMove(new CMove(promoFrom, promoTo, promoIsCapture ? CMove.BISHOP_PROMO_CAP : CMove.BISHOP_PROMO));
+					break;
+			}
+		}
+		setPromoState(false, square);
+	}
+	
+	private void promoMoved(MouseEvent e)
+	{
+		int square = cbg.getSquare(e.getX(), e.getY());
+		if(square != cursorSquare)
+		{
+			lgp.setCursor(((promo >> square) & 1) == 1 ? HAND_CURSOR : DEFAULT_CURSOR);
+			cursorSquare = square;
+		}
 	}
 	
 	private void updateCursor(int square)
@@ -144,8 +191,10 @@ class ChessBoardView
 	
 	protected void requestPromoMove(boolean isCapture, int from, int to)
 	{
-		lgp.setCursor(DEFAULT_CURSOR);
-		parent.requestPromoMove(isCapture, from, to);
+		promoIsCapture = isCapture;
+		promoFrom = from;
+		promoTo = to;
+		setPromoState(true, to);
 	}
 	
 	public void setSelectionEnabled(boolean b)
@@ -153,9 +202,18 @@ class ChessBoardView
 		externalSelectionEnabled = b;
 		if(externalSelectionEnabled && internalSelectionEnabled)
 		{
-			lgp.setMouseListener(enabledML);
-			lgp.setMouseMotionListener(enabledMML);
-			updateCursor(cursorSquare);
+			if(promoState)
+			{
+				lgp.setMouseListener(promoML);
+				lgp.setMouseMotionListener(promoMML);
+				lgp.setCursor(((promo >> cursorSquare) & 1) == 1 ? HAND_CURSOR : DEFAULT_CURSOR);
+			}
+			else
+			{
+				lgp.setMouseListener(enabledML);
+				lgp.setMouseMotionListener(enabledMML);
+				updateCursor(cursorSquare);
+			}
 		}
 		else
 		{
@@ -181,9 +239,18 @@ class ChessBoardView
 		internalSelectionEnabled = b;
 		if(externalSelectionEnabled && internalSelectionEnabled)
 		{
-			lgp.setMouseListener(enabledML);
-			lgp.setMouseMotionListener(enabledMML);
-			updateCursor(cursorSquare);
+			if(promoState)
+			{
+				lgp.setMouseListener(promoML);
+				lgp.setMouseMotionListener(promoMML);
+				lgp.setCursor(((promo >> cursorSquare) & 1) == 1 ? HAND_CURSOR : DEFAULT_CURSOR);
+			}
+			else
+			{
+				lgp.setMouseListener(enabledML);
+				lgp.setMouseMotionListener(enabledMML);
+				updateCursor(cursorSquare);
+			}
 		}
 		else
 		{
@@ -262,6 +329,40 @@ class ChessBoardView
 		cbg.paintCorners(from);
 	}
 	
+	public void setPromoState(boolean b, int square)
+	{
+		if(promoState != b)
+		{
+			if(b)
+			{
+				lgp.setMouseListener(promoML);
+				lgp.setMouseMotionListener(promoMML);
+				if(Square.rank(square) == Square.rank_1)
+				{
+					promo = 0x0000000001010101L;
+					promo <<= Square.file(square);
+				}
+				else if(Square.rank(square) == Square.rank_8)
+				{
+					promo = 0x0101010100000000L;
+					promo <<= Square.file(square);
+				}
+				cbg.paintPromoState(square, promo);
+				lgp.repaint();
+			}
+			else
+			{
+				promo = 0L;
+				updateCursor(cursorSquare);
+				lgp.setMouseListener(enabledML);
+				lgp.setMouseMotionListener(enabledMML);
+				cbg.clear(ChessboardGraphics.PROMO_LAYER);
+				lgp.repaint();
+			}
+			promoState = b;
+		}
+	}
+	
 	public void setInitialState(BoardViewState initialState)
 	{
 		currentState = initialState;
@@ -294,5 +395,15 @@ class ChessBoardView
 	public BufferedImage getRenderedImage()
 	{
 		return cbg.getRenderedImage();
+	}
+	
+	public int getX(int square)
+	{
+		return cbg.getX(square);
+	}
+	
+	public int getY(int square)
+	{
+		return cbg.getY(square);
 	}
 }

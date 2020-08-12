@@ -141,7 +141,7 @@ public class RootControl implements Control
 		
 		GameView view = new GameView();
 //		GameControl control = new GameControl(view, white, black, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-		GameControl control = new GameControl(view, white, black, "rnbkqb1r/ppppppPp/5n2/8/8/8/PPPPP1PP/RNBKQBNR w - - 0 5");
+		GameControl control = new GameControl(view, white, black, "rnbqkbnr/pPpppppp/8/8/8/8/PpPPPPPP/RNBQKBNR w - - 0 1");
 		return control;
 	}
 	

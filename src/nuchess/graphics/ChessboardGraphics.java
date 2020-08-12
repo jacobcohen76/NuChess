@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import nuchess.engine.Bits;
 import nuchess.engine.CMove;
 import nuchess.engine.FENParser;
+import nuchess.engine.Piece;
 import nuchess.engine.Square;
 
 public class ChessboardGraphics
@@ -27,7 +28,8 @@ public class ChessboardGraphics
 	public static final int CORNER_LAYER				= 5;
 	public static final int RING_LAYER					= 6;
 	public static final int ARROW_LAYER					= 7;
-	public static final int NUM_LAYERS					= 8;
+	public static final int PROMO_LAYER					= 8;
+	public static final int NUM_LAYERS					= 9;
 	
 	private LayeredGraphics lg;
 	private boolean flipped;
@@ -234,6 +236,24 @@ public class ChessboardGraphics
 	public int getSquare(int x, int y)
 	{
 		return Square.makeSquare(getRank(y), getFile(x));
+	}
+	
+	public void paintPromoState(int square, long promo)
+	{
+		if(Square.rank(square) == Square.rank_1)
+		{
+			paint(ResourceManager.getTexture(Piece.BLACK_QUEEN),  square +  0, PROMO_LAYER);
+			paint(ResourceManager.getTexture(Piece.BLACK_KNIGHT), square +  8, PROMO_LAYER);
+			paint(ResourceManager.getTexture(Piece.BLACK_ROOK),   square + 16, PROMO_LAYER);
+			paint(ResourceManager.getTexture(Piece.BLACK_BISHOP), square + 24, PROMO_LAYER);
+		}
+		else if(Square.rank(square) == Square.rank_8)
+		{
+			paint(ResourceManager.getTexture(Piece.WHITE_QUEEN),  square -  0, PROMO_LAYER);
+			paint(ResourceManager.getTexture(Piece.WHITE_KNIGHT), square -  8, PROMO_LAYER);
+			paint(ResourceManager.getTexture(Piece.WHITE_ROOK),   square - 16, PROMO_LAYER);
+			paint(ResourceManager.getTexture(Piece.WHITE_BISHOP), square - 24, PROMO_LAYER);
+		}
 	}
 	
 	private void resizeLayeredGraphics(int w, int h)
