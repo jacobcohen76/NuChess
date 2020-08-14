@@ -14,19 +14,19 @@ public final class Chessboard
 	private static final long KCB_OCC             = 0x6000000000000000L;
 	private static final long QCB_OCC             = 0x0E00000000000000L;
 	
-	private static final int modifiedCastlingRights(int square)
-	{
-		switch(square)
-		{
-			case Square.a1:		return 0b1011;
-			case Square.e1:		return 0b0011;
-			case Square.h1:		return 0b0111;
-			case Square.a8:		return 0b1110;
-			case Square.e8:		return 0b1100;
-			case Square.h8:		return 0b1101;
-			default:			return 0b1111;
-		}
-	}
+//	private static final int modifiedCastlingRights(int square)
+//	{
+//		switch(square)
+//		{
+//			case Square.a1:		return 0b1011;
+//			case Square.e1:		return 0b0011;
+//			case Square.h1:		return 0b0111;
+//			case Square.a8:		return 0b1110;
+//			case Square.e8:		return 0b1100;
+//			case Square.h8:		return 0b1101;
+//			default:			return 0b1111;
+//		}
+//	}
 	
 	public long[] bitboards;
 	public long zobristKey, checks;
@@ -52,6 +52,16 @@ public final class Chessboard
 		halfmoveClock = 0;
 		castlingRights = 0;
 		epTarget = Square.NULL;
+	}
+	
+	public void resizeUnmakeInfo(int n)
+	{
+		int[] resizedUnmakeInfo = new int[unmakeInfo.length + n];
+		for(int i = 0; i < unmakeInfo.length; i++)
+		{
+			resizedUnmakeInfo[i] = unmakeInfo[i];
+		}
+		unmakeInfo = resizedUnmakeInfo;
 	}
 	
 	public MoveList generateMoves()
@@ -96,7 +106,8 @@ public final class Chessboard
 	
 	public boolean canMake(CMove move)
 	{
-		return	(contains(Piece.WHITE_KING + toMove, move.from()) ?
+		return	move != null && halfmoveClock < 100 &&
+				(contains(Piece.WHITE_KING + toMove, move.from()) ?
 					(!isAttacked(move.to(), toMove ^ 1, occAfter(move))) :
 					(attacksTo(king[toMove], toMove ^ 1, occAfter(move)) & ~move.captureBitboard()) == 0);
 	}
@@ -135,6 +146,7 @@ public final class Chessboard
 		}
 		move(moving, move.from(), move.to());
 		epTarget = move.flags() == CMove.DOUBLE_PAWN_PUSH ? (toMove == Color.WHITE ? -8 : +8) + move.to() : Square.NULL;
+		zobristKey ^= Zobrist.BLACK;
 		toMove ^= 1;
 		checks = attacksTo(king[toMove], toMove ^ 1, bitboards[OCC]);
 		ply++;
@@ -144,6 +156,7 @@ public final class Chessboard
 	{
 		ply--;
 		toMove ^= 1;
+		zobristKey ^= Zobrist.BLACK;
 		move(move.to(), move.from());
 		if(move.flags() == CMove.KING_CASTLE)
 		{
@@ -191,11 +204,11 @@ public final class Chessboard
 	{
 		bitboards[piece] &= ~(1L << square);
 		bitboards[piece & 1] &= ~(1L << square);
-//		zobristKey ^= 
+		zobristKey ^= Zobrist.PIECE[piece][square];
 		
 		bitboards[promotion] |= 1L << square;
 		bitboards[promotion & 1] |= 1L << square;
-//		zobristKey ^= 
+		zobristKey ^= Zobrist.PIECE[promotion][square];
 	}
 	
 	public void move(int from, int to)
@@ -208,12 +221,12 @@ public final class Chessboard
 		bitboards[piece] &= ~(1L << from);
 		bitboards[piece & 1] &= ~(1L << from);
 		bitboards[OCC] &= ~(1L << from);
-//		zobristKey ^= 
+		zobristKey ^= Zobrist.PIECE[piece][from];
 		
 		bitboards[piece] |= 1L << to;
 		bitboards[piece & 1] |= 1L << to;
 		bitboards[OCC] |= 1L << to;
-//		zobristKey ^= 
+		zobristKey ^= Zobrist.PIECE[piece][to];
 		
 		if(Piece.pieceType(piece) == Piece.PAWN)
 		{
@@ -223,8 +236,7 @@ public final class Chessboard
 		{
 			king[toMove] = to;
 		}
-		castlingRights &= modifiedCastlingRights(from);
-//		zobristKey ^= 
+		updateCastlingRights(from);
 	}
 	
 	public int capture(int square)
@@ -232,8 +244,7 @@ public final class Chessboard
 		int piece = pieceAt(square, toMove ^ 1);
 		remove(piece, square);
 		halfmoveClock = 0;
-		castlingRights &= modifiedCastlingRights(square);
-//		zobristKey ^= 
+		updateCastlingRights(square);
 		return piece;
 	}
 	
@@ -241,8 +252,44 @@ public final class Chessboard
 	{
 		remove(piece, square);
 		halfmoveClock = 0;
-		castlingRights &= modifiedCastlingRights(square);
-//		zobristKey ^= 
+		updateCastlingRights(square);
+	}
+	
+	private void updateCastlingRights(int square)
+	{
+		switch(square)
+		{
+			case Square.a1:
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				castlingRights &= 0b1011;
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				break;
+			case Square.e1:
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				castlingRights &= 0b0011;
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				break;
+			case Square.h1:
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				castlingRights &= 0b0111;
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				break;
+			case Square.a8:
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				castlingRights &= 0b1110;
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				break;
+			case Square.e8:
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				castlingRights &= 0b1100;
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				break;
+			case Square.h8:
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				castlingRights &= 0b1101;
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				break;
+		}
 	}
 	
 	public void put(int piece, int square)
@@ -272,7 +319,7 @@ public final class Chessboard
 		material[piece & 1]--;
 		material[OCC]--;
 		
-//		zobristKey ^= 
+		zobristKey ^= Zobrist.PIECE[piece][square];
 	}
 	
 	public boolean isAttacked(int square, int by, long occ)
@@ -448,6 +495,16 @@ public final class Chessboard
 		halfmoveClock = FENParser.parseFENhalfmoveClock(elements[FENParser.HALFMOVE_CLOCK]);
 		ply = ((FENParser.parseFENfullmoveNumber(elements[FENParser.FULLMOVE_NUMBER]) - 1) << 1) + toMove;
 		checks = attacksTo(king[toMove], toMove ^ 1, bitboards[OCC]);
+		
+		if(toMove == Color.BLACK)
+		{
+			zobristKey ^= Zobrist.BLACK;
+		}
+		if(epTarget != Square.NULL)
+		{
+			zobristKey ^= Zobrist.ENPASSANT[Square.file(epTarget)];
+		}
+		zobristKey ^= Zobrist.CASTLE[castlingRights];
 	}
 	
 	private void loadFENlayout(String FENlayout)

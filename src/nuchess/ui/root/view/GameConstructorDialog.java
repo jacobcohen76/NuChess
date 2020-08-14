@@ -2,6 +2,7 @@ package nuchess.ui.root.view;
 
 import javax.swing.JDialog;
 
+import nuchess.engine.Color;
 import nuchess.player.Player;
 import nuchess.player.human.Human;
 import nuchess.ui.root.control.RootControl;
@@ -21,12 +22,15 @@ public class GameConstructorDialog extends JDialog
 		contentPanel = new ContentPanel();
 		whitePlayer = new Human("Default White");
 		blackPlayer = new Human("Default Black");
-		wpcd = new PlayerConstructorDialog();
-		bpcd = new PlayerConstructorDialog();
+		wpcd = new PlayerConstructorDialog(Color.WHITE);
+		bpcd = new PlayerConstructorDialog(Color.BLACK);
 		control = null;
 		
 		wpcd.setTitle("Choose White Player");
-		bpcd.setTitle("Choose White Player");
+		wpcd.gcd = this;
+		
+		bpcd.setTitle("Choose Black Player");
+		bpcd.gcd = this;
 		
 		add(contentPanel);
 		
@@ -38,6 +42,18 @@ public class GameConstructorDialog extends JDialog
 	public void hideDialog()
 	{
 		setVisible(false);
+	}
+	
+	public void setWhitePlayer(Player player)
+	{
+		whitePlayer = player;
+		contentPanel.setWhitePlayerUsername(player.getUsername());
+	}
+	
+	public void setBlackPlayer(Player player)
+	{
+		blackPlayer = player;
+		contentPanel.setBlackPlayerUsername(player.getUsername());
 	}
 	
 	/**
@@ -100,7 +116,7 @@ public class GameConstructorDialog extends JDialog
 	        });
 	        gridBagConstraints = new java.awt.GridBagConstraints();
 	        gridBagConstraints.gridx = 17;
-	        gridBagConstraints.gridy = 1;
+	        gridBagConstraints.gridy = 0;
 	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
 	        add(chooseWhitePlayerButton, gridBagConstraints);
 
@@ -128,7 +144,7 @@ public class GameConstructorDialog extends JDialog
 	        });
 	        gridBagConstraints = new java.awt.GridBagConstraints();
 	        gridBagConstraints.gridx = 17;
-	        gridBagConstraints.gridy = 0;
+	        gridBagConstraints.gridy = 1;
 	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
 	        add(chooseBlackPlayerButton, gridBagConstraints);
 
@@ -178,14 +194,25 @@ public class GameConstructorDialog extends JDialog
 
 	    private void chooseWhitePlayerButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                        
 	    	wpcd.setLocationRelativeTo(this);
+	    	wpcd.setPlayer(whitePlayer);
 	    	wpcd.setVisible(true);
 	    }                                                       
 
 	    private void chooseBlackPlayerButtonActionPerformed(java.awt.event.ActionEvent evt) {    
 	    	bpcd.setLocationRelativeTo(this);
+	    	bpcd.setPlayer(blackPlayer);
 	    	bpcd.setVisible(true);
 	    }                                                       
-
+	    
+	    public void setWhitePlayerUsername(String username)
+	    {
+	    	whitePlayerUsernameLabel.setText(username);
+	    }
+	    
+	    public void setBlackPlayerUsername(String username)
+	    {
+	    	blackPlayerUsernameLabel.setText(username);
+	    }
 	    
 	    // Variables declaration - do not modify                     
 	    private javax.swing.JLabel FENLabel;

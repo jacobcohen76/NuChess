@@ -2,28 +2,23 @@ package nuchess.engine;
 
 import java.util.Random;
 
-public class ZobristHashing
+public class Zobrist
 {
 	private static final long SEED = 0L;
 	private static final long NULL_KEY = 0L;
 	
-	private static final long[][] ZOBRIST_NUMBERS;
-	private static final long[] ZOBRIST_ENPASSANT;
-	private static final long[] ZOBRIST_CASTLE;
-	private static final long ZOBRIST_BLACK;
+	public static final long[][] PIECE;
+	public static final long[] ENPASSANT;
+	public static final long[] CASTLE;
+	public static final long BLACK;
 	
 	static
 	{
 		Random rand = new Random(SEED);
-		
-		ZOBRIST_NUMBERS = new long[14][64];
-		ZOBRIST_ENPASSANT = new long[8];
-		ZOBRIST_CASTLE = new long[4];
-		ZOBRIST_BLACK = rand.nextLong();
-		
-		fillRandomNumbers(ZOBRIST_NUMBERS, rand);
-		fillRandomNumbers(ZOBRIST_ENPASSANT, rand);
-		fillRandomNumbers(ZOBRIST_CASTLE, rand);
+		fillRandomNumbers(PIECE = new long[14][64], rand);
+		fillRandomNumbers(ENPASSANT = new long[8], rand);
+		fillRandomNumbers(CASTLE = new long[16], rand);
+		BLACK = rand.nextLong();
 	}
 	
 	private static void fillRandomNumbers(long[][] numbers, Random rand)
@@ -62,22 +57,22 @@ public class ZobristHashing
 		while(occ != 0)
 		{
 			int square = Bits.bitscanForward(occ);
-			key ^= ZOBRIST_NUMBERS[board.pieceAt(square)][square];
+			key ^= PIECE[board.pieceAt(square)][square];
 			occ &= occ ^ -occ;
 		}
 		while(castlingRights != 0)
 		{
 			int bit = Bits.bitscanForward(castlingRights);
-			key ^= ZOBRIST_CASTLE[bit];
+			key ^= CASTLE[bit];
 			castlingRights &= castlingRights ^ -castlingRights;
 		}
 		if(epSquare != Square.NULL)
 		{
-			key ^= ZOBRIST_ENPASSANT[Square.file(epSquare)];
+			key ^= ENPASSANT[Square.file(epSquare)];
 		}
 		if(toMove == Color.BLACK)
 		{
-			key ^= ZOBRIST_BLACK;
+			key ^= BLACK;
 		}
 		return key;
 	}

@@ -1,4 +1,4 @@
-package nuchess.player.computer.evaluator;
+package nuchess.player.computer.boardeval;
 
 import nuchess.engine.Chessboard;
 

@@ -1,19 +1,70 @@
 package nuchess.ui.root.view;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JDialog;
+
+import nuchess.engine.Chessboard;
+import nuchess.engine.Color;
+import nuchess.player.Player;
+import nuchess.player.computer.Computer;
+import nuchess.player.computer.algorithm.AlphaBeta;
+import nuchess.player.computer.algorithm.MiniMax;
+import nuchess.player.computer.boardeval.BoardEvaluator;
+import nuchess.player.computer.boardeval.MaterialBE;
+import nuchess.player.computer.boardeval.RandomBE;
+import nuchess.player.computer.moveorder.MoveOrderer;
+import nuchess.player.human.Human;
 
 public class PlayerConstructorDialog extends JDialog
 {
 	private static final long serialVersionUID = -1188324272973018664L;
 	
-	private ContentPanel contentPanel;
+	public GameConstructorDialog gcd;
 	
-	public PlayerConstructorDialog()
+	private ContentPanel contentPanel;
+	private int toMove;
+	
+	public PlayerConstructorDialog(int toMove)
 	{
+		gcd = null;
 		contentPanel = new ContentPanel();
+		this.toMove = toMove;
+		
 		setSize(371, 271);
 		setResizable(false);
 		add(contentPanel);
+	}
+	
+	public void setPlayer(Player player)
+	{
+		if(player instanceof Human)
+		{
+			contentPanel.setHuman();
+		}
+		else if(player instanceof Computer)
+		{
+			contentPanel.setComputer();
+			
+			if(player instanceof MiniMax)
+			{
+				contentPanel.setMiniMax();
+				contentPanel.setRecurseDepth(((MiniMax) player).getDepth());
+			}
+			else if(player instanceof AlphaBeta)
+			{
+				contentPanel.setAlphaBeta();
+				contentPanel.setRecurseDepth(((AlphaBeta) player).getDepth());
+			}
+		}
+		
+		contentPanel.setUsername(player.getUsername());
+	}
+	
+	private void hideDialog()
+	{
+		setVisible(false);
 	}
 	
 	public class ContentPanel extends javax.swing.JPanel {
@@ -39,7 +90,7 @@ public class PlayerConstructorDialog extends JDialog
 	        confirmButton = new javax.swing.JButton();
 	        usernameTextField = new javax.swing.JTextField();
 	        usernameLabel = new javax.swing.JLabel();
-	        recurseDepthLabell = new javax.swing.JLabel();
+	        recurseDepthLabel = new javax.swing.JLabel();
 	        selectionAlgorithmLabel = new javax.swing.JLabel();
 	        selectionAlgorithmComboBox = new javax.swing.JComboBox<>();
 	        moveOrdererLabel = new javax.swing.JLabel();
@@ -50,24 +101,48 @@ public class PlayerConstructorDialog extends JDialog
 	        playerTypeLabel = new javax.swing.JLabel();
 
 	        playerTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Human", "Computer" }));
-
+	        playerTypeComboBox.addActionListener(new ActionListener()
+	        {
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					playerTypeComboBoxActionPerformed(e);
+				}
+	        });
+	        
 	        confirmButton.setText("Confirm");
+	        confirmButton.addActionListener(new ActionListener()
+	        {
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					confirmButtonActionPerformed(e);
+				}
+	        });
 
 	        usernameLabel.setText("Username");
 
-	        recurseDepthLabell.setText("Recurse Depth");
+	        recurseDepthLabel.setText("Recurse Depth");
 
 	        selectionAlgorithmLabel.setText("Selection Algorithm");
 
 	        selectionAlgorithmComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Alphabeta", "Minimax" }));
-
+	        selectionAlgorithmComboBox.addActionListener(new ActionListener()
+	        {
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					selectionAlgorithmComboBoxActionPerformed(e);
+				}
+	        });
+	        
 	        moveOrdererLabel.setText("Move Orderer");
 
 	        moveOrdererComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
 	        boardEvaluatorLabel.setText("Board Evaluator");
 
-	        boardEvaluatorComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+	        boardEvaluatorComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Custom Weighted", "Simple Material", "Random Number" }));
 
 	        recurseDepthComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" }));
 
@@ -84,7 +159,7 @@ public class PlayerConstructorDialog extends JDialog
 	                    .addGroup(layout.createSequentialGroup()
 	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
 	                            .addComponent(usernameLabel)
-	                            .addComponent(recurseDepthLabell)
+	                            .addComponent(recurseDepthLabel)
 	                            .addComponent(selectionAlgorithmLabel)
 	                            .addComponent(playerTypeLabel)
 	                            .addComponent(boardEvaluatorLabel)
@@ -113,7 +188,7 @@ public class PlayerConstructorDialog extends JDialog
 	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 	                    .addComponent(recurseDepthComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                    .addComponent(recurseDepthLabell))
+	                    .addComponent(recurseDepthLabel))
 	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 	                    .addComponent(selectionAlgorithmComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -130,8 +205,141 @@ public class PlayerConstructorDialog extends JDialog
 	                .addComponent(confirmButton)
 	                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 	        );
-	    }// </editor-fold>                        
-
+	    }// </editor-fold>        
+	    
+	    public Player constructNewPlayer()
+	    {
+	    	if(playerTypeComboBox.getItemAt(playerTypeComboBox.getSelectedIndex()).equals("Computer"))
+	    	{
+	    		return constructNewComputer();
+	    	}
+	    	else
+	    	{
+	    		return new Human(usernameTextField.getText());
+	    	}
+	    }
+	    
+	    private Computer constructNewComputer()
+	    {
+	    	switch(selectionAlgorithmComboBox.getItemAt(selectionAlgorithmComboBox.getSelectedIndex()))
+	    	{
+		    	case "Alphabeta":
+		    		return new AlphaBeta(
+		    			usernameTextField.getText(),
+		    			new Chessboard(),
+		    			constructNewBoardEvaluator(),
+		    			constructNewMoveOrderer(),
+		    			recurseDepthComboBox.getSelectedIndex());
+		    		
+		    	case "Minimax":
+		    		return new MiniMax(
+		    			usernameTextField.getText(),
+		    			new Chessboard(),
+		    			constructNewBoardEvaluator(),
+		    			recurseDepthComboBox.getSelectedIndex());
+	    	}
+	    	return null;
+	    }
+	    
+	    private void playerTypeComboBoxActionPerformed(ActionEvent e)
+	    {
+	    	boolean b = playerTypeComboBox.getItemAt(playerTypeComboBox.getSelectedIndex()).equals("Computer");
+    		selectionAlgorithmComboBox.setEnabled(b);
+    		recurseDepthComboBox.setEnabled(b);
+    		moveOrdererComboBox.setEnabled(b);
+    		boardEvaluatorComboBox.setEnabled(b);
+	    }
+	    
+	    private void selectionAlgorithmComboBoxActionPerformed(ActionEvent e)
+	    {
+	    	switch(selectionAlgorithmComboBox.getItemAt(selectionAlgorithmComboBox.getSelectedIndex()))
+	    	{
+		    	case "Alphabeta":
+		    		moveOrdererComboBox.setEnabled(true);
+		    		break;
+		    		
+		    	case "Minimax":
+		    		moveOrdererComboBox.setEnabled(false);
+		    		break;
+	    	}
+	    }
+	    
+	    private void confirmButtonActionPerformed(ActionEvent e)
+	    {
+	    	if(toMove == Color.WHITE)
+	    	{
+	    		gcd.setWhitePlayer(constructNewPlayer());
+	    	}
+	    	else
+	    	{
+	    		gcd.setBlackPlayer(constructNewPlayer());
+	    	}
+	    	hideDialog();
+	    }
+	    
+	    private BoardEvaluator constructNewBoardEvaluator()
+	    {
+	    	switch(boardEvaluatorComboBox.getItemAt(boardEvaluatorComboBox.getSelectedIndex()))
+	    	{
+	    		case "Custom Weighted":			return null;
+	    		case "Simple Material":			return new MaterialBE();
+	    		case "Random Number":			return new RandomBE();
+	    		default:						return null;
+	    	}
+	    }
+	    
+	    private MoveOrderer constructNewMoveOrderer()
+	    {
+	    	
+	    	return null;
+	    }
+	    
+	    public void setHuman()
+	    {
+	    	playerTypeComboBox.setSelectedItem("Human");
+    		selectionAlgorithmComboBox.setEnabled(false);
+    		recurseDepthComboBox.setEnabled(false);
+    		moveOrdererComboBox.setEnabled(false);
+    		boardEvaluatorComboBox.setEnabled(false);
+	    }
+	    
+	    public void setComputer()
+	    {
+	    	playerTypeComboBox.setSelectedItem("Computer");
+    		selectionAlgorithmComboBox.setEnabled(true);
+    		recurseDepthComboBox.setEnabled(true);
+    		moveOrdererComboBox.setEnabled(true);
+    		boardEvaluatorComboBox.setEnabled(true);
+	    }
+	    
+	    public void setMiniMax()
+	    {
+	    	selectionAlgorithmComboBox.setSelectedItem("Minimax");
+    		moveOrdererComboBox.setEnabled(false);
+	    }
+	    
+	    public void setAlphaBeta()
+	    {
+	    	selectionAlgorithmComboBox.setSelectedItem("Alphabeta");
+    		moveOrdererComboBox.setEnabled(true);
+	    }
+	    
+	    public void setUsername(String username)
+	    {
+	    	usernameTextField.setText(username);
+	    }
+	    
+	    public void setRecurseDepth(int depth)
+	    {
+	    	if(depth >= 20)
+	    	{
+	    		recurseDepthComboBox.setSelectedIndex(20);
+	    	}
+	    	else
+	    	{
+	    		recurseDepthComboBox.setSelectedIndex(depth);
+	    	}
+	    }
 
 	    // Variables declaration - do not modify                     
 	    private javax.swing.JComboBox<String> boardEvaluatorComboBox;
@@ -142,7 +350,7 @@ public class PlayerConstructorDialog extends JDialog
 	    private javax.swing.JComboBox<String> playerTypeComboBox;
 	    private javax.swing.JLabel playerTypeLabel;
 	    private javax.swing.JComboBox<String> recurseDepthComboBox;
-	    private javax.swing.JLabel recurseDepthLabell;
+	    private javax.swing.JLabel recurseDepthLabel;
 	    private javax.swing.JComboBox<String> selectionAlgorithmComboBox;
 	    private javax.swing.JLabel selectionAlgorithmLabel;
 	    private javax.swing.JLabel usernameLabel;

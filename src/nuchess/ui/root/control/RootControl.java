@@ -10,15 +10,7 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import nuchess.engine.CBoard;
-import nuchess.engine.Chessboard;
 import nuchess.player.Player;
-import nuchess.player.computer.algorithm.AlphaBeta;
-import nuchess.player.computer.algorithm.MiniMax;
-import nuchess.player.computer.evaluator.BoardEvaluator;
-import nuchess.player.computer.evaluator.MoveEvaluator;
-import nuchess.player.computer.evaluator.SimpleBoardEvaluator;
-import nuchess.player.computer.evaluator.SimpleMoveEvaluator;
-import nuchess.player.human.Human;
 import nuchess.ui.Control;
 import nuchess.ui.View;
 import nuchess.ui.bitboardeditor.control.BitboardEditorControl;

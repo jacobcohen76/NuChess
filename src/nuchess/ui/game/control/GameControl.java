@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import nuchess.engine.Bits;
 import nuchess.engine.CMove;
 import nuchess.engine.Chessboard;
 import nuchess.engine.MoveList;
@@ -18,10 +19,13 @@ import nuchess.ui.game.view.GameView;
 
 public class GameControl implements Control
 {
+	public static long AI_SELECTION_DELAY = 500L;
+	
 	private GameView view;
 	private Chessboard board;
 	private LinkedList<CMove> moveHistory;
 	private Player white, black;
+	private int initialToMove;
 	private boolean gameover, closed;
 	
 	public GameControl(GameView view, Player white, Player black, String FEN)
@@ -30,6 +34,7 @@ public class GameControl implements Control
 		this.white = white;
 		this.black = black;
 		board = new Chessboard(FEN);
+		initialToMove = board.toMove;
 		moveHistory = new LinkedList<CMove>();
 		view.control = this;
 		gameover = false;
@@ -144,7 +149,7 @@ public class GameControl implements Control
 	
 	public Player getNextPlayer()
 	{
-		return (moveHistory.size() & 1) == 0 ? white : black;
+		return ((moveHistory.size() + initialToMove) & 1) == 0 ? white : black;
 	}
 	
 	private void dispatchThread(Computer computer)
@@ -164,15 +169,17 @@ public class GameControl implements Control
 		
 		public void run()
 		{
+			System.out.println(Bits.toBinaryString(board.zobristKey));
+			try
+			{
+				Thread.sleep(AI_SELECTION_DELAY);
+			}
+			catch (InterruptedException iex)
+			{
+				iex.printStackTrace();
+			}
+			
 			CMove move = computer.computeMove(board.getFEN());
-//			try
-//			{
-//				Thread.sleep(1000L);
-//			}
-//			catch (InterruptedException iex)
-//			{
-//				iex.printStackTrace();
-//			}
 			make(move);
 		}
 	}
