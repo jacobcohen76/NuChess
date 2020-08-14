@@ -19,7 +19,7 @@ import nuchess.ui.game.view.GameView;
 public class GameControl implements Control
 {
 	private GameView view;
-	private Chessboard engine;
+	private Chessboard board;
 	private LinkedList<CMove> moveHistory;
 	private Player white, black;
 	private boolean gameover, closed;
@@ -29,7 +29,7 @@ public class GameControl implements Control
 		this.view = view;
 		this.white = white;
 		this.black = black;
-		engine = new Chessboard(FEN);
+		board = new Chessboard(FEN);
 		moveHistory = new LinkedList<CMove>();
 		view.control = this;
 		gameover = false;
@@ -43,8 +43,8 @@ public class GameControl implements Control
 	
 	public void make(CMove move)
 	{
-		String SAN = engine.getSAN(move);
-		engine.make(move);
+		String SAN = board.getSAN(move);
+		board.make(move);
 		moveHistory.add(move);
 		updateView(SAN);
 		
@@ -61,24 +61,24 @@ public class GameControl implements Control
 	
 	public void updateView(String SAN)
 	{
-		long checkBB = engine.inCheck() ? engine.bitboards[Piece.WHITE_KING + engine.toMove]: 0L;
-		long occBB = engine.bitboards[Chessboard.OCC];
+		long checkBB = board.inCheck() ? board.bitboards[Piece.WHITE_KING + board.toMove]: 0L;
+		long occBB = board.bitboards[Chessboard.OCC];
 		CMove move = moveHistory.getLast();
 		List<CMove> legalMoves = generateLegalMoves();
-		String FEN = engine.getFEN();
+		String FEN = board.getFEN();
 		view.addNewState(checkBB, occBB, move, FEN, SAN);
-		view.setMoveableSquares(engine.bitboards[engine.toMove]);
+		view.setMoveableSquares(board.bitboards[board.toMove]);
 		view.setSelectableMoves(legalMoves);
-		gameover = legalMoves.isEmpty() || engine.halfmoveClock >= 100;
+		gameover = legalMoves.isEmpty() || board.halfmoveClock >= 100;
 	}
 	
 	public List<CMove> generateLegalMoves()
 	{
-		MoveList moveList = engine.generateMoves();
+		MoveList moveList = board.generateMoves();
 		ArrayList<CMove> moves = new ArrayList<CMove>();
 		for(int i = 0; i < moveList.n; i++)
 		{
-			if(engine.canMake(moveList.array[i]))
+			if(board.canMake(moveList.array[i]))
 			{
 				moves.add(moveList.array[i]);
 			}
@@ -89,18 +89,18 @@ public class GameControl implements Control
 	public void unmake()
 	{
 		CMove move = moveHistory.pollLast();
-		engine.unmake(move);
+		board.unmake(move);
 	}
 	
 	@Override
 	public void init()
 	{
-		long checkBB = engine.inCheck() ? engine.bitboards[Piece.WHITE_KING + engine.toMove] : 0L;
-		long occBB = engine.bitboards[Chessboard.OCC];
-		String FEN = engine.getFEN();
+		long checkBB = board.inCheck() ? board.bitboards[Piece.WHITE_KING + board.toMove] : 0L;
+		long occBB = board.bitboards[Chessboard.OCC];
+		String FEN = board.getFEN();
 		
 		view.setInitialState(checkBB, occBB, FEN);
-		view.setMoveableSquares(engine.bitboards[engine.toMove]);
+		view.setMoveableSquares(board.bitboards[board.toMove]);
 		view.setSelectableMoves(generateLegalMoves());
 		
 		view.setWhiteUsername(white.getUsername());
@@ -120,7 +120,7 @@ public class GameControl implements Control
 	@Override
 	public void saveGraphicsAs()
 	{
-		File out = FileSaving.chooseImageFile(view.getPanel(), engine.getFEN().replace('/', '.'));
+		File out = FileSaving.chooseImageFile(view.getPanel(), board.getFEN().replace('/', '.'));
 		FileSaving.saveRenderedImage(view.getRenderedImage(), out);
 	}
 	
@@ -164,7 +164,7 @@ public class GameControl implements Control
 		
 		public void run()
 		{
-			CMove move = computer.computeMove(engine.getFEN());
+			CMove move = computer.computeMove(board.getFEN());
 //			try
 //			{
 //				Thread.sleep(1000L);

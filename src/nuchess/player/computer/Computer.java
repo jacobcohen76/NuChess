@@ -7,9 +7,9 @@ public abstract class Computer extends Player
 {
 	private static final long serialVersionUID = -5199764752116960751L;
 	
-	public Computer(String username, String userid)
+	public Computer(String username)
 	{
-		super(username, userid);
+		super(username);
 	}
 	
 	public abstract CMove computeMove(String FEN);

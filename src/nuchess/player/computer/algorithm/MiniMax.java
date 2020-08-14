@@ -9,9 +9,9 @@ public class MiniMax extends Algorithm
 {
 	private static final long serialVersionUID = 394129760291512170L;
 
-	public MiniMax(String username, String userid, Chessboard board, BoardEvaluator boardEvaluator, int depth)
+	public MiniMax(String username, Chessboard board, BoardEvaluator boardEvaluator, int depth)
 	{
-		super(username, userid, board, boardEvaluator, null, depth);
+		super(username, board, boardEvaluator, null, depth);
 	}
 	
 	@Override

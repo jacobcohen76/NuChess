@@ -10,9 +10,9 @@ public class AlphaBeta extends Algorithm
 {
 	private static final long serialVersionUID = 6545473395096568748L;
 
-	public AlphaBeta(String username, String userid, Chessboard board, BoardEvaluator boardEvaluator, MoveEvaluator moveEvaluator, int depth)
+	public AlphaBeta(String username, Chessboard board, BoardEvaluator boardEvaluator, MoveEvaluator moveEvaluator, int depth)
 	{
-		super(username, userid, board, boardEvaluator, moveEvaluator, depth);
+		super(username, board, boardEvaluator, moveEvaluator, depth);
 	}
 	
 	@Override

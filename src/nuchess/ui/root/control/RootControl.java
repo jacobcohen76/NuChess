@@ -27,6 +27,7 @@ import nuchess.ui.feneditor.control.FENEditorControl;
 import nuchess.ui.feneditor.view.FENEditorView;
 import nuchess.ui.game.control.GameControl;
 import nuchess.ui.game.view.GameView;
+import nuchess.ui.root.view.GameConstructorDialog;
 import nuchess.ui.root.view.HomeView;
 import nuchess.ui.root.view.RootView;
 
@@ -34,11 +35,18 @@ public class RootControl implements Control
 {
 	private RootView rootView;
 	private HomeView homeView;
+	private GameConstructorDialog gcd;
 	
-	public RootControl(RootView rootView, HomeView homeView)
+	public RootControl(RootView rootView, HomeView homeView, GameConstructorDialog gcd)
 	{
 		this.rootView = rootView;
 		this.homeView = homeView;
+		this.gcd = gcd;
+	}
+	
+	public RootControl(RootView rootView, HomeView homeView)
+	{
+		this(rootView, homeView, new GameConstructorDialog());
 	}
 	
 	@Override
@@ -46,6 +54,7 @@ public class RootControl implements Control
 	{
 		openTab(homeView);
 		initMainMenuBar();
+		gcd.control = this;
 	}
 	
 	@Override
@@ -83,6 +92,13 @@ public class RootControl implements Control
 		rootView.openTab(view);
 	}
 	
+	public void openNewGameTab(Player white, Player black, String FEN)
+	{
+		GameView view = new GameView();
+		GameControl control = new GameControl(view, white, black, FEN);
+		openTab(control);
+	}
+	
 	private void saveAsActionPerformed(ActionEvent e)
 	{
 		
@@ -95,7 +111,8 @@ public class RootControl implements Control
 	
 	private void newGameActionPerformed(ActionEvent e)
 	{
-		openTab(constructNewGameController());
+		gcd.setLocationRelativeTo(rootView.getPanel());
+		gcd.setVisible(true);
 	}
 	
 	private void newAIActionPerformed(ActionEvent e)
@@ -117,34 +134,7 @@ public class RootControl implements Control
 //	{
 //		graphicsSettingsDialog.setVisible(true);
 //	}
-	
-	private Control constructNewGameController()
-	{
-//		Chessboard board;
-//		BoardEvaluator boardEvaluator;
-//		MoveEvaluator moveEvaluator;
-//		int depth;
-//		
-//		board = new Chessboard();
-//		boardEvaluator = new SimpleBoardEvaluator();
-//		moveEvaluator = new SimpleMoveEvaluator();
-//		depth = 7;
-//		Player white = new AlphaBeta("AlphaBeta, Depth = " + depth, "", board, boardEvaluator, moveEvaluator, depth);
-//		Player white = new MiniMax("MiniMax, Depth = " + depth, "", board, boardEvaluator, depth);
-		Player white = new Human("Jacob Cohen", "");
-
-//		engine = new ChessEngine();
-//		evaluator = new MaterialEvaluator();
-//		depth = 5;
-//		Player black = new MiniMax("MiniMax Material Evaluator, Depth = " + depth, "", engine, evaluator, depth);
-		Player black = new Human("Jacob Cohen", "");
 		
-		GameView view = new GameView();
-//		GameControl control = new GameControl(view, white, black, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-		GameControl control = new GameControl(view, white, black, "rnbqkbnr/pPpppppp/8/8/8/8/PpPPPPPP/RNBQKBNR w - - 0 1");
-		return control;
-	}
-	
 	private Control constructNewBitboardEditor()
 	{
 		BitboardEditorView view = new BitboardEditorView();

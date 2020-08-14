@@ -22,6 +22,7 @@ class FENBoardView
 	public FENBoardView(boolean flipped)
 	{
 		LayeredGraphics lg = new LayeredGraphics(ResourceManager.getSquareSize() * 8, ResourceManager.getSquareSize() * 8);
+		
 		lgp = new LayeredGraphicsPanel(lg);
 		cbg = new ChessboardGraphics(flipped, lg);
 		parent = null;
