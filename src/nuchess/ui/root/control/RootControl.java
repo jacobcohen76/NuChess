@@ -19,6 +19,7 @@ import nuchess.ui.feneditor.control.FENEditorControl;
 import nuchess.ui.feneditor.view.FENEditorView;
 import nuchess.ui.game.control.GameControl;
 import nuchess.ui.game.view.GameView;
+import nuchess.ui.root.view.BoardEvaluatorConstructorDialog;
 import nuchess.ui.root.view.GameConstructorDialog;
 import nuchess.ui.root.view.HomeView;
 import nuchess.ui.root.view.RootView;
@@ -103,6 +104,10 @@ public class RootControl implements Control
 	
 	private void newGameActionPerformed(ActionEvent e)
 	{
+		BoardEvaluatorConstructorDialog ccd = new BoardEvaluatorConstructorDialog();
+		ccd.setLocationRelativeTo(rootView.getPanel());
+		ccd.setVisible(true);
+		
 		gcd.setLocationRelativeTo(rootView.getPanel());
 		gcd.setVisible(true);
 	}
@@ -141,7 +146,6 @@ public class RootControl implements Control
 		FENEditorControl control = new FENEditorControl(board, view);
 		return control;
 	}
-
 	
 	private void initMainMenuBar()
 	{
