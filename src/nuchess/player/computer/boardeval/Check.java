@@ -1,8 +1,8 @@
-package nuchess.player.computer.feature;
+package nuchess.player.computer.boardeval;
 
 import nuchess.engine.Chessboard;
 
-public class Check implements Feature
+public class Check implements BoardFeature
 {
 	@Override
 	public int getFeature(Chessboard board)

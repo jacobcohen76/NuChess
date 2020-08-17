@@ -23,7 +23,8 @@ public class HumanConstructorDialog extends JDialog
 		gcd = null;
 		
 		add(contentPanel);
-		setSize(200, 100);
+		pack();
+		setResizable(false);
 	}
 	
 	public void setUsernameText(String usernameText)

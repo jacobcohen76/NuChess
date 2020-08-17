@@ -1,8 +1,8 @@
-package nuchess.player.computer.feature;
+package nuchess.player.computer.boardeval;
 
 import nuchess.engine.Chessboard;
 
-public interface Feature
+public interface BoardFeature
 {
 	public int getFeature(Chessboard board);
 }

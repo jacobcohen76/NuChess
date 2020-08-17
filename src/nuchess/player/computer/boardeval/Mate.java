@@ -1,9 +1,9 @@
-package nuchess.player.computer.feature;
+package nuchess.player.computer.boardeval;
 
 import nuchess.engine.Chessboard;
 import nuchess.engine.MoveList;
 
-public class Mate implements Feature
+public class Mate implements BoardFeature
 {
 	@Override
 	public int getFeature(Chessboard board)

@@ -13,10 +13,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import nuchess.player.computer.boardeval.BoardEvaluator;
-import nuchess.player.computer.boardeval.WeightedBE;
-import nuchess.player.computer.feature.Check;
-import nuchess.player.computer.feature.Feature;
-import nuchess.player.computer.feature.Mate;
+import nuchess.player.computer.boardeval.Check;
+import nuchess.player.computer.boardeval.BoardFeature;
+import nuchess.player.computer.boardeval.Mate;
 
 public class BoardEvaluatorConstructorDialog extends JDialog
 {
@@ -28,15 +27,16 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 	{
 		weightDecider = new WeightDecider();
 		add(weightDecider);
-		setSize(800, 400);
+		pack();
+		setResizable(false);
 	}
 	
 	public BoardEvaluator getBoardEvaluator()
 	{
-		Feature[] factors = weightDecider.getFeatures();
+		BoardFeature[] factors = weightDecider.getFeatures();
 		int[] weights = weightDecider.getWeights();
 		int n = weightDecider.getNumRows();
-		return new WeightedBE(factors, weights, n);
+		return new BoardEvaluator(factors, weights, n);
 	}
 	
 	/**
@@ -48,15 +48,15 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 		private static final long serialVersionUID = -8332408797014422954L;
 		
 		private DefaultTableModel tableModel;
-		private ArrayList<Feature> features;
-		private AbstractListModel<Feature> listModel;
+		private ArrayList<BoardFeature> features;
+		private AbstractListModel<BoardFeature> listModel;
 
 	    /**
 	     * Creates new form WeightDecider
 	     */
 	    public WeightDecider()
 	    {
-	    	features = new ArrayList<Feature>();
+	    	features = new ArrayList<BoardFeature>();
 	    	features.add(new Mate());
 	    	features.add(new Check());
 	    	
@@ -70,7 +70,7 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 	    		}
 	    	};
 	    	
-	    	listModel = new AbstractListModel<Feature>()
+	    	listModel = new AbstractListModel<BoardFeature>()
 	    	{	            
 				private static final long serialVersionUID = -6199430926115424087L;
 
@@ -79,7 +79,7 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 	            	return features.size();
 	            }
 	            
-	            public Feature getElementAt(int i)
+	            public BoardFeature getElementAt(int i)
 	            {
 	            	return features.get(i);
 	            }
@@ -88,13 +88,13 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 	    }
 	    
 	    @SuppressWarnings("rawtypes")
-		public Feature[] getFeatures()
+		public BoardFeature[] getFeatures()
 	    {
 	    	Vector<Vector> dataVector = tableModel.getDataVector();
-	    	Feature[] features = new Feature[dataVector.size()];
+	    	BoardFeature[] features = new BoardFeature[dataVector.size()];
 	    	for(int i = 0; i < dataVector.size(); i++)
 	    	{
-	    		features[i] = (Feature) dataVector.get(i).get(0);
+	    		features[i] = (BoardFeature) dataVector.get(i).get(0);
 	    	}
 	    	return features;
 	    }
@@ -161,7 +161,7 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 				{
 					if(e.getKeyCode() == KeyEvent.VK_DELETE)
 					{
-						features.add((Feature) tableModel.getValueAt(weightsTable.getSelectedRow(), 0));
+						features.add((BoardFeature) tableModel.getValueAt(weightsTable.getSelectedRow(), 0));
 						tableModel.removeRow(weightsTable.getSelectedRow());
 						weightsTable.revalidate();
 						weightsList.repaint();
@@ -203,7 +203,7 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 	    }
 	    
 	    // Variables declaration - do not modify                     
-	    private javax.swing.JList<Feature> weightsList;
+	    private javax.swing.JList<BoardFeature> weightsList;
 	    private javax.swing.JScrollPane weightsListScrollPane;
 	    private javax.swing.JTable weightsTable;
 	    private javax.swing.JScrollPane weightsTableScrollPane;

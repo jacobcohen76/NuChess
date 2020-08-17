@@ -32,7 +32,7 @@ public class ComputerConstructorDialog extends JDialog
 		computer = getComputer();
 		
 		add(contentPanel);
-		setSize(500, 265);
+		pack();
 		setResizable(false);
 	}
 	
@@ -115,7 +115,7 @@ public class ComputerConstructorDialog extends JDialog
 	
 	        recurseDepthLabel.setText("Recurse Depth");
 	
-	        selectionAlgorithmComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Minimax", "Alphabeta" }));
+	        selectionAlgorithmComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "AlphaBeta", "MiniMax" }));
 	        selectionAlgorithmComboBox.addActionListener(new java.awt.event.ActionListener() {
 	            public void actionPerformed(java.awt.event.ActionEvent evt) {
 	                selectionAlgorithmComboBoxActionPerformed(evt);
@@ -294,8 +294,9 @@ public class ComputerConstructorDialog extends JDialog
 	    	gcd.setPlayer(side, getComputer());
 	    }                                             
 	
-	    private void selectionAlgorithmComboBoxActionPerformed(java.awt.event.ActionEvent evt) {                                                           
-	        // TODO add your handling code here:
+	    private void selectionAlgorithmComboBoxActionPerformed(java.awt.event.ActionEvent evt)
+	    {                                                           
+	        moveEvaluatorCustomizeButton.setEnabled(selectionAlgorithmComboBox.getSelectedIndex() == 0);
 	    }                                                          
 	
 	    private boolean isDigit(char ch)

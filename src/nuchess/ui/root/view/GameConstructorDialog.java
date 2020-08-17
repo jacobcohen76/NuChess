@@ -31,9 +31,6 @@ public class GameConstructorDialog extends JDialog
 		whcd.gcd = this;
 		bhcd.gcd = this;
 		
-		whcd.setSize(400, 110);
-		bhcd.setSize(400, 110);
-		
 		whcd.setResizable(false);
 		bhcd.setResizable(false);
 		
@@ -51,7 +48,7 @@ public class GameConstructorDialog extends JDialog
 		
 		add(contentPanel);
 		
-		setSize(560, 180);
+		pack();
 		setResizable(false);
 		setTitle("Constructing a New Game");
 		
