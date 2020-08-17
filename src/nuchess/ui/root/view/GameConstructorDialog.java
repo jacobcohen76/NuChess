@@ -83,9 +83,11 @@ public class GameConstructorDialog extends JDialog
 	        whiteLabel = new javax.swing.JLabel();
 	        whitePlayerUsernameLabel = new javax.swing.JLabel();
 	        chooseWhitePlayerButton = new javax.swing.JButton();
+	        whitePlayerTypeComboBox = new javax.swing.JComboBox<>();
 	        blackLabel = new javax.swing.JLabel();
 	        blackPlayerUsernameLabel = new javax.swing.JLabel();
 	        chooseBlackPlayerButton = new javax.swing.JButton();
+	        blackPlayerTypeComboBox = new javax.swing.JComboBox<>();
 	        FENLabel = new javax.swing.JLabel();
 	        FENTextField = new javax.swing.JTextField();
 	        playButton = new javax.swing.JButton();
@@ -103,7 +105,7 @@ public class GameConstructorDialog extends JDialog
 	        gridBagConstraints = new java.awt.GridBagConstraints();
 	        gridBagConstraints.gridx = 1;
 	        gridBagConstraints.gridy = 0;
-	        gridBagConstraints.gridwidth = 16;
+	        gridBagConstraints.gridwidth = 1;
 	        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 	        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
 	        add(whitePlayerUsernameLabel, gridBagConstraints);
@@ -115,10 +117,18 @@ public class GameConstructorDialog extends JDialog
 	            }
 	        });
 	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 17;
+	        gridBagConstraints.gridx = 18;
 	        gridBagConstraints.gridy = 0;
 	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
 	        add(chooseWhitePlayerButton, gridBagConstraints);
+	        
+	        whitePlayerTypeComboBox.addItem("Human");
+	        whitePlayerTypeComboBox.addItem("Computer");
+	        gridBagConstraints = new java.awt.GridBagConstraints();
+	        gridBagConstraints.gridx = 30;
+	        gridBagConstraints.gridy = 0;
+	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+	        add(whitePlayerTypeComboBox, gridBagConstraints);
 
 	        blackLabel.setText("BLACK");
 	        gridBagConstraints = new java.awt.GridBagConstraints();
@@ -131,11 +141,11 @@ public class GameConstructorDialog extends JDialog
 	        gridBagConstraints = new java.awt.GridBagConstraints();
 	        gridBagConstraints.gridx = 1;
 	        gridBagConstraints.gridy = 1;
-	        gridBagConstraints.gridwidth = 16;
+	        gridBagConstraints.gridwidth = 1;
 	        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 	        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
 	        add(blackPlayerUsernameLabel, gridBagConstraints);
-
+	        
 	        chooseBlackPlayerButton.setText("Choose Player");
 	        chooseBlackPlayerButton.addActionListener(new java.awt.event.ActionListener() {
 	            public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -143,10 +153,18 @@ public class GameConstructorDialog extends JDialog
 	            }
 	        });
 	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 17;
+	        gridBagConstraints.gridx = 18;
 	        gridBagConstraints.gridy = 1;
 	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
 	        add(chooseBlackPlayerButton, gridBagConstraints);
+	        
+	        blackPlayerTypeComboBox.addItem("Human");
+	        blackPlayerTypeComboBox.addItem("Computer");
+	        gridBagConstraints = new java.awt.GridBagConstraints();
+	        gridBagConstraints.gridx = 30;
+	        gridBagConstraints.gridy = 1;
+	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+	        add(blackPlayerTypeComboBox, gridBagConstraints);
 
 	        FENLabel.setText("FEN");
 	        gridBagConstraints = new java.awt.GridBagConstraints();
@@ -164,7 +182,7 @@ public class GameConstructorDialog extends JDialog
 	        gridBagConstraints = new java.awt.GridBagConstraints();
 	        gridBagConstraints.gridx = 1;
 	        gridBagConstraints.gridy = 2;
-	        gridBagConstraints.gridwidth = 17;
+	        gridBagConstraints.gridwidth = 30;
 	        gridBagConstraints.ipadx = 100;
 	        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
 	        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
@@ -221,6 +239,8 @@ public class GameConstructorDialog extends JDialog
 	    private javax.swing.JLabel blackPlayerUsernameLabel;
 	    private javax.swing.JButton chooseBlackPlayerButton;
 	    private javax.swing.JButton chooseWhitePlayerButton;
+	    private javax.swing.JComboBox<String> whitePlayerTypeComboBox;
+	    private javax.swing.JComboBox<String> blackPlayerTypeComboBox;
 	    private javax.swing.JButton playButton;
 	    private javax.swing.JLabel whiteLabel;
 	    private javax.swing.JLabel whitePlayerUsernameLabel;
