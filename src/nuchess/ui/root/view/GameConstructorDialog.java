@@ -4,7 +4,6 @@ import javax.swing.JDialog;
 
 import nuchess.engine.Color;
 import nuchess.player.Player;
-import nuchess.player.human.Human;
 import nuchess.ui.root.control.RootControl;
 
 public class GameConstructorDialog extends JDialog
@@ -13,35 +12,65 @@ public class GameConstructorDialog extends JDialog
 	
 	private Player whitePlayer, blackPlayer;
 	private ContentPanel contentPanel;
-	private PlayerConstructorDialog wpcd, bpcd;
+	private ComputerConstructorDialog wccd, bccd;
+	private HumanConstructorDialog whcd, bhcd;
 	
 	public RootControl control;
 	
 	public GameConstructorDialog()
 	{
 		contentPanel = new ContentPanel();
-		whitePlayer = new Human("Default White");
-		blackPlayer = new Human("Default Black");
-		wpcd = new PlayerConstructorDialog(Color.WHITE);
-		bpcd = new PlayerConstructorDialog(Color.BLACK);
+		
+		wccd = new ComputerConstructorDialog(Color.WHITE);
+		bccd = new ComputerConstructorDialog(Color.BLACK);
+		whcd = new HumanConstructorDialog(Color.WHITE);
+		bhcd = new HumanConstructorDialog(Color.BLACK);
+		
+		wccd.gcd = this;
+		bccd.gcd = this;
+		whcd.gcd = this;
+		bhcd.gcd = this;
+		
+		whcd.setSize(400, 110);
+		bhcd.setSize(400, 110);
+		
+		whcd.setResizable(false);
+		bhcd.setResizable(false);
+		
+		wccd.setTitle("White - Construct a New Computer Player");
+		bccd.setTitle("Black - Construct a New Computer Player");
+		whcd.setTitle("White - Construct a New Human Player");
+		bhcd.setTitle("Black - Construct a New Human Player");
+		
+		wccd.setNicknameText("Default White Computer");
+		bccd.setNicknameText("Default Black Computer");
+		whcd.setUsernameText("Default White Human");
+		bhcd.setUsernameText("Default Black Human");
+		
 		control = null;
-		
-		wpcd.setTitle("Choose White Player");
-		wpcd.gcd = this;
-		
-		bpcd.setTitle("Choose Black Player");
-		bpcd.gcd = this;
 		
 		add(contentPanel);
 		
-		setSize(560, 170);
+		setSize(560, 180);
 		setResizable(false);
-		setTitle("New Game");
+		setTitle("Constructing a New Game");
+		
+		whitePlayer = contentPanel.getWhitePlayer();
+		blackPlayer = contentPanel.getBlackPlayer();
+		
+		contentPanel.setWhitePlayerUsername(whitePlayer.getUsername());
+		contentPanel.setBlackPlayerUsername(blackPlayer.getUsername());
 	}
 	
 	public void hideDialog()
 	{
 		setVisible(false);
+	}
+	
+	public void setPlayer(int side, Player player)
+	{
+		if(side == Color.WHITE)		setWhitePlayer(player);
+		else						setBlackPlayer(player);
 	}
 	
 	public void setWhitePlayer(Player player)
@@ -78,172 +107,234 @@ public class GameConstructorDialog extends JDialog
 	     */
 	    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
 	    private void initComponents() {
-	        java.awt.GridBagConstraints gridBagConstraints;
 
+	        playButton = new javax.swing.JButton();
 	        whiteLabel = new javax.swing.JLabel();
-	        whitePlayerUsernameLabel = new javax.swing.JLabel();
-	        chooseWhitePlayerButton = new javax.swing.JButton();
-	        whitePlayerTypeComboBox = new javax.swing.JComboBox<>();
 	        blackLabel = new javax.swing.JLabel();
-	        blackPlayerUsernameLabel = new javax.swing.JLabel();
-	        chooseBlackPlayerButton = new javax.swing.JButton();
+	        whiteCustomizePlayerButton = new javax.swing.JButton();
+	        blackCustomizePlayerButton = new javax.swing.JButton();
+	        whitePlayerTypeComboBox = new javax.swing.JComboBox<>();
 	        blackPlayerTypeComboBox = new javax.swing.JComboBox<>();
 	        FENLabel = new javax.swing.JLabel();
 	        FENTextField = new javax.swing.JTextField();
-	        playButton = new javax.swing.JButton();
+	        whitePlayerUsernameLabel = new javax.swing.JLabel();
+	        blackPlayerUsernameLabel = new javax.swing.JLabel();
 
-	        setLayout(new java.awt.GridBagLayout());
-
-	        whiteLabel.setText("WHITE");
-	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 0;
-	        gridBagConstraints.gridy = 0;
-	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-	        add(whiteLabel, gridBagConstraints);
-
-	        whitePlayerUsernameLabel.setText("Default White");
-	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 1;
-	        gridBagConstraints.gridy = 0;
-	        gridBagConstraints.gridwidth = 1;
-	        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-	        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
-	        add(whitePlayerUsernameLabel, gridBagConstraints);
-
-	        chooseWhitePlayerButton.setText("Choose Player");
-	        chooseWhitePlayerButton.addActionListener(new java.awt.event.ActionListener() {
-	            public void actionPerformed(java.awt.event.ActionEvent evt) {
-	                chooseWhitePlayerButtonActionPerformed(evt);
-	            }
-	        });
-	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 18;
-	        gridBagConstraints.gridy = 0;
-	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-	        add(chooseWhitePlayerButton, gridBagConstraints);
-	        
-	        whitePlayerTypeComboBox.addItem("Human");
-	        whitePlayerTypeComboBox.addItem("Computer");
-	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 30;
-	        gridBagConstraints.gridy = 0;
-	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-	        add(whitePlayerTypeComboBox, gridBagConstraints);
-
-	        blackLabel.setText("BLACK");
-	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 0;
-	        gridBagConstraints.gridy = 1;
-	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-	        add(blackLabel, gridBagConstraints);
-
-	        blackPlayerUsernameLabel.setText("Default Black");
-	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 1;
-	        gridBagConstraints.gridy = 1;
-	        gridBagConstraints.gridwidth = 1;
-	        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-	        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
-	        add(blackPlayerUsernameLabel, gridBagConstraints);
-	        
-	        chooseBlackPlayerButton.setText("Choose Player");
-	        chooseBlackPlayerButton.addActionListener(new java.awt.event.ActionListener() {
-	            public void actionPerformed(java.awt.event.ActionEvent evt) {
-	                chooseBlackPlayerButtonActionPerformed(evt);
-	            }
-	        });
-	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 18;
-	        gridBagConstraints.gridy = 1;
-	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-	        add(chooseBlackPlayerButton, gridBagConstraints);
-	        
-	        blackPlayerTypeComboBox.addItem("Human");
-	        blackPlayerTypeComboBox.addItem("Computer");
-	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 30;
-	        gridBagConstraints.gridy = 1;
-	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-	        add(blackPlayerTypeComboBox, gridBagConstraints);
-
-	        FENLabel.setText("FEN");
-	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 0;
-	        gridBagConstraints.gridy = 2;
-	        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-	        add(FENLabel, gridBagConstraints);
-
-	        FENTextField.setText("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-	        FENTextField.addActionListener(new java.awt.event.ActionListener() {
-	            public void actionPerformed(java.awt.event.ActionEvent evt) {
-	                FENTextFieldActionPerformed(evt);
-	            }
-	        });
-	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 1;
-	        gridBagConstraints.gridy = 2;
-	        gridBagConstraints.gridwidth = 30;
-	        gridBagConstraints.ipadx = 100;
-	        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-	        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
-	        add(FENTextField, gridBagConstraints);
-
-	        playButton.setText("PLAY");
+	        playButton.setText("Play");
 	        playButton.addActionListener(new java.awt.event.ActionListener() {
 	            public void actionPerformed(java.awt.event.ActionEvent evt) {
 	                playButtonActionPerformed(evt);
 	            }
 	        });
-	        gridBagConstraints = new java.awt.GridBagConstraints();
-	        gridBagConstraints.gridx = 0;
-	        gridBagConstraints.gridy = 3;
-	        gridBagConstraints.gridwidth = 18;
-	        add(playButton, gridBagConstraints);
+
+	        whiteLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+	        whiteLabel.setText("WHITE PLAYER:");
+
+	        blackLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+	        blackLabel.setText("BLACK PLAYER:");
+
+	        whiteCustomizePlayerButton.setText("Customize");
+	        whiteCustomizePlayerButton.addActionListener(new java.awt.event.ActionListener() {
+	            public void actionPerformed(java.awt.event.ActionEvent evt) {
+	                whiteCustomizePlayerButtonActionPerformed(evt);
+	            }
+	        });
+
+	        blackCustomizePlayerButton.setText("Customize");
+	        blackCustomizePlayerButton.addActionListener(new java.awt.event.ActionListener() {
+	            public void actionPerformed(java.awt.event.ActionEvent evt) {
+	                blackCustomizePlayerButtonActionPerformed(evt);
+	            }
+	        });
+
+	        whitePlayerTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Human", "Computer" }));
+	        whitePlayerTypeComboBox.addActionListener(new java.awt.event.ActionListener() {
+	            public void actionPerformed(java.awt.event.ActionEvent evt) {
+	                whitePlayerTypeComboBoxActionPerformed(evt);
+	            }
+	        });
+
+	        blackPlayerTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Human", "Computer" }));
+	        blackPlayerTypeComboBox.addActionListener(new java.awt.event.ActionListener() {
+	            public void actionPerformed(java.awt.event.ActionEvent evt) {
+	                blackPlayerTypeComboBoxActionPerformed(evt);
+	            }
+	        });
+
+	        FENLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+	        FENLabel.setText("FEN");
+
+	        FENTextField.setText("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+	        whitePlayerUsernameLabel.setText("Default White Player");
+
+	        blackPlayerUsernameLabel.setText("Default Black Player");
+
+	        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+	        this.setLayout(layout);
+	        layout.setHorizontalGroup(
+	            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	            .addGroup(layout.createSequentialGroup()
+	                .addContainerGap()
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	                    .addComponent(playButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+	                    .addGroup(layout.createSequentialGroup()
+	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+	                            .addComponent(FENLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+	                            .addComponent(blackLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+	                            .addComponent(whiteLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE))
+	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	                            .addComponent(FENTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
+	                            .addGroup(layout.createSequentialGroup()
+	                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+	                                    .addComponent(whitePlayerUsernameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+	                                    .addComponent(blackPlayerUsernameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+	                                        .addComponent(blackCustomizePlayerButton)
+	                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                                        .addComponent(blackPlayerTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+	                                        .addComponent(whiteCustomizePlayerButton)
+	                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                                        .addComponent(whitePlayerTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+	                .addContainerGap())
+	        );
+	        layout.setVerticalGroup(
+	            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+	                .addContainerGap()
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(whitePlayerTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                    .addComponent(whiteCustomizePlayerButton)
+	                    .addComponent(whiteLabel)
+	                    .addComponent(whitePlayerUsernameLabel))
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(blackPlayerTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                    .addComponent(blackCustomizePlayerButton)
+	                    .addComponent(blackLabel)
+	                    .addComponent(blackPlayerUsernameLabel))
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(FENLabel)
+	                    .addComponent(FENTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                .addComponent(playButton)
+	                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+	        );
 	    }// </editor-fold>                        
 
-	    private void FENTextFieldActionPerformed(java.awt.event.ActionEvent evt) {                                             
-	        // TODO add your handling code here:
-	    }                                            
+	    private void whitePlayerTypeComboBoxActionPerformed(java.awt.event.ActionEvent evt)
+	    {
+	    	if(whitePlayerTypeComboBox.getSelectedIndex() == 0)
+	    	{
+	    		setWhitePlayer(whcd.getHuman());
+	    	}
+	    	else
+	    	{
+	    		setWhitePlayer(wccd.getComputer());
+	    	}
+	    }
+	    
+	    private void blackPlayerTypeComboBoxActionPerformed(java.awt.event.ActionEvent evt)
+	    {
+	    	if(blackPlayerTypeComboBox.getSelectedIndex() == 0)
+	    	{
+	    		setBlackPlayer(bhcd.getHuman());
+	    	}
+	    	else
+	    	{
+	    		setBlackPlayer(bccd.getComputer());
+	    	}
+	    }                                                       
 
-	    private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {     
+	    private void playButtonActionPerformed(java.awt.event.ActionEvent evt)
+	    {
 	    	hideDialog();
 	    	control.openNewGameTab(whitePlayer, blackPlayer, FENTextField.getText());
 	    }                                          
 
-	    private void chooseWhitePlayerButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                        
-	    	wpcd.setLocationRelativeTo(this);
-	    	wpcd.setPlayer(whitePlayer);
-	    	wpcd.setVisible(true);
-	    }                                                       
+	    private void blackCustomizePlayerButtonActionPerformed(java.awt.event.ActionEvent evt)
+	    {
+	    	if(blackPlayerTypeComboBox.getSelectedIndex() == 0)
+	    	{
+	    		bhcd.setLocationRelativeTo(this);
+	    		bhcd.setVisible(true);
+	    		bccd.setVisible(false);
+	    	}
+	    	else
+	    	{
+	    		bccd.setLocationRelativeTo(this);
+	    		bccd.setVisible(true);
+	    		bhcd.setVisible(false);
+	    	}
+	    }                                                          
 
-	    private void chooseBlackPlayerButtonActionPerformed(java.awt.event.ActionEvent evt) {    
-	    	bpcd.setLocationRelativeTo(this);
-	    	bpcd.setPlayer(blackPlayer);
-	    	bpcd.setVisible(true);
-	    }                                                       
+	    private void whiteCustomizePlayerButtonActionPerformed(java.awt.event.ActionEvent evt)
+	    {
+	    	if(whitePlayerTypeComboBox.getSelectedIndex() == 0)
+	    	{
+	    		whcd.setLocationRelativeTo(this);
+	    		whcd.setVisible(true);
+	    		wccd.setVisible(false);
+	    	}
+	    	else
+	    	{
+	    		wccd.setLocationRelativeTo(this);
+	    		wccd.setVisible(true);
+	    		whcd.setVisible(false);
+	    	}
+	    }
 	    
 	    public void setWhitePlayerUsername(String username)
 	    {
 	    	whitePlayerUsernameLabel.setText(username);
 	    }
-	    
+
 	    public void setBlackPlayerUsername(String username)
 	    {
 	    	blackPlayerUsernameLabel.setText(username);
 	    }
 	    
+	    public Player getWhitePlayer()
+	    {
+	    	if(whitePlayerTypeComboBox.getSelectedIndex() == 0)
+	    	{
+	    		return whcd.getHuman();
+	    	}
+	    	else
+	    	{
+	    		return wccd.getComputer();
+	    	}
+	    }
+	    
+	    public Player getBlackPlayer()
+	    {
+	    	if(blackPlayerTypeComboBox.getSelectedIndex() == 0)
+	    	{
+	    		return bhcd.getHuman();
+	    	}
+	    	else
+	    	{
+	    		return bccd.getComputer();
+	    	}
+	    }
+
 	    // Variables declaration - do not modify                     
 	    private javax.swing.JLabel FENLabel;
 	    private javax.swing.JTextField FENTextField;
+	    private javax.swing.JButton blackCustomizePlayerButton;
 	    private javax.swing.JLabel blackLabel;
-	    private javax.swing.JLabel blackPlayerUsernameLabel;
-	    private javax.swing.JButton chooseBlackPlayerButton;
-	    private javax.swing.JButton chooseWhitePlayerButton;
-	    private javax.swing.JComboBox<String> whitePlayerTypeComboBox;
 	    private javax.swing.JComboBox<String> blackPlayerTypeComboBox;
+	    private javax.swing.JLabel blackPlayerUsernameLabel;
 	    private javax.swing.JButton playButton;
+	    private javax.swing.JButton whiteCustomizePlayerButton;
 	    private javax.swing.JLabel whiteLabel;
+	    private javax.swing.JComboBox<String> whitePlayerTypeComboBox;
 	    private javax.swing.JLabel whitePlayerUsernameLabel;
-	    // End of variables declaration                         
+	    // End of variables declaration                   
 	}
 }

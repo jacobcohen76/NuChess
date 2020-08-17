@@ -16,19 +16,28 @@ public class ComputerConstructorDialog extends JDialog
 	private ContentPanel contentPanel;
 	private BoardEvaluatorConstructorDialog becd;
 	private MoveOrdererConstructorDialog mocd;
-
-	public ComputerConstructorDialog()
+	private Computer computer;
+	private int side;
+	
+	protected GameConstructorDialog gcd;
+	
+	public ComputerConstructorDialog(int side)
 	{
+		this.side = side;
 		contentPanel = new ContentPanel();
 		becd = new BoardEvaluatorConstructorDialog();
 		mocd = new MoveOrdererConstructorDialog();
+		gcd = null;
+		
+		computer = getComputer();
+		
 		add(contentPanel);
-		setSize(500, 230);
+		setSize(500, 265);
+		setResizable(false);
 	}
 	
 	public Computer getComputer()
 	{
-		Computer computer;
 		String username = contentPanel.getNicknameText();
 		Chessboard board = new Chessboard();
 		int recurseDepth = contentPanel.getRecurseDepth();
@@ -44,6 +53,17 @@ public class ComputerConstructorDialog extends JDialog
 		}
 		
 		return computer;
+	}
+	
+	public void setNicknameText(String nicknameText)
+	{
+		computer.changeUsername(nicknameText);
+		contentPanel.setNicknameText(nicknameText);
+	}
+	
+	private void hideDialog()
+	{
+		setVisible(false);
 	}
 	
 	/**
@@ -259,7 +279,8 @@ public class ComputerConstructorDialog extends JDialog
 	        // TODO add your handling code here:
 	    }                                                    
 	
-	    private void boardEvaluatorCustomizeButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                              
+	    private void boardEvaluatorCustomizeButtonActionPerformed(java.awt.event.ActionEvent evt) {    
+	    	becd.setLocationRelativeTo(this);
 	    	becd.setVisible(true);
 	    }                                                             
 	
@@ -267,8 +288,10 @@ public class ComputerConstructorDialog extends JDialog
 	        // TODO add your handling code here:
 	    }                                                            
 	
-	    private void confirmButtonActionPerformed(java.awt.event.ActionEvent evt) {                                              
-	        // TODO add your handling code here:
+	    private void confirmButtonActionPerformed(java.awt.event.ActionEvent evt)
+	    {
+	    	hideDialog();
+	    	gcd.setPlayer(side, getComputer());
 	    }                                             
 	
 	    private void selectionAlgorithmComboBoxActionPerformed(java.awt.event.ActionEvent evt) {                                                           
@@ -314,6 +337,11 @@ public class ComputerConstructorDialog extends JDialog
 	    public boolean isAlphaBeta()
 	    {
 	    	return selectionAlgorithmComboBox.getItemAt(selectionAlgorithmComboBox.getSelectedIndex()).equals("AlphaBeta");
+	    }
+	    
+	    public void setNicknameText(String nicknameText)
+	    {
+	    	nicknameTextField.setText(nicknameText);
 	    }
 	
 	    // Variables declaration - do not modify                     

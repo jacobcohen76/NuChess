@@ -19,7 +19,6 @@ import nuchess.ui.feneditor.control.FENEditorControl;
 import nuchess.ui.feneditor.view.FENEditorView;
 import nuchess.ui.game.control.GameControl;
 import nuchess.ui.game.view.GameView;
-import nuchess.ui.root.view.ComputerConstructorDialog;
 import nuchess.ui.root.view.GameConstructorDialog;
 import nuchess.ui.root.view.HomeView;
 import nuchess.ui.root.view.RootView;
@@ -103,11 +102,7 @@ public class RootControl implements Control
 	}
 	
 	private void newGameActionPerformed(ActionEvent e)
-	{
-		ComputerConstructorDialog ccd = new ComputerConstructorDialog();
-		ccd.setLocationRelativeTo(rootView.getPanel());
-		ccd.setVisible(true);
-		
+	{		
 		gcd.setLocationRelativeTo(rootView.getPanel());
 		gcd.setVisible(true);
 	}
