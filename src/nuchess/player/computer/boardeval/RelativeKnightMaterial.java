@@ -1,17 +1,18 @@
 package nuchess.player.computer.boardeval;
 
 import nuchess.engine.Chessboard;
+import nuchess.engine.Piece;
 
-public class Check implements BoardFeature
+public class RelativeKnightMaterial implements BoardFeature
 {
 	@Override
 	public int getFeature(Chessboard board)
 	{
-		return board.inCheck() ? 1 : 0;
+		return board.relativeMaterial(Piece.WHITE_KNIGHT);
 	}
 	
 	public String toString()
 	{
-		return "In Check";
+		return "Relative Knight Material";
 	}
 }

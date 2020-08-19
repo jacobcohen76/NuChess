@@ -13,9 +13,17 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import nuchess.player.computer.boardeval.BoardEvaluator;
-import nuchess.player.computer.boardeval.Check;
+import nuchess.player.computer.boardeval.InCheck;
 import nuchess.player.computer.boardeval.BoardFeature;
 import nuchess.player.computer.boardeval.Mate;
+import nuchess.player.computer.boardeval.Mobility;
+import nuchess.player.computer.boardeval.NumChecks;
+import nuchess.player.computer.boardeval.PseudoLegalMobility;
+import nuchess.player.computer.boardeval.RelativeBishopMaterial;
+import nuchess.player.computer.boardeval.RelativeKnightMaterial;
+import nuchess.player.computer.boardeval.RelativePawnMaterial;
+import nuchess.player.computer.boardeval.RelativeQueenMaterial;
+import nuchess.player.computer.boardeval.RelativeRookMaterial;
 
 public class BoardEvaluatorConstructorDialog extends JDialog
 {
@@ -48,18 +56,15 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 		private static final long serialVersionUID = -8332408797014422954L;
 		
 		private DefaultTableModel tableModel;
-		private ArrayList<BoardFeature> features;
+		private ArrayList<BoardFeature> featuresList;
 		private AbstractListModel<BoardFeature> listModel;
-
+		
 	    /**
 	     * Creates new form WeightDecider
 	     */
 	    public WeightDecider()
 	    {
-	    	features = new ArrayList<BoardFeature>();
-	    	features.add(new Mate());
-	    	features.add(new Check());
-	    	
+	    	initFeaturesList();
             tableModel = new DefaultTableModel(new Object[][] {}, new String[] { "Feature", "Weight" })
 	    	{
 	    		private static final long serialVersionUID = -8225338543361272365L;
@@ -76,15 +81,30 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 
 				public int getSize()
 	            {
-	            	return features.size();
+	            	return featuresList.size();
 	            }
 	            
 	            public BoardFeature getElementAt(int i)
 	            {
-	            	return features.get(i);
+	            	return featuresList.get(i);
 	            }
 	    	};
 	        initComponents();
+	    }
+	    
+	    private void initFeaturesList()
+	    {
+	    	featuresList = new ArrayList<BoardFeature>();
+	    	featuresList.add(new Mate());
+	    	featuresList.add(new InCheck());
+	    	featuresList.add(new NumChecks());
+	    	featuresList.add(new RelativePawnMaterial());
+	    	featuresList.add(new RelativeKnightMaterial());
+	    	featuresList.add(new RelativeBishopMaterial());
+	    	featuresList.add(new RelativeRookMaterial());
+	    	featuresList.add(new RelativeQueenMaterial());
+	    	featuresList.add(new PseudoLegalMobility());
+	    	featuresList.add(new Mobility());
 	    }
 	    
 	    @SuppressWarnings("rawtypes")
@@ -161,7 +181,7 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 				{
 					if(e.getKeyCode() == KeyEvent.VK_DELETE)
 					{
-						features.add((BoardFeature) tableModel.getValueAt(weightsTable.getSelectedRow(), 0));
+						featuresList.add((BoardFeature) tableModel.getValueAt(weightsTable.getSelectedRow(), 0));
 						tableModel.removeRow(weightsTable.getSelectedRow());
 						weightsTable.revalidate();
 						weightsList.repaint();
@@ -180,7 +200,7 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 	        layout.setHorizontalGroup(
 	            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	            .addGroup(layout.createSequentialGroup()
-	                .addComponent(weightsListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                .addComponent(weightsListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 	                .addComponent(weightsTableScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
 	        );
@@ -196,7 +216,7 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 	    	if(0 <= weightsList.getSelectedIndex())
 	    	{
 		    	tableModel.addRow(new Object[] { weightsList.getSelectedValue(), 0 } );
-		    	features.remove(weightsList.getSelectedIndex());
+		    	featuresList.remove(weightsList.getSelectedIndex());
 		    	weightsList.clearSelection();
 		    	weightsList.repaint();
 	    	}

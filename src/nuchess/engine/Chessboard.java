@@ -13,21 +13,7 @@ public final class Chessboard
 	private static final long QCW_OCC             = 0x000000000000000EL;
 	private static final long KCB_OCC             = 0x6000000000000000L;
 	private static final long QCB_OCC             = 0x0E00000000000000L;
-	
-//	private static final int modifiedCastlingRights(int square)
-//	{
-//		switch(square)
-//		{
-//			case Square.a1:		return 0b1011;
-//			case Square.e1:		return 0b0011;
-//			case Square.h1:		return 0b0111;
-//			case Square.a8:		return 0b1110;
-//			case Square.e8:		return 0b1100;
-//			case Square.h8:		return 0b1101;
-//			default:			return 0b1111;
-//		}
-//	}
-	
+		
 	public long[] bitboards;
 	public long zobristKey, checks;
 	public int[] material, king, unmakeInfo;
@@ -54,6 +40,43 @@ public final class Chessboard
 		epTarget = Square.NULL;
 	}
 	
+	public void clear()
+	{
+		for(int bb = 0; bb <= OCC; bb++)
+		{
+			bitboards[bb] = 0L;
+			material[bb] = 0;
+		}
+		zobristKey = 0L;
+		toMove = Color.WHITE;
+		ply = 0;
+		halfmoveClock = 0;
+		castlingRights = 0;
+	}
+	
+	public void loadFEN(String FEN)
+	{
+		clear();
+		String[] elements = FEN.trim().split("\\s+");
+		loadFENlayout(elements[FENParser.LAYOUT]);
+		toMove = FENParser.parseFENtoMove(elements[FENParser.TO_MOVE]);
+		castlingRights = FENParser.parseFENcastlingRights(elements[FENParser.CASTLING_RIGHTS]);
+		epTarget = FENParser.parseFENepTarget(elements[FENParser.EP_TARGET]);
+		halfmoveClock = FENParser.parseFENhalfmoveClock(elements[FENParser.HALFMOVE_CLOCK]);
+		ply = ((FENParser.parseFENfullmoveNumber(elements[FENParser.FULLMOVE_NUMBER]) - 1) << 1) + toMove;
+		checks = attacksTo(king[toMove], toMove ^ 1, bitboards[OCC]);
+		
+		if(toMove == Color.BLACK)
+		{
+			zobristKey ^= Zobrist.BLACK;
+		}
+		if(epTarget != Square.NULL)
+		{
+			zobristKey ^= Zobrist.ENPASSANT[Square.file(epTarget)];
+		}
+		zobristKey ^= Zobrist.CASTLE[castlingRights];
+	}
+	
 	public void resizeUnmakeInfo(int n)
 	{
 		int[] resizedUnmakeInfo = new int[unmakeInfo.length + n];
@@ -68,48 +91,6 @@ public final class Chessboard
 	{
 		MoveList moves = new MoveList();
 		return inCheck() ? generateMovesInCheck(moves) : generateMoves(moves);
-	}
-	
-	private MoveList generateMovesInCheck(MoveList moves)
-	{
-		if(getNumChecks() > 1)
-		{
-			addKingMoves(moves);
-		}
-		else
-		{
-			int source = Bits.bitscanForward(checks);
-			long between = sliding(source, toMove ^ 1) ? Bitboards.between(king[toMove], source) : 0L;
-			addPawnMoves(moves, between, checks);
-			addKnightMoves(moves, between, checks);
-			addBishopMoves(moves, between, checks);
-			addRookMoves(moves, between, checks);
-			addQueenMoves(moves, between, checks);
-			addPromotionMoves(moves, between, checks);
-			addKingMoves(moves);
-		}
-		return moves;
-	}
-	
-	private MoveList generateMoves(MoveList moves)
-	{
-		addPawnMoves(moves);
-		addKnightMoves(moves);
-		addBishopMoves(moves);
-		addRookMoves(moves);
-		addQueenMoves(moves);
-		addKingMoves(moves);
-		addPromotionMoves(moves);
-		addCastleMoves(moves);
-		return moves;
-	}
-	
-	public boolean canMake(CMove move)
-	{
-		return	move != null && halfmoveClock < 100 &&
-				(contains(Piece.WHITE_KING + toMove, move.from()) ?
-					(!isAttacked(move.to(), toMove ^ 1, occAfter(move))) :
-					(attacksTo(king[toMove], toMove ^ 1, occAfter(move)) & ~move.captureBitboard()) == 0);
 	}
 	
 	public void make(CMove move)
@@ -190,136 +171,32 @@ public final class Chessboard
 		epTarget = Info.epTarget(unmakeInfo[ply]);
 	}
 	
-	public int getNumChecks()
+	public boolean canMake(CMove move)
 	{
-		return Bits.bitCount(checks);
+		return	move != null && halfmoveClock < 100 &&
+				(contains(Piece.WHITE_KING + toMove, move.from()) ?
+					(!isAttacked(move.to(), toMove ^ 1, occAfter(move))) :
+					(attacksTo(king[toMove], toMove ^ 1, occAfter(move)) & ~move.captureBitboard()) == 0);
+	}
+	
+	public boolean isCheck(CMove move)
+	{
+		return isDirectCheck(move) || isDiscoveryCheck(move);
+	}
+	
+	public boolean isDirectCheck(CMove move)
+	{
+		return (Attacks.attacks(pieceAt(move.from()), move.to(), occAfter(move)) & bitboards[Piece.WHITE_KING + toMove ^ 1]) != 0;
+	}
+	
+	public boolean isDiscoveryCheck(CMove move)
+	{
+		return attacksTo(king[toMove ^ 1], toMove, occAfter(move)) != 0;
 	}
 	
 	public boolean inCheck()
 	{
 		return checks != 0L;
-	}
-	
-	public void promote(int piece, int promotion, int square)
-	{
-		bitboards[piece] &= ~(1L << square);
-		bitboards[piece & 1] &= ~(1L << square);
-		zobristKey ^= Zobrist.PIECE[piece][square];
-		
-		bitboards[promotion] |= 1L << square;
-		bitboards[promotion & 1] |= 1L << square;
-		zobristKey ^= Zobrist.PIECE[promotion][square];
-	}
-	
-	public void move(int from, int to)
-	{
-		move(pieceAt(from, toMove), from, to);
-	}
-	
-	public void move(int piece, int from, int to)
-	{
-		bitboards[piece] &= ~(1L << from);
-		bitboards[piece & 1] &= ~(1L << from);
-		bitboards[OCC] &= ~(1L << from);
-		zobristKey ^= Zobrist.PIECE[piece][from];
-		
-		bitboards[piece] |= 1L << to;
-		bitboards[piece & 1] |= 1L << to;
-		bitboards[OCC] |= 1L << to;
-		zobristKey ^= Zobrist.PIECE[piece][to];
-		
-		if(Piece.pieceType(piece) == Piece.PAWN)
-		{
-			halfmoveClock = 0;
-		}
-		else if(king[toMove] == from)
-		{
-			king[toMove] = to;
-		}
-		updateCastlingRights(from);
-	}
-	
-	public int capture(int square)
-	{
-		int piece = pieceAt(square, toMove ^ 1);
-		remove(piece, square);
-		halfmoveClock = 0;
-		updateCastlingRights(square);
-		return piece;
-	}
-	
-	public void capture(int piece, int square)
-	{
-		remove(piece, square);
-		halfmoveClock = 0;
-		updateCastlingRights(square);
-	}
-	
-	private void updateCastlingRights(int square)
-	{
-		switch(square)
-		{
-			case Square.a1:
-				zobristKey ^= Zobrist.CASTLE[castlingRights];
-				castlingRights &= 0b1011;
-				zobristKey ^= Zobrist.CASTLE[castlingRights];
-				break;
-			case Square.e1:
-				zobristKey ^= Zobrist.CASTLE[castlingRights];
-				castlingRights &= 0b0011;
-				zobristKey ^= Zobrist.CASTLE[castlingRights];
-				break;
-			case Square.h1:
-				zobristKey ^= Zobrist.CASTLE[castlingRights];
-				castlingRights &= 0b0111;
-				zobristKey ^= Zobrist.CASTLE[castlingRights];
-				break;
-			case Square.a8:
-				zobristKey ^= Zobrist.CASTLE[castlingRights];
-				castlingRights &= 0b1110;
-				zobristKey ^= Zobrist.CASTLE[castlingRights];
-				break;
-			case Square.e8:
-				zobristKey ^= Zobrist.CASTLE[castlingRights];
-				castlingRights &= 0b1100;
-				zobristKey ^= Zobrist.CASTLE[castlingRights];
-				break;
-			case Square.h8:
-				zobristKey ^= Zobrist.CASTLE[castlingRights];
-				castlingRights &= 0b1101;
-				zobristKey ^= Zobrist.CASTLE[castlingRights];
-				break;
-		}
-	}
-	
-	public void put(int piece, int square)
-	{
-		bitboards[piece] |= 1L << square;
-		bitboards[piece & 1] |= 1L << square;
-		bitboards[OCC] |= 1L << square;
-		
-		material[piece]++;
-		material[piece & 1]++;
-		material[OCC]++;
-		
-		if(Piece.pieceType(piece) == Piece.KING)
-		{
-			king[piece & 1] = square;
-		}
-//		zobristKey ^= 
-	}
-	
-	public void remove(int piece, int square)
-	{
-		bitboards[piece] &= ~(1L << square);
-		bitboards[piece & 1] &= ~(1L << square);
-		bitboards[OCC] &= ~(1L << square);
-		
-		material[piece]--;
-		material[piece & 1]--;
-		material[OCC]--;
-		
-		zobristKey ^= Zobrist.PIECE[piece][square];
 	}
 	
 	public boolean isAttacked(int square, int by, long occ)
@@ -359,6 +236,16 @@ public final class Chessboard
 		return ((bitboards[OCC] >> square) & 1) == 0;
 	}
 	
+	public int relativeMaterial(int piece)
+	{
+		return material[piece + toMove] - material[piece + toMove ^ 1];
+	}
+	
+	public int getNumChecks()
+	{
+		return Bits.bitCount(checks);
+	}
+	
 	public int pieceAt(int square)
 	{
 		     if(((bitboards[Piece.WHITE_PAWN]   >> square) & 1) == 1)     return Piece.WHITE_PAWN;
@@ -387,7 +274,7 @@ public final class Chessboard
 		else                                                                      return Piece.NULL;
 	}
 	
-	public final long attacksTo(int square, int by, long occ)
+	public long attacksTo(int square, int by, long occ)
 	{
 		return	Attacks.pawnAttacks   (square, by ^ 1) & bitboards[Piece.WHITE_PAWN   + by] |
 				Attacks.knightAttacks (square)         & bitboards[Piece.WHITE_KNIGHT + by] |
@@ -436,18 +323,6 @@ public final class Chessboard
 		return sb.toString();
 	}
 	
-	public String getDebugVarInfo()
-	{
-		return	"zobristKey     = " + Bits.toBinaryString(zobristKey) + " = " + zobristKey + "\n" +
-				"toMove         = " + Bits.toBinaryString(toMove) + " = " + (toMove == Color.WHITE ? "WHITE" : "BLACK") + "\n" +
-				"ply            = " + Bits.toBinaryString(ply) + " = " + ply + "\n" +
-				"fullmoveNumber = " + Bits.toBinaryString((ply >> 1) + 1) + " = " + ((ply >> 1) + 1) + "\n" +
-				"halfmoveClock  = " + Bits.toBinaryString(halfmoveClock) + " = " + halfmoveClock + "\n" +
-				"castlingRights = " + Bits.toBinaryString(castlingRights) + " = " + FENFormatter.formatFENcastlingRights(castlingRights) + "\n" +
-				"epTarget       = " + Bits.toBinaryString(epTarget) + " = " + FENFormatter.formatFENepTarget(epTarget) + "\n" +
-				"numChecks      = " + Bits.toBinaryString(getNumChecks()) + " = " + getNumChecks();
-	}
-	
 	public String getFEN()
 	{
 		return	formatFENlayout() + " " +
@@ -456,92 +331,6 @@ public final class Chessboard
 				FENFormatter.formatFENepTarget(epTarget) + " " +
 				FENFormatter.formatFENhalfmoveClock(halfmoveClock) + " " +
 				FENFormatter.formatFENfullmoveNumber(ply);
-	}
-	
-	private String formatFENlayout()
-	{
-		StringBuilder sb = new StringBuilder(FENFormatter.LONGEST_FEN_LAYOUT);
-		int emptyCount = 0;
-		for(int rank = Square.rank_8; Square.rank_1 <= rank; rank--)
-		{
-			for(int file = Square.file_a; file <= Square.file_h; file++)
-			{
-				if(empty(Square.makeSquare(rank, file)))
-				{
-					emptyCount++;
-				}
-				else
-				{
-					if(emptyCount != 0)						sb.append(emptyCount);
-					sb.append(FENFormatter.pieceCharacter(pieceAt(Square.makeSquare(rank, file))));
-					emptyCount = 0;
-				}
-			}
-			if(emptyCount != 0)								sb.append(emptyCount);
-			if(rank != Square.rank_1)						sb.append("/");
-			emptyCount = 0;
-		}
-		return sb.toString();
-	}
-	
-	public void loadFEN(String FEN)
-	{
-		clear();
-		String[] elements = FEN.trim().split("\\s+");
-		loadFENlayout(elements[FENParser.LAYOUT]);
-		toMove = FENParser.parseFENtoMove(elements[FENParser.TO_MOVE]);
-		castlingRights = FENParser.parseFENcastlingRights(elements[FENParser.CASTLING_RIGHTS]);
-		epTarget = FENParser.parseFENepTarget(elements[FENParser.EP_TARGET]);
-		halfmoveClock = FENParser.parseFENhalfmoveClock(elements[FENParser.HALFMOVE_CLOCK]);
-		ply = ((FENParser.parseFENfullmoveNumber(elements[FENParser.FULLMOVE_NUMBER]) - 1) << 1) + toMove;
-		checks = attacksTo(king[toMove], toMove ^ 1, bitboards[OCC]);
-		
-		if(toMove == Color.BLACK)
-		{
-			zobristKey ^= Zobrist.BLACK;
-		}
-		if(epTarget != Square.NULL)
-		{
-			zobristKey ^= Zobrist.ENPASSANT[Square.file(epTarget)];
-		}
-		zobristKey ^= Zobrist.CASTLE[castlingRights];
-	}
-	
-	private void loadFENlayout(String FENlayout)
-	{
-		int i = 0, rank = Square.rank_8, file = Square.file_a;
-		char ch;
-		while(i < FENlayout.length() && (ch = FENlayout.charAt(i++)) != ' ')
-		{
-			if(ch == '/')
-			{
-				rank--;
-				file = 0;
-			}
-			else if(FENParser.isDigit(ch))
-			{
-				file += ch - '0';
-			}
-			else
-			{
-				put(FENParser.piece(ch), Square.makeSquare(rank, file));
-				file++;
-			}
-		}
-	}
-	
-	public void clear()
-	{
-		for(int bb = 0; bb <= OCC; bb++)
-		{
-			bitboards[bb] = 0L;
-			material[bb] = 0;
-		}
-		zobristKey = 0L;
-		toMove = Color.WHITE;
-		ply = 0;
-		halfmoveClock = 0;
-		castlingRights = 0;
 	}
 	
 	public String getSAN(CMove move)
@@ -615,19 +404,209 @@ public final class Chessboard
 		return SAN.toString();
 	}
 	
-	public final boolean isCheck(CMove move)
+	private void promote(int piece, int promotion, int square)
 	{
-		return isDirectCheck(move) || isDiscoveryCheck(move);
+		bitboards[piece] &= ~(1L << square);
+		bitboards[piece & 1] &= ~(1L << square);
+		zobristKey ^= Zobrist.PIECE[piece][square];
+		
+		bitboards[promotion] |= 1L << square;
+		bitboards[promotion & 1] |= 1L << square;
+		zobristKey ^= Zobrist.PIECE[promotion][square];
 	}
 	
-	public final boolean isDirectCheck(CMove move)
+	private void move(int from, int to)
 	{
-		return (Attacks.attacks(pieceAt(move.from()), move.to(), occAfter(move)) & bitboards[Piece.WHITE_KING + toMove ^ 1]) != 0;
+		move(pieceAt(from, toMove), from, to);
 	}
 	
-	public final boolean isDiscoveryCheck(CMove move)
+	private void move(int piece, int from, int to)
 	{
-		return attacksTo(king[toMove ^ 1], toMove, occAfter(move)) != 0;
+		bitboards[piece] &= ~(1L << from);
+		bitboards[piece & 1] &= ~(1L << from);
+		bitboards[OCC] &= ~(1L << from);
+		zobristKey ^= Zobrist.PIECE[piece][from];
+		
+		bitboards[piece] |= 1L << to;
+		bitboards[piece & 1] |= 1L << to;
+		bitboards[OCC] |= 1L << to;
+		zobristKey ^= Zobrist.PIECE[piece][to];
+		
+		if(Piece.pieceType(piece) == Piece.PAWN)
+		{
+			halfmoveClock = 0;
+		}
+		else if(king[toMove] == from)
+		{
+			king[toMove] = to;
+		}
+		updateCastlingRights(from);
+	}
+	
+	private int capture(int square)
+	{
+		int piece = pieceAt(square, toMove ^ 1);
+		remove(piece, square);
+		halfmoveClock = 0;
+		updateCastlingRights(square);
+		return piece;
+	}
+	
+	private void capture(int piece, int square)
+	{
+		remove(piece, square);
+		halfmoveClock = 0;
+		updateCastlingRights(square);
+	}
+	
+	private void put(int piece, int square)
+	{
+		bitboards[piece] |= 1L << square;
+		bitboards[piece & 1] |= 1L << square;
+		bitboards[OCC] |= 1L << square;
+		
+		material[piece]++;
+		material[piece & 1]++;
+		material[OCC]++;
+		
+		if(Piece.pieceType(piece) == Piece.KING)
+		{
+			king[piece & 1] = square;
+		}
+		zobristKey ^= Zobrist.PIECE[piece][square];
+	}
+	
+	private void remove(int piece, int square)
+	{
+		bitboards[piece] &= ~(1L << square);
+		bitboards[piece & 1] &= ~(1L << square);
+		bitboards[OCC] &= ~(1L << square);
+		
+		material[piece]--;
+		material[piece & 1]--;
+		material[OCC]--;
+		
+		zobristKey ^= Zobrist.PIECE[piece][square];
+	}
+	
+	private void updateCastlingRights(int square)
+	{
+		switch(square)
+		{
+			case Square.a1:
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				castlingRights &= 0b1011;
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				break;
+			case Square.e1:
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				castlingRights &= 0b0011;
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				break;
+			case Square.h1:
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				castlingRights &= 0b0111;
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				break;
+			case Square.a8:
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				castlingRights &= 0b1110;
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				break;
+			case Square.e8:
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				castlingRights &= 0b1100;
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				break;
+			case Square.h8:
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				castlingRights &= 0b1101;
+				zobristKey ^= Zobrist.CASTLE[castlingRights];
+				break;
+		}
+	}
+	
+	private void loadFENlayout(String FENlayout)
+	{
+		int i = 0, rank = Square.rank_8, file = Square.file_a;
+		char ch;
+		while(i < FENlayout.length() && (ch = FENlayout.charAt(i++)) != ' ')
+		{
+			if(ch == '/')
+			{
+				rank--;
+				file = 0;
+			}
+			else if(FENParser.isDigit(ch))
+			{
+				file += ch - '0';
+			}
+			else
+			{
+				put(FENParser.piece(ch), Square.makeSquare(rank, file));
+				file++;
+			}
+		}
+	}
+	
+	private String formatFENlayout()
+	{
+		StringBuilder sb = new StringBuilder(FENFormatter.LONGEST_FEN_LAYOUT);
+		int emptyCount = 0;
+		for(int rank = Square.rank_8; Square.rank_1 <= rank; rank--)
+		{
+			for(int file = Square.file_a; file <= Square.file_h; file++)
+			{
+				if(empty(Square.makeSquare(rank, file)))
+				{
+					emptyCount++;
+				}
+				else
+				{
+					if(emptyCount != 0)						sb.append(emptyCount);
+					sb.append(FENFormatter.pieceCharacter(pieceAt(Square.makeSquare(rank, file))));
+					emptyCount = 0;
+				}
+			}
+			if(emptyCount != 0)								sb.append(emptyCount);
+			if(rank != Square.rank_1)						sb.append("/");
+			emptyCount = 0;
+		}
+		return sb.toString();
+	}
+	
+	private MoveList generateMovesInCheck(MoveList moves)
+	{
+		if(getNumChecks() > 1)
+		{
+			addKingMoves(moves);
+		}
+		else
+		{
+			int source = Bits.bitscanForward(checks);
+			long between = sliding(source, toMove ^ 1) ? Bitboards.between(king[toMove], source) : 0L;
+			addPawnMoves(moves, between, checks);
+			addKnightMoves(moves, between, checks);
+			addBishopMoves(moves, between, checks);
+			addRookMoves(moves, between, checks);
+			addQueenMoves(moves, between, checks);
+			addPromotionMoves(moves, between, checks);
+			addKingMoves(moves);
+		}
+		return moves;
+	}
+	
+	private MoveList generateMoves(MoveList moves)
+	{
+		addPawnMoves(moves);
+		addKnightMoves(moves);
+		addBishopMoves(moves);
+		addRookMoves(moves);
+		addQueenMoves(moves);
+		addKingMoves(moves);
+		addPromotionMoves(moves);
+		addCastleMoves(moves);
+		return moves;
 	}
 	
 	private void addPawnMoves(MoveList moves)
