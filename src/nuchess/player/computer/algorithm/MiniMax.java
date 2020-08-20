@@ -61,7 +61,7 @@ public class MiniMax extends Algorithm
 					numLegalMoves++;
 				}
 			}
-			return numLegalMoves == 0 ? +be.evaluate(board) : max;
+			return numLegalMoves == 0 ? (board.inCheck() ? -(BoardEvaluator.MATED_VALUE - board.ply) : 0) : max;
 		}
 	}
 	
@@ -89,7 +89,7 @@ public class MiniMax extends Algorithm
 					numLegalMoves++;
 				}
 			}
-			return numLegalMoves == 0 ? -be.evaluate(board) : min;
+			return numLegalMoves == 0 ? (board.inCheck() ? +(BoardEvaluator.MATED_VALUE - board.ply) : 0) : min;
 		}
 	}
 }

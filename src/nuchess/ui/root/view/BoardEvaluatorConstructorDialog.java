@@ -126,7 +126,7 @@ public class BoardEvaluatorConstructorDialog extends JDialog
 	    	int[] weights = new int[dataVector.size()];
 	    	for(int i = 0; i < dataVector.size(); i++)
 	    	{
-	    		weights[i] = Integer.valueOf(dataVector.get(i).get(0).toString());
+	    		weights[i] = Integer.valueOf(dataVector.get(i).get(1).toString());
 	    	}
 	    	return weights;
 	    }

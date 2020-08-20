@@ -49,7 +49,6 @@ public class AlphaBeta extends Algorithm
 		{
 			int score, numLegalMoves = 0;
 			MoveList moves = board.generateMoves();
-//			orderMoves(moves);
 			for(int i = 0; i < moves.n; i++)
 			{
 				if(board.canMake(moves.array[i]))
@@ -68,7 +67,7 @@ public class AlphaBeta extends Algorithm
 					numLegalMoves++;
 				}
 			}
-			return numLegalMoves == 0 ? +be.evaluate(board) : a;
+			return numLegalMoves == 0 ? (board.inCheck() ? -(BoardEvaluator.MATED_VALUE - board.ply) : 0) : a;
 		}
 	}
 	
@@ -101,7 +100,7 @@ public class AlphaBeta extends Algorithm
 					numLegalMoves++;
 				}
 			}
-			return numLegalMoves == 0 ? -be.evaluate(board) : b;
+			return numLegalMoves == 0 ? (board.inCheck() ? +(BoardEvaluator.MATED_VALUE - board.ply) : 0) : b;
 		}
 	}
 }

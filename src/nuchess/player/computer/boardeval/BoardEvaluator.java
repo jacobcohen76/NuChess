@@ -4,6 +4,8 @@ import nuchess.engine.Chessboard;
 
 public class BoardEvaluator
 {
+	public static final int MATED_VALUE = +16384;
+	
 	private BoardFeature[] features;
 	private int[] weights;
 	private int n;
@@ -14,7 +16,7 @@ public class BoardEvaluator
 		this.weights = weights;
 		this.n = n;
 	}
-
+	
 	public int evaluate(Chessboard board)
 	{
 		int score = 0;
