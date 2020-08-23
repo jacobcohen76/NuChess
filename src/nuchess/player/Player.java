@@ -12,7 +12,7 @@ public abstract class Player implements Serializable
 	{
 		this.username = username;
 	}
-		
+	
 	public final String getUsername()
 	{
 		return username;

@@ -144,5 +144,7 @@ public final class CMove
 	public static final int BISHOP_PROMO_CAP	= 0b1101;
 	public static final int ROOK_PROMO_CAP		= 0b1110;
 	public static final int QUEEN_PROMO_CAP		= 0b1111;
+	
+	public static final short NULL              = 0;
 }
 
