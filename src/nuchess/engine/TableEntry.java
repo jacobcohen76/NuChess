@@ -59,7 +59,7 @@ public class TableEntry
 	public void setMove(int move)
 	{
 		word2 &= 0xFFFF0000;
-		word2 |= move;
+		word2 |= move & 0xFFFF;
 	}
 	
 	public int getScore()

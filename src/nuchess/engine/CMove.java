@@ -2,7 +2,7 @@ package nuchess.engine;
 
 public final class CMove
 {	
-	private short move;
+	public short move;
 	
 	public CMove(short raw16bits)
 	{
